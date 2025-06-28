@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Calculadora de Ahorro</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
@@ -14,9 +14,10 @@
       --noche-input-bg: #1a2945;
     }
     body {
-      font-family: Arial, sans-serif;
-      margin: 0; padding: 1rem;
-      background: #f0f4ff;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 1rem;
+      background: #f7f9fc;
       color: var(--azul-oscuro);
       transition: background 0.3s, color 0.3s;
     }
@@ -24,81 +25,76 @@
       background: var(--noche-bg);
       color: var(--noche-texto);
     }
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
     .tabs {
       display: flex;
+      justify-content: center;
       margin-bottom: 1rem;
-      border-bottom: 2px solid var(--azul-oscuro);
     }
     .tab {
       padding: 0.5rem 1.5rem;
-      margin-right: 1rem;
-      background: #b3c7ff;
+      margin: 0 0.5rem;
+      background: var(--azul-claro);
       color: var(--azul-oscuro);
       cursor: pointer;
-      border-radius: 0.5rem 0.5rem 0 0;
-      user-select: none;
+      border-radius: 1rem;
       font-weight: 600;
       transition: background 0.3s, color 0.3s;
     }
     .tab.active {
       background: var(--azul-oscuro);
-      color: #fff;
+      color: white;
     }
     .tab-content {
       display: none;
-      background: var(--azul-claro);
-      border-radius: 0 0 0.5rem 0.5rem;
-      padding: 1rem;
-      box-shadow: 0 0 8px rgba(0, 51, 102, 0.2);
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+      max-width: 1000px;
+      margin: 0 auto;
     }
     .tab-content.active {
       display: block;
     }
     form {
-      max-width: 900px;
-      margin: 0 auto;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem 1.5rem;
-      align-items: flex-end;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
     }
     label {
+      font-weight: 600;
       display: flex;
       flex-direction: column;
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: inherit;
-      min-width: 150px;
-      flex: 1 1 150px;
     }
-    input[type=number] {
-      margin-top: 0.3rem;
+    input[type="number"] {
       padding: 0.5rem;
+      border-radius: 0.5rem;
       border: 1px solid var(--azul-oscuro);
-      border-radius: 0.25rem;
+      background: #eef2ff;
       font-size: 1rem;
-      background: #e6f0ff;
-      color: var(--azul-oscuro);
-      transition: background 0.3s, color 0.3s, border-color 0.3s;
     }
-    body.night input[type=number] {
+    body.night input[type="number"] {
       background: var(--noche-input-bg);
       color: var(--noche-texto);
       border-color: #5a7db8;
     }
     button {
-      background: var(--azul-oscuro);
-      color: #fff;
+      padding: 0.6rem 1rem;
+      border-radius: 0.5rem;
       border: none;
-      border-radius: 0.3rem;
-      padding: 0.5rem 1rem;
+      background: var(--azul-oscuro);
+      color: white;
       cursor: pointer;
-      font-weight: 600;
+      font-weight: bold;
       transition: background 0.3s;
-      flex-shrink: 0;
     }
     button:hover {
-      background: #002244;
+      background: #001f4d;
     }
     #resumen {
       max-width: 900px;
@@ -108,115 +104,50 @@
       border-radius: 1rem;
       font-weight: bold;
       box-shadow: 0 0 8px rgba(0, 51, 102, 0.1);
-      line-height: 1.6;
     }
     body.night #resumen {
       background: #1f2f4a;
     }
     #tableContainer {
-      max-width: 900px;
+      max-width: 1000px;
       margin: 1rem auto;
       overflow-x: auto;
-      background: var(--azul-claro);
+      background: white;
       border-radius: 0.5rem;
-      box-shadow: 0 0 8px rgba(0, 51, 102, 0.15);
-      color: var(--azul-oscuro);
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
     }
     body.night #tableContainer {
       background: var(--noche-input-bg);
-      color: var(--noche-texto);
-      box-shadow: 0 0 10px rgba(90, 125, 184, 0.4);
     }
     table {
-      border-collapse: collapse;
       width: 100%;
-      font-size: 0.9rem;
-      color: inherit;
+      border-collapse: collapse;
     }
     th, td {
-      border: 1px solid var(--azul-oscuro);
-      padding: 0.5rem;
+      padding: 0.75rem;
       text-align: center;
-    }
-    body.night th, body.night td {
-      border-color: #5a7db8;
+      border: 1px solid var(--azul-oscuro);
     }
     canvas {
-      max-width: 900px;
       width: 100% !important;
+      max-width: 1000px;
       height: 500px !important;
-      margin: 1rem auto 2rem auto;
+      margin: 2rem auto;
       display: block;
-      background: var(--azul-claro);
+      background: white;
+      border-radius: 1rem;
       padding: 1rem;
-      border-radius: 0.5rem;
-      box-shadow: 0 0 8px rgba(0, 51, 102, 0.15);
-      transition: background 0.3s;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
     }
     body.night canvas {
-      background: var(--noche-input-bg);
-      box-shadow: 0 0 10px rgba(90, 125, 184, 0.4);
+      background: #1a2945;
     }
-    #addHitoBtn {
-      margin-top: 1.5rem;
-    }
-    #toggleTableBtn, #toggleNightBtn {
-      margin: 0 0.5rem 1rem 0;
-      padding: 0.5rem 1rem;
-    }
-    #listaHitos {
-      max-width: 900px;
-      margin: 0.5rem auto 1rem auto;
-      color: var(--azul-oscuro);
-      font-weight: 600;
-    }
-    body.night #listaHitos {
-      color: var(--noche-texto);
-    }
-    .hitos-list-item {
-      background: #b3c7ff;
-      padding: 0.3rem 0.5rem;
-      border-radius: 0.25rem;
-      margin-bottom: 0.3rem;
+    .controls {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    body.night .hitos-list-item {
-      background: #2a3b65;
-      color: var(--noche-texto);
-    }
-    .hitos-list-item button {
-      background: transparent;
-      border: none;
-      font-weight: 700;
-      font-size: 1.1rem;
-      cursor: pointer;
-      color: inherit;
-      padding: 0 0.3rem;
-      line-height: 1;
-    }
-    @media (max-width: 600px) {
-      form {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      label {
-        min-width: 100%;
-        flex: unset;
-      }
-      canvas {
-        height: 300px !important;
-      }
-      #listaHitos {
-        max-width: 100%;
-      }
-      #tableContainer {
-        max-width: 100%;
-      }
-      #resumen {
-        max-width: 100%;
-      }
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
     }
   </style>
 </head>
@@ -226,172 +157,92 @@
     <div class="tab active" data-tab="basico">Básico</div>
     <div class="tab" data-tab="avanzado">Avanzado</div>
   </div>
-
   <div id="basico" class="tab-content active">
-    <form id="formBasico" onsubmit="return false;">
-      <label>Edad inicio (Tramo inicial)
-        <input type="number" id="edadInicioBasico" min="0" max="120" value="25" />
-      </label>
-      <label>Edad fin (Tramo final)
-        <input type="number" id="edadFinBasico" min="0" max="120" value="65" />
-      </label>
-      <label>Monto inicial
-        <input type="number" id="montoInicialBasico" value="0" min="0" />
-      </label>
-      <label>Aporte mensual
-        <input type="number" id="aporteMensualBasico" min="0" value="100" />
-      </label>
-      <label>Rendimiento anual (%)
-        <input type="number" id="rendimientoBasico" min="0" step="0.01" value="5" />
-      </label>
-      <label>Inflación anual (%)
-        <input type="number" id="inflacionBasico" min="0" step="0.01" value="3" />
-      </label>
-    </form>
+    <form id="formBasico" onsubmit="return false;"></form>
   </div>
-
   <div id="avanzado" class="tab-content">
-    <form id="formAvanzado" onsubmit="return false;">
-      <label>Monto inicial
-        <input type="number" id="montoInicialAdv" value="0" min="0" />
-      </label>
-      <label>Edad inicio (Tramo inicial)
-        <input type="number" id="edadInicioAdv" min="0" max="120" value="25" />
-      </label>
-      <label>Aporte tramo 1 (Edad < <span id="labelEdadCambio1Adv">35</span>)  
-        <input type="number" id="aporteTramo1" min="0" value="1200" />
-      </label>
-      <label>Edad cambio 1 (Tramo 2 empieza a los)
-        <input type="number" id="edadCambio1Adv" min="0" max="120" value="35" />
-      </label>
-      <label>Aporte tramo 2 (Edad < <span id="labelEdadCambio2Adv">50</span>)
-        <input type="number" id="aporteTramo2" min="0" value="1500" />
-      </label>
-      <label>Edad cambio 2 (Tramo 3 empieza a los)
-        <input type="number" id="edadCambio2Adv" min="0" max="120" value="50" />
-      </label>
-      <label>Aporte tramo 3 (Edad >= <span id="labelEdadCambio2Adv2">50</span>)
-        <input type="number" id="aporteTramo3" min="0" value="1800" />
-      </label>
-      <label>Edad fin (Tramo final)
-        <input type="number" id="edadFinAdv" min="0" max="120" value="65" />
-      </label>
-
-      <label>Edad hito
-        <input type="number" id="edadHito" min="0" max="120" />
-      </label>
-      <label>Gasto hito
-        <input type="number" id="gastoHito" min="0" />
-      </label>
-      <button type="button" id="addHitoBtn">Agregar hito</button>
-    </form>
-    <div id="listaHitos" aria-live="polite"></div>
+    <form id="formAvanzado" onsubmit="return false;"></form>
   </div>
-
   <div id="resumen"></div>
-
-  <div style="max-width:900px; margin: 0 auto;">
+  <div class="controls">
     <button id="toggleTableBtn">Ocultar tabla</button>
     <button id="toggleNightBtn">Modo noche</button>
   </div>
-
   <div id="tableContainer"></div>
-
-  <canvas id="chartGeneral" aria-label="Gráfico de saldo nominal y saldo real" role="img"></canvas>
-
+  <canvas id="chartGeneral"></canvas>
   <script>
-    let hitos = [];
-    let tablaVisible = true;
-    let chartGeneral;
+    const camposBasico = [
+      ['Edad inicio', 'edadInicioBasico', 25],
+      ['Edad fin', 'edadFinBasico', 65],
+      ['Monto inicial', 'montoInicialBasico', 0],
+      ['Aporte mensual', 'aporteMensualBasico', 100],
+      ['Rendimiento anual (%)', 'rendimientoBasico', 5],
+      ['Inflación anual (%)', 'inflacionBasico', 3],
+    ];
+    const camposAvanzado = [
+      ['Monto inicial', 'montoInicialAdv', 0],
+      ['Edad actual (Etapa 1)', 'edadInicioAdv', 25],
+      ['Aporte etapa 1', 'aporteTramo1', 1200],
+      ['Edad inico etapa 2', 'edadCambio1Adv', 35],
+      ['Aporte etapa 2', 'aporteTramo2', 1500],
+      ['Edad etapa 3 ', 'edadCambio2Adv', 50],
+      ['Aporte etapa 3', 'aporteTramo3', 1800],
+      ['Edad objetivo', 'edadFinAdv', 65],
+      ['Rendimiento anual (%)', 'rendimientoAdv', 5],
+      ['Inflación anual (%)', 'inflacionAdv', 3],
+    ];
 
-    // Actualiza los spans con los valores actuales de edades de cambio para claridad
-    function actualizarLabelsEdadesCambio() {
-      const e1 = document.getElementById('edadCambio1Adv').value;
-      const e2 = document.getElementById('edadCambio2Adv').value;
-      document.getElementById('labelEdadCambio1Adv').textContent = e1;
-      document.getElementById('labelEdadCambio2Adv').textContent = e2;
-      document.getElementById('labelEdadCambio2Adv2').textContent = e2;
+    function generarInputs(campos, formId) {
+      const form = document.getElementById(formId);
+      campos.forEach(([labelText, id, valor]) => {
+        const value = localStorage.getItem(id) ?? valor;
+        const label = document.createElement('label');
+        label.innerHTML = `${labelText}<input type="number" id="${id}" value="${value}">`;
+        form.appendChild(label);
+      });
     }
 
-    actualizarLabelsEdadesCambio();
+    generarInputs(camposBasico, 'formBasico');
+    generarInputs(camposAvanzado, 'formAvanzado');
 
-    ['edadCambio1Adv','edadCambio2Adv'].forEach(id => {
-      document.getElementById(id).addEventListener('input', () => {
-        actualizarLabelsEdadesCambio();
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab).classList.add('active');
         autoCalcular();
       });
     });
 
-    function cargarDatos() {
-      // Básico
-      ['edadInicioBasico','edadFinBasico','montoInicialBasico','aporteMensualBasico','rendimientoBasico','inflacionBasico'].forEach(id => {
-        const val = localStorage.getItem(id);
-        if (val !== null) document.getElementById(id).value = val;
-      });
-
-      // Avanzado
-      ['edadInicioAdv','edadCambio1Adv','edadCambio2Adv','edadFinAdv',
-       'aporteTramo1','aporteTramo2','aporteTramo3',
-       'montoInicialAdv','rendimientoAdv','inflacionAdv'].forEach(id => {
-        const val = localStorage.getItem(id);
-        if (val !== null) document.getElementById(id).value = val;
-      });
-
-      // Hitos
-      const hitosGuardados = localStorage.getItem('hitos');
-      if (hitosGuardados) {
-        try {
-          hitos = JSON.parse(hitosGuardados);
-        } catch {
-          hitos = [];
-        }
+    document.addEventListener('input', e => {
+      if (e.target.tagName === 'INPUT') {
+        localStorage.setItem(e.target.id, e.target.value);
+        autoCalcular();
       }
-      renderHitos();
+    });
 
-      // Modo noche
-      const night = localStorage.getItem('modoNoche');
-      if (night === 'true') {
-        document.body.classList.add('night');
-        document.getElementById('toggleNightBtn').textContent = 'Modo día';
-      }
+    let chartGeneral;
+    function autoCalcular() {
+      const tab = document.querySelector('.tab.active').dataset.tab;
+      tab === 'basico' ? calcularBasico() : calcularAvanzado();
     }
-
-    function guardarDatos() {
-      ['edadInicioBasico','edadFinBasico','montoInicialBasico','aporteMensualBasico','rendimientoBasico','inflacionBasico'].forEach(id => {
-        localStorage.setItem(id, document.getElementById(id).value);
-      });
-
-      ['edadInicioAdv','edadCambio1Adv','edadCambio2Adv','edadFinAdv',
-       'aporteTramo1','aporteTramo2','aporteTramo3',
-       'montoInicialAdv','rendimientoAdv','inflacionAdv'].forEach(id => {
-        localStorage.setItem(id, document.getElementById(id).value);
-      });
-
-      localStorage.setItem('hitos', JSON.stringify(hitos));
-      localStorage.setItem('modoNoche', document.body.classList.contains('night'));
-    }
-
     function calcularBasico() {
       const e0 = +document.getElementById('edadInicioBasico').value;
       const eF = +document.getElementById('edadFinBasico').value;
-      const aporteMensual = +document.getElementById('aporteMensualBasico').value;
+      const aporte = +document.getElementById('aporteMensualBasico').value * 12;
       const rendimiento = +document.getElementById('rendimientoBasico').value / 100;
       const inflacion = +document.getElementById('inflacionBasico').value / 100;
-      const inicial = +document.getElementById('montoInicialBasico').value;
-      if (!e0 || !eF || eF < e0) return clearResultados();
-      let saldo = inicial;
-      const resultados = [];
-
+      let saldo = +document.getElementById('montoInicialBasico').value;
+      if (!e0 || !eF || eF < e0) return;
+      const datos = [];
       for (let edad = e0; edad <= eF; edad++) {
-        saldo += aporteMensual * 12;
+        saldo += aporte;
         saldo *= 1 + rendimiento;
-        resultados.push({ edad, saldo, aporte: aporteMensual * 12 });
+        datos.push({ edad, saldo });
       }
-
-      renderResultados(resultados, e0, inflacion);
-      mostrarResumenDesdeDatos(resultados, inflacion, e0);
+      renderResultados(datos, e0, inflacion);
     }
-
     function calcularAvanzado() {
       const e0 = +document.getElementById('edadInicioAdv').value;
       const e1 = +document.getElementById('edadCambio1Adv').value;
@@ -400,245 +251,82 @@
       const a1 = +document.getElementById('aporteTramo1').value * 12;
       const a2 = +document.getElementById('aporteTramo2').value * 12;
       const a3 = +document.getElementById('aporteTramo3').value * 12;
-      const rendimiento = +document.getElementById('rendimientoAdv').value / 100 || 0.05;
-      const inflacion = +document.getElementById('inflacionAdv').value / 100 || 0.03;
-      const inicial = +document.getElementById('montoInicialAdv').value;
-      if (!e0 || !eF || eF < e0 || !e1 || !e2) return clearResultados();
-      let saldo = inicial;
-      const resultados = [];
-
+      const rendimiento = +document.getElementById('rendimientoAdv').value / 100;
+      const inflacion = +document.getElementById('inflacionAdv').value / 100;
+      let saldo = +document.getElementById('montoInicialAdv').value;
+      if (!e0 || !eF || eF < e0) return;
+      const datos = [];
       for (let edad = e0; edad <= eF; edad++) {
-        let aporte = edad < e1 ? a1 : edad < e2 ? a2 : a3;
-        let gastos = hitos.filter(h => h.edad === edad).reduce((acc, h) => acc + h.gasto, 0);
-        saldo += aporte - gastos;
+        const aporte = edad < e1 ? a1 : edad < e2 ? a2 : a3;
+        saldo += aporte;
         saldo *= 1 + rendimiento;
-        resultados.push({ edad, saldo, aporte, gasto: gastos });
+        datos.push({ edad, saldo });
       }
-
-      renderResultados(resultados, e0, inflacion);
-      mostrarResumenDesdeDatos(resultados, inflacion, e0);
+      renderResultados(datos, e0, inflacion);
     }
-
-    function clearResultados() {
-      document.getElementById('tableContainer').innerHTML = '';
-      document.getElementById('resumen').textContent = '';
+    function renderResultados(datos, e0, inflacion) {
+      const tabla = datos.map(d => {
+        const real = d.saldo / Math.pow(1 + inflacion, d.edad - e0);
+        return `<tr><td>${d.edad}</td><td>${d.saldo.toFixed(2)}</td><td>${real.toFixed(2)}</td></tr>`;
+      }).join('');
+      document.getElementById('tableContainer').innerHTML = `<table><thead><tr><th>Edad</th><th>Saldo Nominal</th><th>Saldo Real</th></tr></thead><tbody>${tabla}</tbody></table>`;
+      const labels = datos.map(d => d.edad);
+      const nominal = datos.map(d => d.saldo);
+      const real = datos.map(d => d.saldo / Math.pow(1 + inflacion, d.edad - e0));
       if (chartGeneral) chartGeneral.destroy();
-    }
-
-    function renderResultados(data, e0, inflacion) {
-      if (!data || data.length === 0) return;
-      // Tabla
-      const tableContainer = document.getElementById('tableContainer');
-      let html = '<table><thead><tr><th>Edad</th><th>Saldo Nominal</th><th>Saldo Real</th><th>Aporte anual</th><th>Gasto anual</th></tr></thead><tbody>';
-      for (const d of data) {
-        const saldoReal = d.saldo / Math.pow(1 + inflacion, d.edad - e0);
-        html += `<tr>
-          <td>${d.edad}</td>
-          <td>$${d.saldo.toLocaleString('es-AR', {maximumFractionDigits:0})}</td>
-          <td>$${saldoReal.toLocaleString('es-AR', {maximumFractionDigits:0})}</td>
-          <td>$${(d.aporte || 0).toLocaleString('es-AR', {maximumFractionDigits:0})}</td>
-          <td>$${(d.gasto || 0).toLocaleString('es-AR', {maximumFractionDigits:0})}</td>
-        </tr>`;
-      }
-      html += '</tbody></table>';
-      tableContainer.innerHTML = html;
-
-      if (!tablaVisible) tableContainer.style.display = 'none';
-
-      // Gráfico
-      const ctx = document.getElementById('chartGeneral').getContext('2d');
-      if (chartGeneral) chartGeneral.destroy();
-      chartGeneral = new Chart(ctx, {
+      chartGeneral = new Chart(document.getElementById('chartGeneral'), {
         type: 'line',
         data: {
-          labels: data.map(d => d.edad),
+          labels,
           datasets: [
             {
               label: 'Saldo Nominal',
-              data: data.map(d => d.saldo),
-              borderColor: '#003366',
-              backgroundColor: 'rgba(0, 51, 102, 0.2)',
+              data: nominal,
+              borderColor: '#3366cc',
+              backgroundColor: 'rgba(51, 102, 204, 0.1)',
               fill: true,
-              tension: 0.2,
+              tension: 0.3
             },
             {
-              label: 'Saldo Real (ajustado por inflación)',
-              data: data.map(d => d.saldo / Math.pow(1 + inflacion, d.edad - e0)),
-              borderColor: '#ff6600',
-              backgroundColor: 'rgba(255, 102, 0, 0.2)',
+              label: 'Saldo Real',
+              data: real,
+              borderColor: '#dc3912',
+              backgroundColor: 'rgba(220, 57, 18, 0.1)',
               fill: true,
-              tension: 0.2,
-            },
-          ],
+              tension: 0.3
+            }
+          ]
         },
         options: {
           responsive: true,
-          interaction: {
-            mode: 'index',
-            intersect: false,
-          },
-          stacked: false,
-          scales: {
-            y: {
-              ticks: {
-                callback: function(val) {
-                  return '$' + val.toLocaleString('es-AR', {maximumFractionDigits:0});
-                },
-              },
-              beginAtZero: true,
-            },
-          },
           plugins: {
-            legend: { position: 'top' },
-            tooltip: {
-              callbacks: {
-                label: context => `$${context.parsed.y.toLocaleString('es-AR', {maximumFractionDigits:0})}`
+            legend: {
+              position: 'top',
+              labels: {
+                color: document.body.classList.contains('night') ? '#cbd6f7' : '#003366'
               }
             }
+          },
+          scales: {
+            x: { ticks: { color: document.body.classList.contains('night') ? '#cbd6f7' : '#003366' } },
+            y: { ticks: { color: document.body.classList.contains('night') ? '#cbd6f7' : '#003366' } }
           }
-        },
-      });
-    }
-
-    function mostrarResumenDesdeDatos(resultados, inflacion, edadInicio) {
-      if (!resultados || resultados.length === 0) return;
-
-      let montoInvertido = 0;
-      let saldoFinal = resultados[resultados.length - 1].saldo;
-      let saldoFinalReal = saldoFinal / Math.pow(1 + inflacion, resultados[resultados.length - 1].edad - edadInicio);
-
-      for (const r of resultados) {
-        if (typeof r.aporte !== 'undefined') {
-          montoInvertido += r.aporte;
         }
-        if (typeof r.gasto !== 'undefined') {
-          montoInvertido -= r.gasto;
-        }
-      }
-
-      let edadMillon = "No se alcanza";
-      for (const r of resultados) {
-        const real = r.saldo / Math.pow(1 + inflacion, r.edad - edadInicio);
-        if (real >= 1000000) {
-          edadMillon = r.edad;
-          break;
-        }
-      }
-
-      mostrarResumen(saldoFinalReal, montoInvertido, edadMillon, resultados[resultados.length - 1].edad);
-    }
-
-    function mostrarResumen(saldoFinalReal, montoInvertido, edadMillon, edadFinal) {
-      const rendimientoGenerado = saldoFinalReal - montoInvertido;
-      document.getElementById('resumen').innerHTML = `
-        <div>📈 <strong>Edad a la que se llega al millón real:</strong> ${edadMillon}</div>
-        <div>🎯 <strong>En edad objetivo (${edadFinal}):</strong></div>
-        <ul>
-          <li>Monto final real: <strong>$ ${saldoFinalReal.toLocaleString('es-AR', {maximumFractionDigits:0})}</strong></li>
-          <li>Total aportado: <strong>$ ${montoInvertido.toLocaleString('es-AR', {maximumFractionDigits:0})}</strong></li>
-          <li>Generado por rendimiento: <strong>$ ${rendimientoGenerado.toLocaleString('es-AR', {maximumFractionDigits:0})}</strong></li>
-        </ul>
-      `;
-    }
-
-    // Eventos para tabs
-    document.querySelectorAll('.tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-        document.getElementById(tab.dataset.tab).classList.add('active');
-        autoCalcular();
       });
-    });
-
-    // Eventos inputs básicos
-    ['edadInicioBasico','edadFinBasico','montoInicialBasico','aporteMensualBasico','rendimientoBasico','inflacionBasico'].forEach(id => {
-      document.getElementById(id).addEventListener('input', () => {
-        guardarDatos();
-        autoCalcular();
-      });
-    });
-
-    // Eventos inputs avanzados
-    ['edadInicioAdv','edadCambio1Adv','edadCambio2Adv','edadFinAdv',
-     'aporteTramo1','aporteTramo2','aporteTramo3',
-     'montoInicialAdv','rendimientoAdv','inflacionAdv',
-     'edadHito','gastoHito'].forEach(id => {
-      if (document.getElementById(id)) {
-        document.getElementById(id).addEventListener('input', () => {
-          guardarDatos();
-          autoCalcular();
-        });
-      }
-    });
-
-    // Botón agregar hito
-    document.getElementById('addHitoBtn').addEventListener('click', () => {
-      const edad = parseInt(document.getElementById('edadHito').value);
-      const gasto = parseFloat(document.getElementById('gastoHito').value);
-      if (!edad || edad < 0 || edad > 120 || !gasto || gasto <= 0) {
-        alert('Por favor ingrese una edad válida (0-120) y un gasto mayor que cero.');
-        return;
-      }
-      hitos.push({ edad, gasto });
-      document.getElementById('edadHito').value = '';
-      document.getElementById('gastoHito').value = '';
-      guardarDatos();
-      renderHitos();
-      autoCalcular();
-    });
-
-    function renderHitos() {
-      const lista = document.getElementById('listaHitos');
-      if (!lista) return;
-      if (hitos.length === 0) {
-        lista.textContent = 'No hay hitos agregados.';
-        return;
-      }
-      lista.innerHTML = '';
-      hitos.sort((a,b) => a.edad - b.edad);
-      hitos.forEach((h, i) => {
-        const div = document.createElement('div');
-        div.className = 'hitos-list-item';
-        div.textContent = `Edad: ${h.edad} - Gasto: $${h.gasto.toLocaleString('es-AR', {maximumFractionDigits:0})}`;
-        const btn = document.createElement('button');
-        btn.title = 'Eliminar hito';
-        btn.textContent = '✖';
-        btn.addEventListener('click', () => {
-          hitos.splice(i,1);
-          guardarDatos();
-          renderHitos();
-          autoCalcular();
-        });
-        div.appendChild(btn);
-        lista.appendChild(div);
-      });
+      const final = datos[datos.length - 1];
+      const realFinal = final.saldo / Math.pow(1 + inflacion, final.edad - e0);
+      document.getElementById('resumen').textContent = `A los ${final.edad} años tendrás $${final.saldo.toFixed(2)} (equivalente a $${realFinal.toFixed(2)} de hoy).`;
     }
-
-    // Botón mostrar/ocultar tabla
     document.getElementById('toggleTableBtn').addEventListener('click', () => {
-      tablaVisible = !tablaVisible;
-      document.getElementById('tableContainer').style.display = tablaVisible ? 'block' : 'none';
-      document.getElementById('toggleTableBtn').textContent = tablaVisible ? 'Ocultar tabla' : 'Mostrar tabla';
+      const cont = document.getElementById('tableContainer');
+      const visible = cont.style.display !== 'none';
+      cont.style.display = visible ? 'none' : 'block';
+      document.getElementById('toggleTableBtn').textContent = visible ? 'Mostrar tabla' : 'Ocultar tabla';
     });
-
-    // Botón modo noche
     document.getElementById('toggleNightBtn').addEventListener('click', () => {
       document.body.classList.toggle('night');
-      const esNoche = document.body.classList.contains('night');
-      document.getElementById('toggleNightBtn').textContent = esNoche ? 'Modo día' : 'Modo noche';
-      guardarDatos();
+      autoCalcular();
     });
-
-    // Cálculo automático según pestaña activa
-    function autoCalcular() {
-      const activeTab = document.querySelector('.tab.active').dataset.tab;
-      if (activeTab === 'basico') calcularBasico();
-      else if (activeTab === 'avanzado') calcularAvanzado();
-    }
-
-    cargarDatos();
     autoCalcular();
   </script>
 </body>
