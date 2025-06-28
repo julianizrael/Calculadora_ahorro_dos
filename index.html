@@ -48,31 +48,51 @@
   .tab-content.active {
     display: block;
   }
-  .input-group {
+  form {
+    max-width: 850px;
+    margin: 0 auto;
+  }
+  /* Inputs - Basico */
+  #basico .input-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem 1.5rem;
+  }
+  /* Inputs - Avanzado */
+  #avanzado .input-group {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: 1rem 1.5rem;
     margin-bottom: 1rem;
   }
-  .input-group > div {
+  /* Avanzado fila monto inicial */
+  #avanzado .input-group.monto-inicial {
+    justify-content: flex-start;
+  }
+  /* Avanzado filas edades y aportes en grid */
+  #avanzado .input-group.edades-aportes {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(110px, 1fr));
+    gap: 0.5rem 1rem;
+    align-items: end;
+  }
+  /* Etiquetas */
+  label {
     display: flex;
     flex-direction: column;
-    min-width: 130px;
-    flex: 1 1 130px;
-  }
-  label {
-    font-size: 0.9rem;
-    margin-bottom: 0.25rem;
     font-weight: 600;
+    font-size: 0.9rem;
+    color: inherit;
   }
   input[type=number] {
+    margin-top: 0.3rem;
     padding: 0.5rem;
     border: 1px solid #003366;
     border-radius: 0.25rem;
     font-size: 1rem;
-    transition: background 0.3s, color 0.3s, border-color 0.3s;
     background: #e6f0ff;
     color: #003366;
+    transition: background 0.3s, color 0.3s, border-color 0.3s;
   }
   body.night input[type=number] {
     background: #1a2945;
@@ -143,7 +163,7 @@
     text-align: center;
   }
   #toggleTableBtn, #toggleNightBtn {
-    margin: 1rem 0.5rem 1rem 0;
+    margin: 0 0.5rem 1rem 0;
     padding: 0.5rem 1rem;
   }
   #resumen {
@@ -151,9 +171,12 @@
     padding: 1rem;
     border-radius: 0.5rem;
     box-shadow: 0 0 8px rgba(0, 51, 102, 0.15);
-    margin-top: 1rem;
+    margin: 0 0 1rem 0;
     font-weight: 600;
     color: #003366;
+    max-width: 850px;
+    margin-left: auto;
+    margin-right: auto;
   }
   body.night #resumen {
     background: #243759;
@@ -164,7 +187,8 @@
     width: 100% !important;
     max-width: 900px;
     height: 400px !important;
-    margin-top: 2rem;
+    margin: 0 auto 2rem auto;
+    display: block;
     background: #d6e0ff;
     padding: 1rem;
     border-radius: 0.5rem;
@@ -177,8 +201,9 @@
 
   /* Responsive */
   @media (max-width: 600px) {
-    .input-group > div {
-      flex: 1 1 100%;
+    #avanzado .input-group.edades-aportes {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem 1rem;
     }
     canvas {
       height: 250px !important;
@@ -196,54 +221,88 @@
 <div id="basico" class="tab-content active">
   <form id="formBasico" onsubmit="return false;">
     <div class="input-group">
-      <div><label>Edad inicio<input type="number" id="edadInicioBasico" min="0" max="120" /></label></div>
-      <div><label>Edad fin<input type="number" id="edadFinBasico" min="0" max="120" /></label></div>
-      <div><label>Monto inicial<input type="number" id="montoInicialBasico" value="0" min="0" /></label></div>
-      <div><label>Aporte mensual<input type="number" id="aporteMensualBasico" min="0" /></label></div>
-      <div><label>Rendimiento anual (%)<input type="number" id="rendimientoBasico" min="0" step="0.01" /></label></div>
-      <div><label>Inflación anual (%)<input type="number" id="inflacionBasico" min="0" step="0.01" /></label></div>
+      <label>Edad inicio
+        <input type="number" id="edadInicioBasico" min="0" max="120" />
+      </label>
+      <label>Edad fin
+        <input type="number" id="edadFinBasico" min="0" max="120" />
+      </label>
+      <label>Monto inicial
+        <input type="number" id="montoInicialBasico" value="0" min="0" />
+      </label>
+      <label>Aporte mensual
+        <input type="number" id="aporteMensualBasico" min="0" />
+      </label>
+      <label>Rendimiento anual (%)
+        <input type="number" id="rendimientoBasico" min="0" step="0.01" />
+      </label>
+      <label>Inflación anual (%)
+        <input type="number" id="inflacionBasico" min="0" step="0.01" />
+      </label>
     </div>
   </form>
 </div>
 
 <div id="avanzado" class="tab-content">
   <form id="formAvanzado" onsubmit="return false;">
-    <div class="input-group">
-      <div><label>Edad inicio<input type="number" id="edadInicioAdv" min="0" max="120" /></label></div>
-      <div><label>Edad cambio 1<input type="number" id="edadCambio1Adv" min="0" max="120" /></label></div>
-      <div><label>Edad cambio 2<input type="number" id="edadCambio2Adv" min="0" max="120" /></label></div>
-      <div><label>Edad fin<input type="number" id="edadFinAdv" min="0" max="120" /></label></div>
+    <div class="input-group monto-inicial">
+      <label>Monto inicial
+        <input type="number" id="montoInicialAdv" value="0" min="0" />
+      </label>
+    </div>
+    <div class="input-group edades-aportes">
+      <label>Edad inicio
+        <input type="number" id="edadInicioAdv" min="0" max="120" />
+      </label>
+      <label>Edad cambio 1
+        <input type="number" id="edadCambio1Adv" min="0" max="120" />
+      </label>
+      <label>Edad cambio 2
+        <input type="number" id="edadCambio2Adv" min="0" max="120" />
+      </label>
+      <label>Edad fin
+        <input type="number" id="edadFinAdv" min="0" max="120" />
+      </label>
+      <label>Aporte tramo 1
+        <input type="number" id="aporteTramo1" min="0" />
+      </label>
+      <label>Aporte tramo 2
+        <input type="number" id="aporteTramo2" min="0" />
+      </label>
+      <label>Aporte tramo 3
+        <input type="number" id="aporteTramo3" min="0" />
+      </label>
     </div>
     <div class="input-group">
-      <div><label>Aporte tramo 1<input type="number" id="aporteTramo1" min="0" /></label></div>
-      <div><label>Aporte tramo 2<input type="number" id="aporteTramo2" min="0" /></label></div>
-      <div><label>Aporte tramo 3<input type="number" id="aporteTramo3" min="0" /></label></div>
-      <div><label>Monto inicial<input type="number" id="montoInicialAdv" value="0" min="0" /></label></div>
-      <div><label>Rendimiento anual (%)<input type="number" id="rendimientoAdv" min="0" step="0.01" /></label></div>
-      <div><label>Inflación anual (%)<input type="number" id="inflacionAdv" min="0" step="0.01" /></label></div>
-    </div>
-    <div class="input-group">
-      <div><label>Edad hito<input type="number" id="edadHito" min="0" max="120" /></label></div>
-      <div><label>Gasto hito<input type="number" id="gastoHito" min="0" /></label></div>
-      <div><button type="button" id="addHitoBtn">Agregar hito</button></div>
+      <label>Edad hito
+        <input type="number" id="edadHito" min="0" max="120" />
+      </label>
+      <label>Gasto hito
+        <input type="number" id="gastoHito" min="0" />
+      </label>
+      <div>
+        <button type="button" id="addHitoBtn">Agregar hito</button>
+      </div>
     </div>
     <div id="listaHitos"></div>
   </form>
 </div>
 
-<button id="toggleTableBtn">Ocultar tabla</button>
-<button id="toggleNightBtn">Modo noche</button>
-<div id="tableContainer"></div>
-
 <div id="resumen" aria-live="polite"></div>
 
-<canvas id="chartNominal"></canvas>
-<canvas id="chartReal"></canvas>
+<div style="max-width:850px; margin: 0 auto;">
+  <button id="toggleTableBtn">Ocultar tabla</button>
+  <button id="toggleNightBtn">Modo noche</button>
+</div>
+
+<div id="tableContainer"></div>
+
+<canvas id="chartGeneral"></canvas>
 
 <script>
   let hitos = [];
   let tablaVisible = true;
-  let chartNominal, chartReal;
+  let chartGeneral;
 
   function cargarDatos() {
     // Básico
@@ -343,8 +402,7 @@
   function clearResultados() {
     document.getElementById('tableContainer').innerHTML = '';
     document.getElementById('resumen').textContent = '';
-    if (chartNominal) chartNominal.destroy();
-    if (chartReal) chartReal.destroy();
+    if (chartGeneral) chartGeneral.destroy();
   }
 
   function renderResultados(data, e0, inflacion) {
@@ -358,46 +416,56 @@
     document.getElementById('tableContainer').innerHTML = `
       <table><thead><tr><th>Edad</th><th>Saldo nominal</th><th>Saldo real</th></tr></thead><tbody>${table}</tbody></table>`;
 
-    // Gráficos
+    // Gráfico único con ambas líneas
     const labels = data.map(r => r.edad);
     const nominal = data.map(r => r.saldo);
     const real = data.map(r => r.saldo / Math.pow(1 + inflacion, r.edad - e0));
 
-    if (chartNominal) chartNominal.destroy();
-    if (chartReal) chartReal.destroy();
+    if (chartGeneral) chartGeneral.destroy();
 
-    chartNominal = new Chart(document.getElementById('chartNominal').getContext('2d'), {
+    chartGeneral = new Chart(document.getElementById('chartGeneral').getContext('2d'), {
       type: 'line',
       data: {
         labels,
-        datasets: [{ label: 'Saldo Nominal', data: nominal, borderColor: '#0047b3', backgroundColor: 'rgba(0,71,179,0.2)', fill: true, tension: 0.2 }]
+        datasets: [
+          { label: 'Saldo Nominal', data: nominal, borderColor: '#0047b3', backgroundColor: 'rgba(0,71,179,0.2)', fill: true, tension: 0.2 },
+          { label: 'Saldo Real', data: real, borderColor: '#0a7d1a', backgroundColor: 'rgba(10,125,26,0.2)', fill: true, tension: 0.2 }
+        ]
       },
       options: {
         responsive: true,
         plugins: {
-          legend: { labels: { color: document.body.classList.contains('night') ? '#cbd6f7' : '#003366' } }
+          legend: {
+            labels: {
+              color: document.body.classList.contains('night') ? '#cbd6f7' : '#003366'
+            }
+          }
         },
         scales: {
-          x: { ticks: { color: document.body.classList.contains('night') ? '#cbd6f7' : '#003366' } },
-          y: { ticks: { color: document.body.classList.contains('night') ? '#cbd6f7' : '#003366' } }
-        }
-      }
-    });
-
-    chartReal = new Chart(document.getElementById('chartReal').getContext('2d'), {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [{ label: 'Saldo Real', data: real, borderColor: '#0a7d1a', backgroundColor: 'rgba(10,125,26,0.2)', fill: true, tension: 0.2 }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { labels: { color: document.body.classList.contains('night') ? '#cbd6f7' : '#003366' } }
-        },
-        scales: {
-          x: { ticks: { color: document.body.classList.contains('night') ? '#cbd6f7' : '#003366' } },
-          y: { ticks: { color: document.body.classList.contains('night') ? '#cbd6f7' : '#003366' } }
+          x: {
+            ticks: { color: document.body.classList.contains('night') ? '#cbd6f7' : '#003366' },
+            title: {
+              display: true,
+              text: 'Edad',
+              color: document.body.classList.contains('night') ? '#cbd6f7' : '#003366',
+              font: { weight: '600' }
+            },
+            grid: {
+              color: document.body.classList.contains('night') ? '#3a4766' : '#d6e0ff'
+            }
+          },
+          y: {
+            ticks: { color: document.body.classList.contains('night') ? '#cbd6f7' : '#003366' },
+            title: {
+              display: true,
+              text: 'Saldo',
+              color: document.body.classList.contains('night') ? '#cbd6f7' : '#003366',
+              font: { weight: '600' }
+            },
+            grid: {
+              color: document.body.classList.contains('night') ? '#3a4766' : '#d6e0ff'
+            }
+          }
         }
       }
     });
