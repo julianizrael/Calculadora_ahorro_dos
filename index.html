@@ -6,93 +6,148 @@
   <title>Calculadora de Ahorro</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    :root {
+      --azul-claro: #d6e0ff;
+      --azul-oscuro: #003366;
+      --noche-bg: #121b2a;
+      --noche-texto: #cbd6f7;
+      --noche-input-bg: #1a2945;
+    }
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       margin: 0;
       padding: 1rem;
-      background: #f0f4ff;
-      color: #003366;
+      background: #f7f9fc;
+      color: var(--azul-oscuro);
       transition: background 0.3s, color 0.3s;
     }
     body.night {
-      background: #121b2a;
-      color: #cbd6f7;
+      background: var(--noche-bg);
+      color: var(--noche-texto);
+    }
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 1rem;
     }
     .tabs {
       display: flex;
+      justify-content: center;
       margin-bottom: 1rem;
-      border-bottom: 2px solid #003366;
     }
     .tab {
       padding: 0.5rem 1.5rem;
-      margin-right: 1rem;
-      background: #b3c7ff;
-      color: #003366;
+      margin: 0 0.5rem;
+      background: var(--azul-claro);
+      color: var(--azul-oscuro);
       cursor: pointer;
-      border-radius: 0.5rem 0.5rem 0 0;
-      user-select: none;
+      border-radius: 1rem;
       font-weight: 600;
       transition: background 0.3s, color 0.3s;
     }
     .tab.active {
-      background: #003366;
-      color: #ffffff;
+      background: var(--azul-oscuro);
+      color: white;
     }
     .tab-content {
       display: none;
-      background: #d6e0ff;
-      border-radius: 0 0 0.5rem 0.5rem;
-      padding: 1rem;
-      box-shadow: 0 0 8px rgba(0, 51, 102, 0.2);
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+      max-width: 1000px;
+      margin: 0 auto;
     }
     .tab-content.active {
       display: block;
     }
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-    }
-    input[type="number"] {
-      width: 100%;
-      padding: 0.5rem;
-      margin-top: 0.25rem;
-      box-sizing: border-box;
-    }
     form {
       display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 1rem;
-      max-width: 600px;
+    }
+    label {
+      font-weight: 600;
+      display: flex;
+      flex-direction: column;
+    }
+    input[type="number"] {
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--azul-oscuro);
+      background: #eef2ff;
+      font-size: 1rem;
+    }
+    body.night input[type="number"] {
+      background: var(--noche-input-bg);
+      color: var(--noche-texto);
+      border-color: #5a7db8;
+    }
+    button {
+      padding: 0.6rem 1rem;
+      border-radius: 0.5rem;
+      border: none;
+      background: var(--azul-oscuro);
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #001f4d;
+    }
+    #resumen {
+      max-width: 900px;
+      margin: 1.5rem auto;
+      background: var(--azul-claro);
+      padding: 1rem;
+      border-radius: 1rem;
+      font-weight: bold;
+      box-shadow: 0 0 8px rgba(0, 51, 102, 0.1);
+    }
+    body.night #resumen {
+      background: #1f2f4a;
+    }
+    #tableContainer {
+      max-width: 1000px;
+      margin: 1rem auto;
+      overflow-x: auto;
+      background: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    }
+    body.night #tableContainer {
+      background: var(--noche-input-bg);
     }
     table {
       width: 100%;
       border-collapse: collapse;
     }
-    table, th, td {
-      border: 1px solid #003366;
-    }
     th, td {
-      padding: 0.5rem;
+      padding: 0.75rem;
       text-align: center;
+      border: 1px solid var(--azul-oscuro);
     }
     canvas {
-      max-width: 900px;
-      display: block;
+      width: 100% !important;
+      max-width: 1000px;
+      height: 500px !important;
       margin: 2rem auto;
+      display: block;
+      background: white;
+      border-radius: 1rem;
+      padding: 1rem;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
     }
-    #resumen {
-      max-width: 600px;
-      margin: 1rem auto;
-      font-weight: bold;
+    body.night canvas {
+      background: #1a2945;
     }
-    #tableContainer {
-      max-width: 900px;
-      margin: 1rem auto;
-      overflow-x: auto;
-    }
-    button {
-      margin-right: 1rem;
-      padding: 0.5rem 1rem;
-      font-weight: bold;
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
     }
   </style>
 </head>
@@ -102,23 +157,19 @@
     <div class="tab active" data-tab="basico">Básico</div>
     <div class="tab" data-tab="avanzado">Avanzado</div>
   </div>
-
   <div id="basico" class="tab-content active">
     <form id="formBasico" onsubmit="return false;"></form>
   </div>
-
   <div id="avanzado" class="tab-content">
     <form id="formAvanzado" onsubmit="return false;"></form>
   </div>
-
   <div id="resumen"></div>
-  <div style="max-width:850px; margin: 0 auto;">
+  <div class="controls">
     <button id="toggleTableBtn">Ocultar tabla</button>
     <button id="toggleNightBtn">Modo noche</button>
   </div>
   <div id="tableContainer"></div>
   <canvas id="chartGeneral"></canvas>
-
   <script>
     const camposBasico = [
       ['Edad inicio', 'edadInicioBasico', 25],
@@ -128,7 +179,6 @@
       ['Rendimiento anual (%)', 'rendimientoBasico', 5],
       ['Inflación anual (%)', 'inflacionBasico', 3],
     ];
-
     const camposAvanzado = [
       ['Monto inicial', 'montoInicialAdv', 0],
       ['Edad inicio', 'edadInicioAdv', 25],
@@ -141,19 +191,16 @@
       ['Rendimiento anual (%)', 'rendimientoAdv', 5],
       ['Inflación anual (%)', 'inflacionAdv', 3],
     ];
-
     function generarInputs(campos, formId) {
       const form = document.getElementById(formId);
       campos.forEach(([labelText, id, valor]) => {
         const label = document.createElement('label');
-        label.innerHTML = `${labelText}: <input type="number" id="${id}" value="${valor}">`;
+        label.innerHTML = `${labelText}<input type="number" id="${id}" value="${valor}">`;
         form.appendChild(label);
       });
     }
-
     generarInputs(camposBasico, 'formBasico');
     generarInputs(camposAvanzado, 'formAvanzado');
-
     document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -163,18 +210,14 @@
         autoCalcular();
       });
     });
-
     document.addEventListener('input', e => {
       if (e.target.tagName === 'INPUT') autoCalcular();
     });
-
     let chartGeneral;
-
     function autoCalcular() {
       const tab = document.querySelector('.tab.active').dataset.tab;
       tab === 'basico' ? calcularBasico() : calcularAvanzado();
     }
-
     function calcularBasico() {
       const e0 = +document.getElementById('edadInicioBasico').value;
       const eF = +document.getElementById('edadFinBasico').value;
@@ -191,7 +234,6 @@
       }
       renderResultados(datos, e0, inflacion);
     }
-
     function calcularAvanzado() {
       const e0 = +document.getElementById('edadInicioAdv').value;
       const e1 = +document.getElementById('edadCambio1Adv').value;
@@ -213,18 +255,15 @@
       }
       renderResultados(datos, e0, inflacion);
     }
-
     function renderResultados(datos, e0, inflacion) {
       const tabla = datos.map(d => {
         const real = d.saldo / Math.pow(1 + inflacion, d.edad - e0);
         return `<tr><td>${d.edad}</td><td>${d.saldo.toFixed(2)}</td><td>${real.toFixed(2)}</td></tr>`;
       }).join('');
       document.getElementById('tableContainer').innerHTML = `<table><thead><tr><th>Edad</th><th>Saldo Nominal</th><th>Saldo Real</th></tr></thead><tbody>${tabla}</tbody></table>`;
-
       const labels = datos.map(d => d.edad);
       const nominal = datos.map(d => d.saldo);
       const real = datos.map(d => d.saldo / Math.pow(1 + inflacion, d.edad - e0));
-
       if (chartGeneral) chartGeneral.destroy();
       chartGeneral = new Chart(document.getElementById('chartGeneral'), {
         type: 'line',
@@ -235,15 +274,17 @@
               label: 'Saldo Nominal',
               data: nominal,
               borderColor: '#3366cc',
-              fill: false,
-              tension: 0.2
+              backgroundColor: 'rgba(51, 102, 204, 0.1)',
+              fill: true,
+              tension: 0.3
             },
             {
               label: 'Saldo Real',
               data: real,
               borderColor: '#dc3912',
-              fill: false,
-              tension: 0.2
+              backgroundColor: 'rgba(220, 57, 18, 0.1)',
+              fill: true,
+              tension: 0.3
             }
           ]
         },
@@ -263,25 +304,20 @@
           }
         }
       });
-
       const final = datos[datos.length - 1];
       const realFinal = final.saldo / Math.pow(1 + inflacion, final.edad - e0);
-      document.getElementById('resumen').textContent =
-        `A los ${final.edad} años tendrás $${final.saldo.toFixed(2)} (equivalente a $${realFinal.toFixed(2)} de hoy).`;
+      document.getElementById('resumen').textContent = `A los ${final.edad} años tendrás $${final.saldo.toFixed(2)} (equivalente a $${realFinal.toFixed(2)} de hoy).`;
     }
-
     document.getElementById('toggleTableBtn').addEventListener('click', () => {
       const cont = document.getElementById('tableContainer');
       const visible = cont.style.display !== 'none';
       cont.style.display = visible ? 'none' : 'block';
       document.getElementById('toggleTableBtn').textContent = visible ? 'Mostrar tabla' : 'Ocultar tabla';
     });
-
     document.getElementById('toggleNightBtn').addEventListener('click', () => {
       document.body.classList.toggle('night');
       autoCalcular();
     });
-
     autoCalcular();
   </script>
 </body>
