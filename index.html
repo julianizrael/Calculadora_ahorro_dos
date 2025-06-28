@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Calculadora de Ahorros - Básico y Avanzado</title>
+<title>Calculadora de Ahorros con Rendimiento e Inflación</title>
 <style>
   :root {
     --bg-light: #f0f0f0;
@@ -176,6 +176,10 @@
   #chartContainer {
     position: relative;
     height: 300px;
+    margin-top: 1rem;
+  }
+  #chartContainer + #chartContainer {
+    margin-top: 2rem;
   }
 
   /* Events/hitos list (Avanzado) */
@@ -262,11 +266,18 @@
     background: var(--accent);
     color: var(--bg-dark);
   }
+
+  /* Resumen */
+  #resumen {
+    margin-top: 1rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
 </style>
 </head>
 <body>
 <header>
-  <h1>Calculadora de Ahorros</h1>
+  <h1>Calculadora de Ahorros con Rendimiento e Inflación</h1>
 </header>
 
 <button id="modeToggle" title="Cambiar modo noche">Modo Noche</button>
@@ -288,6 +299,12 @@
 
       <label for="aporteMensualBasico">Aporte mensual (en $):</label>
       <input type="number" id="aporteMensualBasico" min="0" step="0.01" required />
+
+      <label for="rendimientoBasico">Rendimiento mensual (%)</label>
+      <input type="number" id="rendimientoBasico" min="0" max="100" step="0.01" value="0.5" required />
+
+      <label for="inflacionBasico">Inflación mensual (%)</label>
+      <input type="number" id="inflacionBasico" min="0" max="100" step="0.01" value="0.3" required />
     </form>
   </section>
 
@@ -329,6 +346,12 @@
         </div>
       </div>
 
+      <label for="rendimientoAdv">Rendimiento mensual (%)</label>
+      <input type="number" id="rendimientoAdv" min="0" max="100" step="0.01" value="0.5" required />
+
+      <label for="inflacionAdv">Inflación mensual (%)</label>
+      <input type="number" id="inflacionAdv" min="0" max="100" step="0.01" value="0.3" required />
+
       <hr style="margin: 1rem 0;" />
 
       <h3>Agregar Hito/Gasto único</h3>
@@ -348,10 +371,16 @@
   <!-- Tabla de resultados -->
   <div id="tableContainer" style="display:none;"></div>
 
-  <!-- Gráfico -->
+  <!-- Gráficos -->
   <div id="chartContainer">
-    <canvas id="chart"></canvas>
+    <canvas id="chartNominal"></canvas>
   </div>
+  <div id="chartContainer" style="margin-top:20px;">
+    <canvas id="chartReal"></canvas>
+  </div>
+
+  <!-- Resumen -->
+  <div id="resumen"></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -362,13 +391,20 @@
   const toggleTableBtn = document.getElementById('toggleTableBtn');
   const tableContainer = document.getElementById('tableContainer');
   const modeToggleBtn = document.getElementById('modeToggle');
-  const chartCtx = document.getElementById('chart').getContext('2d');
+
+  // Charts
+  const ctxNominal = document.getElementById('chartNominal').getContext('2d');
+  const ctxReal = document.getElementById('chartReal').getContext('2d');
+  let chartNominal = null;
+  let chartReal = null;
 
   // Formularios y campos básicos
   const formBasico = document.getElementById('formBasico');
   const edadInicioBasico = document.getElementById('edadInicioBasico');
   const edadFinBasico = document.getElementById('edadFinBasico');
   const aporteMensualBasico = document.getElementById('aporteMensualBasico');
+  const rendimientoBasico = document.getElementById('rendimientoBasico');
+  const inflacionBasico = document.getElementById('inflacionBasico');
 
   // Formularios y campos avanzados
   const formAvanzado = document.getElementById('formAvanzado');
@@ -381,15 +417,19 @@
   const aporteTramo2 = document.getElementById('aporteTramo2');
   const aporteTramo3 = document.getElementById('aporteTramo3');
 
+  const rendimientoAdv = document.getElementById('rendimientoAdv');
+  const inflacionAdv = document.getElementById('inflacionAdv');
+
   const edadHito = document.getElementById('edadHito');
   const gastoHito = document.getElementById('gastoHito');
   const addHitoBtn = document.getElementById('addHitoBtn');
   const listaHitos = document.getElementById('listaHitos');
 
+  const resumen = document.getElementById('resumen');
+
   // Estado app
   let currentTab = 'basico';
   let showTable = false;
-  let chart = null;
   let hitos = [];
 
   // --- Funciones utilidad ---
@@ -398,7 +438,9 @@
       basico: {
         edadInicio: edadInicioBasico.value,
         edadFin: edadFinBasico.value,
-        aporte: aporteMensualBasico.value
+        aporte: aporteMensualBasico.value,
+        rendimiento: rendimientoBasico.value,
+        inflacion: inflacionBasico.value
       },
       avanzado: {
         edadInicio: edadInicioAdv.value,
@@ -408,6 +450,8 @@
         aporte1: aporteTramo1.value,
         aporte2: aporteTramo2.value,
         aporte3: aporteTramo3.value,
+        rendimiento: rendimientoAdv.value,
+        inflacion: inflacionAdv.value,
         hitos
       }
     };
@@ -421,6 +465,8 @@
         edadInicioBasico.value = data.basico.edadInicio || '';
         edadFinBasico.value = data.basico.edadFin || '';
         aporteMensualBasico.value = data.basico.aporte || '';
+        rendimientoBasico.value = data.basico.rendimiento ?? '0.5';
+        inflacionBasico.value = data.basico.inflacion ?? '0.3';
       }
       if (data.avanzado) {
         edadInicioAdv.value = data.avanzado.edadInicio || '';
@@ -430,86 +476,108 @@
         aporteTramo1.value = data.avanzado.aporte1 || '';
         aporteTramo2.value = data.avanzado.aporte2 || '';
         aporteTramo3.value = data.avanzado.aporte3 || '';
-        hitos = Array.isArray(data.avanzado.hitos) ? data.avanzado.hitos : [];
-        renderListaHitos();
+        rendimientoAdv.value = data.avanzado.rendimiento ?? '0.5';
+        inflacionAdv.value = data.avanzado.inflacion ?? '0.3';
+        if (data.avanzado.hitos && Array.isArray(data.avanzado.hitos)) {
+          hitos = data.avanzado.hitos;
+          renderListaHitos();
+        }
       }
     }
   }
 
-  function validarEdadesBasico() {
-    const inicio = parseInt(edadInicioBasico.value);
-    const fin = parseInt(edadFinBasico.value);
-    if (isNaN(inicio) || isNaN(fin) || inicio < 0 || fin <= inicio || fin > 120) return false;
-    return true;
-  }
-  function validarEdadesAvanzado() {
-    const e0 = parseInt(edadInicioAdv.value);
-    const e1 = parseInt(edadCambio1Adv.value);
-    const e2 = parseInt(edadCambio2Adv.value);
-    const e3 = parseInt(edadFinAdv.value);
-    if ([e0,e1,e2,e3].some(v => isNaN(v))) return false;
-    if (!(0 <= e0 && e0 < e1 && e1 < e2 && e2 < e3 && e3 <= 120)) return false;
-    return true;
-  }
-  function validarAportesBasico() {
-    return !isNaN(parseFloat(aporteMensualBasico.value)) && parseFloat(aporteMensualBasico.value) >= 0;
-  }
-  function validarAportesAvanzado() {
-    const aportes = [aporteTramo1, aporteTramo2, aporteTramo3];
-    return aportes.every(inp => !isNaN(parseFloat(inp.value)) && parseFloat(inp.value) >= 0);
-  }
-  function validarHito(edad, gasto) {
-    if (isNaN(edad) || isNaN(gasto)) return false;
-    if (edad < 0 || edad > 120 || gasto < 0) return false;
-    return true;
-  }
-
-  // --- Cálculo Básico ---
-  // Para cada edad entre inicio y fin, aporta monto fijo.  
-  // Resultado: array con {edad, aporte, gastoHito, saldoAcumulado}
-  function calcularBasico() {
-    if (!validarEdadesBasico() || !validarAportesBasico()) return [];
-
-    const inicio = parseInt(edadInicioBasico.value);
-    const fin = parseInt(edadFinBasico.value);
+  // --- Validaciones básicas ---
+  function validarBasico() {
+    const ei = parseInt(edadInicioBasico.value);
+    const ef = parseInt(edadFinBasico.value);
     const aporte = parseFloat(aporteMensualBasico.value);
+    const rend = parseFloat(rendimientoBasico.value);
+    const infl = parseFloat(inflacionBasico.value);
 
-    let saldo = 0;
-    const resultados = [];
-
-    for(let edad = inicio; edad <= fin; edad++) {
-      saldo += aporte;
-      resultados.push({
-        edad,
-        aporte,
-        gastoHito: 0,
-        saldoAcumulado: saldo
-      });
+    if (isNaN(ei) || isNaN(ef) || ei < 0 || ef <= ei || isNaN(aporte) || aporte < 0 ||
+        isNaN(rend) || rend < 0 || isNaN(infl) || infl < 0) {
+      return false;
     }
-    return resultados;
+    return true;
   }
 
-  // --- Cálculo Avanzado ---
-  // Tramos con aportes distintos, y hitos (gastos únicos)
-  // Tramos: 
-  // tramo1: desde edadInicioAdv (incl) hasta edadCambio1Adv (excl)
-  // tramo2: desde edadCambio1Adv (incl) hasta edadCambio2Adv (excl)
-  // tramo3: desde edadCambio2Adv (incl) hasta edadFinAdv (incl)
-  // hitos: gastos únicos que restan al saldo en la edad correspondiente
+  function validarAvanzado() {
+    const ei = parseInt(edadInicioAdv.value);
+    const c1 = parseInt(edadCambio1Adv.value);
+    const c2 = parseInt(edadCambio2Adv.value);
+    const ef = parseInt(edadFinAdv.value);
 
-  function calcularAvanzado() {
-    if (!validarEdadesAvanzado() || !validarAportesAvanzado()) return [];
-
-    const e0 = parseInt(edadInicioAdv.value);
-    const e1 = parseInt(edadCambio1Adv.value);
-    const e2 = parseInt(edadCambio2Adv.value);
-    const e3 = parseInt(edadFinAdv.value);
     const a1 = parseFloat(aporteTramo1.value);
     const a2 = parseFloat(aporteTramo2.value);
     const a3 = parseFloat(aporteTramo3.value);
 
-    let saldo = 0;
-    const resultados = [];
+    const rend = parseFloat(rendimientoAdv.value);
+    const infl = parseFloat(inflacionAdv.value);
+
+    if ([ei,c1,c2,ef].some(v => isNaN(v)) ||
+        ei < 0 || ef <= c2 || c2 <= c1 || c1 <= ei || ef <= ei) return false;
+
+    if ([a1,a2,a3].some(v => isNaN(v) || v < 0)) return false;
+    if (isNaN(rend) || rend < 0 || isNaN(infl) || infl < 0) return false;
+
+    return true;
+  }
+
+  function validarHito(edad, gasto) {
+    return !(isNaN(edad) || edad < 0 || edad > 120 || isNaN(gasto) || gasto < 0);
+  }
+
+  // --- Calcular Básico ---
+  function calcularBasico() {
+    if (!validarBasico()) return [];
+
+    const e0 = parseInt(edadInicioBasico.value);
+    const eF = parseInt(edadFinBasico.value);
+    const aporte = parseFloat(aporteMensualBasico.value);
+    const rendimiento = parseFloat(rendimientoBasico.value) / 100;
+    const inflacion = parseFloat(inflacionBasico.value) / 100;
+
+    let saldoNominal = 0;
+    let resultados = [];
+
+    for(let edad = e0; edad <= eF; edad++) {
+      saldoNominal += aporte;
+      // Aplicar rendimiento mensual
+      saldoNominal = saldoNominal * (1 + rendimiento);
+      resultados.push({ edad, aporte, gastoHito: 0, saldoNominal });
+    }
+
+    // Ajustar por inflación para saldo real
+    let saldoReal = 0;
+    let resultadosReal = [];
+    for (let i=0; i<resultados.length; i++) {
+      const { edad, aporte, gastoHito, saldoNominal } = resultados[i];
+      // Inflación compuesta
+      saldoReal = saldoNominal / Math.pow(1 + inflacion, edad - e0);
+      resultadosReal.push({ edad, saldoReal });
+    }
+
+    return { resultados, resultadosReal };
+  }
+
+  // --- Calcular Avanzado ---
+  function calcularAvanzado() {
+    if (!validarAvanzado()) return { resultados: [], resultadosReal: [] };
+
+    const e0 = parseInt(edadInicioAdv.value);
+    const e1 = parseInt(edadCambio1Adv.value);
+    const e2 = parseInt(edadCambio2Adv.value);
+    const e3 = parseInt(edadFinAdv.value);
+
+    const a1 = parseFloat(aporteTramo1.value);
+    const a2 = parseFloat(aporteTramo2.value);
+    const a3 = parseFloat(aporteTramo3.value);
+
+    const rendimiento = parseFloat(rendimientoAdv.value) / 100;
+    const inflacion = parseFloat(inflacionAdv.value) / 100;
+
+    let saldoNominal = 0;
+    let resultados = [];
 
     for(let edad = e0; edad <= e3; edad++) {
       let aporte = 0;
@@ -517,107 +585,125 @@
       else if (edad >= e1 && edad < e2) aporte = a2;
       else if (edad >= e2 && edad <= e3) aporte = a3;
 
-      saldo += aporte;
+      saldoNominal += aporte;
 
-      // Ver si hay hitos en esta edad
-      const gastoHito = hitos
-        .filter(h => h.edad === edad)
-        .reduce((acc, h) => acc + h.gasto, 0);
+      // Aplicar gasto de hitos
+      const gastoHitoMes = hitos.filter(h => h.edad === edad)
+                                .reduce((acc,h) => acc + h.gasto, 0);
+      saldoNominal -= gastoHitoMes;
 
-      saldo -= gastoHito;
+      // Aplicar rendimiento mensual
+      saldoNominal = saldoNominal * (1 + rendimiento);
 
-      resultados.push({
+      resultados.push({ edad, aporte, gastoHito: gastoHitoMes, saldoNominal });
+    }
+
+    // Ajustar por inflación para saldo real
+    let resultadosReal = [];
+    for (let i=0; i<resultados.length; i++) {
+      const { edad, aporte, gastoHito, saldoNominal } = resultados[i];
+      resultadosReal.push({
         edad,
-        aporte,
-        gastoHito,
-        saldoAcumulado: saldo
+        saldoReal: saldoNominal / Math.pow(1 + inflacion, edad - e0)
       });
     }
 
-    return resultados;
+    return { resultados, resultadosReal };
   }
 
   // --- Render tabla ---
-  // Mostrar resultados en tabla con columnas: Edad, Aporte, Gasto Hito, Saldo acumulado
   function renderTabla(resultados) {
-    if (!resultados.length) {
+    if (!resultados || resultados.length === 0) {
       tableContainer.innerHTML = '<p>No hay datos para mostrar.</p>';
       return;
     }
-    let html = '<table><thead><tr><th>Edad</th><th>Aporte mensual ($)</th><th>Gasto único ($)</th><th>Saldo acumulado ($)</th></tr></thead><tbody>';
+    let html = `<table><thead>
+      <tr><th>Edad</th><th>Aporte mensual ($)</th><th>Gasto único ($)</th><th>Saldo acumulado nominal ($)</th></tr>
+    </thead><tbody>`;
     for (const r of resultados) {
       html += `<tr>
         <td>${r.edad}</td>
         <td>${r.aporte.toFixed(2)}</td>
         <td>${r.gastoHito.toFixed(2)}</td>
-        <td>${r.saldoAcumulado.toFixed(2)}</td>
+        <td>${r.saldoNominal.toFixed(2)}</td>
       </tr>`;
     }
     html += '</tbody></table>';
     tableContainer.innerHTML = html;
   }
 
-  // --- Render gráfico ---
-  // Muestra saldo acumulado por edad en gráfico de línea
-  function renderChart(resultados) {
-    if (chart) {
-      chart.destroy();
-      chart = null;
-    }
-    if (!resultados.length) return;
-
-    const labels = resultados.map(r => r.edad);
-    const saldoData = resultados.map(r => r.saldoAcumulado);
-
-    chart = new Chart(chartCtx, {
+  // --- Render gráficos ---
+  function renderCharts(nominal, real) {
+    // Nominal
+    if (chartNominal) chartNominal.destroy();
+    chartNominal = new Chart(ctxNominal, {
       type: 'line',
       data: {
-        labels,
+        labels: nominal.map(r => r.edad),
         datasets: [{
-          label: 'Saldo acumulado ($)',
-          data: saldoData,
-          borderColor: 'rgba(0, 123, 255, 0.8)',
-          backgroundColor: 'rgba(0, 123, 255, 0.2)',
+          label: 'Saldo acumulado nominal ($)',
+          data: nominal.map(r => r.saldoNominal),
+          borderColor: 'rgba(0,123,255,0.8)',
+          backgroundColor: 'rgba(0,123,255,0.2)',
           fill: true,
-          tension: 0.2,
+          tension: 0.3,
           pointRadius: 3
         }]
       },
       options: {
         responsive: true,
-        interaction: {
-          mode: 'nearest',
-          axis: 'x',
-          intersect: false,
-        },
         scales: {
-          x: {
-            title: {
-              display: true,
-              text: 'Edad'
-            }
-          },
-          y: {
-            beginAtZero: true,
-            title: {
-              display: true,
-              text: 'Saldo acumulado ($)'
-            }
-          }
-        },
-        plugins: {
-          legend: {
-            display: true
-          },
-          tooltip: {
-            enabled: true,
-            callbacks: {
-              label: ctx => `$${ctx.parsed.y.toFixed(2)}`
-            }
-          }
+          x: { title: { display: true, text: 'Edad' } },
+          y: { title: { display: true, text: 'Saldo nominal ($)' }, beginAtZero: true }
         }
       }
     });
+
+    // Real ajustado por inflación
+    if (chartReal) chartReal.destroy();
+    chartReal = new Chart(ctxReal, {
+      type: 'line',
+      data: {
+        labels: real.map(r => r.edad),
+        datasets: [{
+          label: 'Saldo ajustado por inflación ($ real)',
+          data: real.map(r => r.saldoReal),
+          borderColor: 'rgba(40,167,69,0.8)',
+          backgroundColor: 'rgba(40,167,69,0.2)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 3
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: { title: { display: true, text: 'Edad' } },
+          y: { title: { display: true, text: 'Saldo real ($)' }, beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  // --- Mostrar resumen edad para llegar a 1 millón ---
+  function renderResumen(nominal, real) {
+    if (!nominal.length || !real.length) {
+      resumen.textContent = '';
+      return;
+    }
+
+    const umbral = 1_000_000;
+
+    // Edad donde se alcanza 1 millón nominal
+    const edadNominal = nominal.find(r => r.saldoNominal >= umbral)?.edad || 'No se alcanza';
+
+    // Edad donde se alcanza 1 millón real
+    const edadReal = real.find(r => r.saldoReal >= umbral)?.edad || 'No se alcanza';
+
+    resumen.innerHTML = `
+      <p>Edad aproximada para alcanzar <strong>$1.000.000 nominal</strong>: <strong>${edadNominal}</strong></p>
+      <p>Edad aproximada para alcanzar <strong>$1.000.000 en poder adquisitivo real</strong>: <strong>${edadReal}</strong></p>
+    `;
   }
 
   // --- Mostrar/ocultar tabla ---
@@ -631,16 +717,11 @@
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
       if (tab.dataset.tab === currentTab) return;
-
-      // Cambiar clases
       tabs.forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
-
-      // Mostrar/ocultar contenidos
       tabContents.forEach(tc => {
         tc.style.display = (tc.id === tab.dataset.tab) ? '' : 'none';
       });
-
       currentTab = tab.dataset.tab;
       calcularYRenderizar();
     });
@@ -680,7 +761,6 @@
     });
     listaHitos.innerHTML = html;
 
-    // Agregar event listeners a botones eliminar
     listaHitos.querySelectorAll('button').forEach(btn => {
       btn.addEventListener('click', () => {
         const idx = parseInt(btn.dataset.index);
@@ -692,31 +772,35 @@
     });
   }
 
-  // --- Calcular y renderizar todo ---
+  // --- Calcular y renderizar ---
   function calcularYRenderizar() {
     guardarDatos();
-    let resultados = [];
+
+    let nominal = [], real = [];
 
     if (currentTab === 'basico') {
-      resultados = calcularBasico();
+      const res = calcularBasico();
+      nominal = res.resultados;
+      real = res.resultadosReal;
     } else {
-      resultados = calcularAvanzado();
+      const res = calcularAvanzado();
+      nominal = res.resultados;
+      real = res.resultadosReal;
     }
 
-    renderTabla(resultados);
+    renderTabla(nominal);
     if (showTable) {
       tableContainer.style.display = 'block';
       toggleTableBtn.textContent = 'Ocultar tabla';
     }
-    renderChart(resultados);
+    renderCharts(nominal, real);
+    renderResumen(nominal, real);
   }
 
   // --- Inputs auto-calculo ---
   function agregarListenersForm(form) {
     form.querySelectorAll('input[type=number]').forEach(input => {
-      input.addEventListener('input', () => {
-        calcularYRenderizar();
-      });
+      input.addEventListener('input', () => calcularYRenderizar());
     });
   }
   agregarListenersForm(formBasico);
@@ -730,10 +814,8 @@
   }
   modeToggleBtn.addEventListener('click', toggleModoNoche);
 
-  // --- Cargar modo noche ---
   function cargarModoNoche() {
-    const modo = localStorage.getItem('modoNoche');
-    if (modo === '1') {
+    if (localStorage.getItem('modoNoche') === '1') {
       document.body.classList.add('night');
     }
   }
@@ -744,8 +826,8 @@
     cargarModoNoche();
     calcularYRenderizar();
   }
-
   init();
 </script>
+
 </body>
 </html>
