@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Millionaire Savings Plan</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: row;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+
+    .form, .results {
+      flex: 1 1 300px;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #007bff;
+      color: white;
+      border: none;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .message {
+      background: #e6f0ff;
+      border-left: 4px solid #3399ff;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+
+    canvas {
+      width: 100% !important;
+      height: auto !important;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Millionaire Savings Plan</h1>
+  <div class="container">
+    <div class="form">
+      <label>Your age:</label>
+      <input type="number" id="age" value="63" />
+
+      <label>Millionaire target age:</label>
+      <input type="number" id="targetAge" value="65" />
+
+      <label>How much do you currently have invested?</label>
+      <input type="number" id="currentInvestment" value="500000" />
+
+      <label>Savings per month:</label>
+      <input type="number" id="monthlySavings" value="2000" />
+
+      <label>Rate of Return (%):</label>
+      <input type="number" id="returnRate" value="7" />
+
+      <button onclick="calculate()">Calculate</button>
+    </div>
+    <div class="results">
+      <div class="message" id="messageBox">Your result will appear here.</div>
+      <canvas id="chart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    const inflationRate = 0.0322;
+
+    function calculate() {
+      const age = parseInt(document.getElementById('age').value);
+      const targetAge = parseInt(document.getElementById('targetAge').value);
+      const current = parseFloat(document.getElementById('currentInvestment').value);
+      const monthly = parseFloat(document.getElementById('monthlySavings').value);
+      const returnRate = parseFloat(document.getElementById('returnRate').value) / 100;
+
+      let balance = current;
+      let data = [];
+      let dataInflation = [];
+
+      for (let year = age; year <= targetAge; year++) {
+        balance *= (1 + returnRate);
+        balance += monthly * 12;
+        let adjusted = balance / Math.pow(1 + inflationRate, year - age);
+        data.push(balance);
+        dataInflation.push(adjusted);
+      }
+
+      const final = Math.round(balance);
+      const msg = final >= 1000000
+        ? `🎉 You could become a millionaire at age ${targetAge}!`
+        : `You could become a millionaire at age ${findMillionaireAge(current, monthly, returnRate)}. You need to save <strong>$${missingContribution(current, returnRate, targetAge - age)}</strong> per month to reach $1,000,000 by age ${targetAge}.`;
+
+      document.getElementById("messageBox").innerHTML = msg;
+
+      drawChart(age, targetAge, data, dataInflation);
+    }
+
+    function drawChart(startAge, endAge, values, adjusted) {
+      const ctx = document.getElementById('chart').getContext('2d');
+      if (window.myChart) window.myChart.destroy();
+      window.myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: Array.from({length: endAge - startAge + 1}, (_, i) => startAge + i),
+          datasets: [
+            {
+              label: "Balance",
+              data: values.map(v => v / 1000),
+              backgroundColor: '#007bff'
+            },
+            {
+              label: "Balance after inflation",
+              data: adjusted.map(v => v / 1000),
+              backgroundColor: '#00cc99'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              title: {
+                display: true,
+                text: 'Thousands of dollars'
+              }
+            },
+            x: {
+              title: {
+                display: true,
+                text: 'Your Age'
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function findMillionaireAge(current, monthly, rate) {
+      let age = parseInt(document.getElementById('age').value);
+      let balance = current;
+      while (balance < 1000000 && age < 100) {
+        balance *= (1 + rate);
+        balance += monthly * 12;
+        age++;
+      }
+      return age;
+    }
+
+    function missingContribution(current, rate, years) {
+      const FV = 1000000;
+      const futureValueCurrent = current * Math.pow(1 + rate, years);
+      const monthlyRate = rate / 12;
+      const months = years * 12;
+      const requiredMonthly = (FV - futureValueCurrent) * monthlyRate / (Math.pow(1 + monthlyRate, months) - 1);
+      return Math.round(requiredMonthly);
+    }
+
+    calculate();
+  </script>
+</body>
+</html>
