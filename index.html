@@ -1,337 +1,751 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Millionaire Savings Plan</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    :root {
-      --bg: #f9f9f9;
-      --text: #000;
-      --box-bg: #fff;
-      --border: #ccc;
-      --accent: #007bff;
-      --highlight: #e6f0ff;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Calculadora de Ahorros - Básico y Avanzado</title>
+<style>
+  :root {
+    --bg-light: #f0f0f0;
+    --bg-dark: #121212;
+    --text-light: #000;
+    --text-dark: #eee;
+    --primary: #007bff;
+    --accent: #28a745;
+    --danger: #dc3545;
+    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
 
-    body.dark {
-      --bg: #121212;
-      --text: #eee;
-      --box-bg: #1e1e1e;
-      --border: #444;
-      --accent: #66aaff;
-      --highlight: #1a2b40;
-    }
+  body {
+    font-family: var(--font-family);
+    margin: 0;
+    background-color: var(--bg-light);
+    color: var(--text-light);
+    transition: background-color 0.3s, color 0.3s;
+  }
+  body.night {
+    background-color: var(--bg-dark);
+    color: var(--text-dark);
+  }
 
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background: var(--bg);
-      color: var(--text);
-      transition: background 0.3s, color 0.3s;
-    }
+  header {
+    padding: 1rem;
+    background-color: var(--primary);
+    color: white;
+    text-align: center;
+  }
 
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-    }
+  .container {
+    max-width: 900px;
+    margin: 1rem auto;
+    padding: 0 1rem 2rem;
+  }
 
-    .content {
-      max-width: 700px;
-      margin: auto;
-      display: block;
-    }
+  /* Tabs */
+  .tabs {
+    display: flex;
+    border-bottom: 2px solid var(--primary);
+    margin-bottom: 1rem;
+  }
+  .tab {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    text-align: center;
+    background-color: var(--bg-light);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    border-bottom: none;
+    user-select: none;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  .tab:hover {
+    background-color: var(--primary);
+    color: white;
+  }
+  .tab.active {
+    background-color: var(--primary);
+    color: white;
+    cursor: default;
+  }
+  body.night .tab {
+    background-color: var(--bg-dark);
+    color: var(--text-dark);
+    border-color: var(--accent);
+  }
+  body.night .tab:hover:not(.active) {
+    background-color: var(--accent);
+    color: var(--bg-dark);
+  }
+  body.night .tab.active {
+    background-color: var(--accent);
+    color: var(--bg-dark);
+  }
 
-    .box {
-      background: var(--box-bg);
-      padding: 20px;
-      margin-bottom: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
-      transition: background 0.3s;
-    }
+  /* Form styles */
+  form {
+    background: rgba(255 255 255 / 0.85);
+    padding: 1rem;
+    border-radius: 5px;
+    box-shadow: 0 0 6px rgba(0,0,0,0.1);
+  }
+  body.night form {
+    background: rgba(20 20 20 / 0.85);
+    box-shadow: 0 0 6px rgba(255,255,255,0.1);
+  }
 
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: bold;
-    }
+  label {
+    display: block;
+    margin-top: 0.75rem;
+    font-weight: 600;
+  }
+  input[type="number"] {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.25rem;
+    box-sizing: border-box;
+    font-size: 1rem;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    transition: border-color 0.3s;
+  }
+  input[type="number"]:focus {
+    border-color: var(--primary);
+    outline: none;
+  }
+  body.night input[type="number"] {
+    background-color: #222;
+    color: var(--text-dark);
+    border-color: #444;
+  }
+  body.night input[type="number"]:focus {
+    border-color: var(--accent);
+  }
 
-    input {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 15px;
-      border: 1px solid var(--border);
-      border-radius: 5px;
-      background: var(--box-bg);
-      color: var(--text);
-    }
+  /* Button */
+  button {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    background-color: var(--primary);
+    color: white;
+    transition: background-color 0.3s;
+  }
+  button:hover {
+    background-color: var(--accent);
+  }
+  body.night button {
+    background-color: var(--accent);
+    color: var(--bg-dark);
+  }
+  body.night button:hover {
+    background-color: var(--primary);
+    color: white;
+  }
 
-    .message {
-      background: var(--highlight);
-      border-left: 4px solid var(--accent);
-      padding: 15px;
-      border-radius: 5px;
-    }
+  /* Table */
+  #tableContainer {
+    margin: 1rem 0;
+    overflow-x: auto;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.9rem;
+  }
+  th, td {
+    border: 1px solid #ccc;
+    padding: 0.4rem 0.6rem;
+    text-align: center;
+  }
+  th {
+    background-color: var(--primary);
+    color: white;
+  }
+  body.night th {
+    background-color: var(--accent);
+  }
+  body.night td, body.night th {
+    border-color: #444;
+  }
 
-    canvas {
-      width: 100% !important;
-      height: auto !important;
-    }
+  /* Chart container */
+  #chartContainer {
+    position: relative;
+    height: 300px;
+  }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      font-size: 12px;
-      color: var(--text);
-    }
+  /* Events/hitos list (Avanzado) */
+  .hitos-list {
+    margin-top: 0.5rem;
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 0.5rem;
+    background: #fff;
+    border-radius: 4px;
+  }
+  body.night .hitos-list {
+    background: #222;
+    border-color: #444;
+    color: var(--text-dark);
+  }
+  .hitos-list-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.3rem;
+  }
+  .hitos-list-item button {
+    background-color: var(--danger);
+    padding: 0 8px;
+    font-weight: bold;
+    border-radius: 3px;
+  }
+  .hitos-list-item button:hover {
+    background-color: #a00;
+  }
 
-    th, td {
-      padding: 6px;
-      border: 1px solid var(--border);
-      text-align: right;
+  /* Responsive */
+  @media (min-width: 600px) {
+    form .input-row {
+      display: flex;
+      gap: 1rem;
     }
+    form .input-row > div {
+      flex: 1;
+    }
+  }
 
-    th {
-      background-color: var(--box-bg);
-    }
+  /* Toggle table button */
+  #toggleTableBtn {
+    margin: 0.75rem 0;
+    cursor: pointer;
+    background: none;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    padding: 0.3rem 0.7rem;
+    border-radius: 3px;
+    user-select: none;
+    font-size: 0.9rem;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  #toggleTableBtn:hover {
+    background-color: var(--primary);
+    color: white;
+  }
+  body.night #toggleTableBtn {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  body.night #toggleTableBtn:hover {
+    background-color: var(--accent);
+    color: var(--bg-dark);
+  }
 
-    td:first-child, th:first-child {
-      text-align: center;
-    }
-
-    #toggleTable, #toggleMode {
-      display: block;
-      margin-bottom: 10px;
-      padding: 8px 12px;
-      background: var(--accent);
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    #toggleMode {
-      float: right;
-      margin-top: -30px;
-    }
-  </style>
+  /* Mode night toggle */
+  #modeToggle {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: var(--primary);
+    border: none;
+    color: white;
+    padding: 0.4rem 0.7rem;
+    border-radius: 3px;
+    cursor: pointer;
+    z-index: 9999;
+  }
+  body.night #modeToggle {
+    background: var(--accent);
+    color: var(--bg-dark);
+  }
+</style>
 </head>
 <body>
-  <h1>Millionaire Savings Plan</h1>
-  <div class="content">
-    <button id="toggleMode">🌙 Modo noche</button>
+<header>
+  <h1>Calculadora de Ahorros</h1>
+</header>
 
-    <div class="box">
-      <label>Your age:</label>
-      <input type="number" id="age" />
+<button id="modeToggle" title="Cambiar modo noche">Modo Noche</button>
 
-      <label>Millionaire target age:</label>
-      <input type="number" id="targetAge" />
-
-      <label>How much do you currently have invested?</label>
-      <input type="number" id="currentInvestment" />
-
-      <label>Savings per month:</label>
-      <input type="number" id="monthlySavings" />
-
-      <label>Rate of Return (%):</label>
-      <input type="number" id="returnRate" />
-    </div>
-
-    <div class="box message" id="messageBox">Your result will appear here.</div>
-
-    <div class="box">
-      <button id="toggleTable">Show yearly breakdown</button>
-      <div id="tableBox" style="display: none;">
-        <h3>Yearly breakdown</h3>
-        <table id="breakdownTable">
-          <thead>
-            <tr>
-              <th>Age</th>
-              <th>Yearly Contribution</th>
-              <th>Interest Earned</th>
-              <th>Total Accumulated</th>
-            </tr>
-          </thead>
-          <tbody id="breakdownBody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="box">
-      <canvas id="chart"></canvas>
-    </div>
+<div class="container">
+  <div class="tabs">
+    <div class="tab active" data-tab="basico">Básico</div>
+    <div class="tab" data-tab="avanzado">Avanzado</div>
   </div>
 
-  <script>
-    const inflationRate = 0.0322;
-    const fields = ["age", "targetAge", "currentInvestment", "monthlySavings", "returnRate"];
+  <!-- Básico -->
+  <section id="basico" class="tab-content">
+    <form id="formBasico" autocomplete="off">
+      <label for="edadInicioBasico">Edad inicio:</label>
+      <input type="number" id="edadInicioBasico" min="0" max="120" step="1" required />
 
-    function loadInputs() {
-      const defaults = { age: 63, targetAge: 65, currentInvestment: 500000, monthlySavings: 2000, returnRate: 7 };
-      fields.forEach(field => {
-        const saved = localStorage.getItem(field);
-        document.getElementById(field).value = saved !== null ? saved : defaults[field];
-      });
+      <label for="edadFinBasico">Edad fin:</label>
+      <input type="number" id="edadFinBasico" min="1" max="120" step="1" required />
 
-      const darkMode = localStorage.getItem("darkMode");
-      if (darkMode === "true") {
-        document.body.classList.add("dark");
-        document.getElementById("toggleMode").textContent = "☀️ Modo día";
+      <label for="aporteMensualBasico">Aporte mensual (en $):</label>
+      <input type="number" id="aporteMensualBasico" min="0" step="0.01" required />
+    </form>
+  </section>
+
+  <!-- Avanzado -->
+  <section id="avanzado" class="tab-content" style="display:none;">
+    <form id="formAvanzado" autocomplete="off">
+
+      <div class="input-row">
+        <div>
+          <label for="edadInicioAdv">Edad inicio:</label>
+          <input type="number" id="edadInicioAdv" min="0" max="120" step="1" required />
+        </div>
+        <div>
+          <label for="edadCambio1Adv">Edad cambio 1:</label>
+          <input type="number" id="edadCambio1Adv" min="0" max="120" step="1" required />
+        </div>
+        <div>
+          <label for="edadCambio2Adv">Edad cambio 2:</label>
+          <input type="number" id="edadCambio2Adv" min="0" max="120" step="1" required />
+        </div>
+        <div>
+          <label for="edadFinAdv">Edad fin:</label>
+          <input type="number" id="edadFinAdv" min="1" max="120" step="1" required />
+        </div>
+      </div>
+
+      <div class="input-row">
+        <div>
+          <label for="aporteTramo1">Aporte tramo 1 (en $):</label>
+          <input type="number" id="aporteTramo1" min="0" step="0.01" required />
+        </div>
+        <div>
+          <label for="aporteTramo2">Aporte tramo 2 (en $):</label>
+          <input type="number" id="aporteTramo2" min="0" step="0.01" required />
+        </div>
+        <div>
+          <label for="aporteTramo3">Aporte tramo 3 (en $):</label>
+          <input type="number" id="aporteTramo3" min="0" step="0.01" required />
+        </div>
+      </div>
+
+      <hr style="margin: 1rem 0;" />
+
+      <h3>Agregar Hito/Gasto único</h3>
+      <label for="edadHito">Edad:</label>
+      <input type="number" id="edadHito" min="0" max="120" step="1" />
+      <label for="gastoHito">Gasto (en $):</label>
+      <input type="number" id="gastoHito" min="0" step="0.01" />
+      <button type="button" id="addHitoBtn">Agregar Hito</button>
+
+      <div class="hitos-list" id="listaHitos"></div>
+    </form>
+  </section>
+
+  <!-- Mostrar/ocultar tabla -->
+  <button id="toggleTableBtn">Mostrar tabla</button>
+
+  <!-- Tabla de resultados -->
+  <div id="tableContainer" style="display:none;"></div>
+
+  <!-- Gráfico -->
+  <div id="chartContainer">
+    <canvas id="chart"></canvas>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // --- Variables globales ---
+  const tabs = document.querySelectorAll('.tab');
+  const tabContents = document.querySelectorAll('.tab-content');
+  const toggleTableBtn = document.getElementById('toggleTableBtn');
+  const tableContainer = document.getElementById('tableContainer');
+  const modeToggleBtn = document.getElementById('modeToggle');
+  const chartCtx = document.getElementById('chart').getContext('2d');
+
+  // Formularios y campos básicos
+  const formBasico = document.getElementById('formBasico');
+  const edadInicioBasico = document.getElementById('edadInicioBasico');
+  const edadFinBasico = document.getElementById('edadFinBasico');
+  const aporteMensualBasico = document.getElementById('aporteMensualBasico');
+
+  // Formularios y campos avanzados
+  const formAvanzado = document.getElementById('formAvanzado');
+  const edadInicioAdv = document.getElementById('edadInicioAdv');
+  const edadCambio1Adv = document.getElementById('edadCambio1Adv');
+  const edadCambio2Adv = document.getElementById('edadCambio2Adv');
+  const edadFinAdv = document.getElementById('edadFinAdv');
+
+  const aporteTramo1 = document.getElementById('aporteTramo1');
+  const aporteTramo2 = document.getElementById('aporteTramo2');
+  const aporteTramo3 = document.getElementById('aporteTramo3');
+
+  const edadHito = document.getElementById('edadHito');
+  const gastoHito = document.getElementById('gastoHito');
+  const addHitoBtn = document.getElementById('addHitoBtn');
+  const listaHitos = document.getElementById('listaHitos');
+
+  // Estado app
+  let currentTab = 'basico';
+  let showTable = false;
+  let chart = null;
+  let hitos = [];
+
+  // --- Funciones utilidad ---
+  function guardarDatos() {
+    const data = {
+      basico: {
+        edadInicio: edadInicioBasico.value,
+        edadFin: edadFinBasico.value,
+        aporte: aporteMensualBasico.value
+      },
+      avanzado: {
+        edadInicio: edadInicioAdv.value,
+        edadCambio1: edadCambio1Adv.value,
+        edadCambio2: edadCambio2Adv.value,
+        edadFin: edadFinAdv.value,
+        aporte1: aporteTramo1.value,
+        aporte2: aporteTramo2.value,
+        aporte3: aporteTramo3.value,
+        hitos
+      }
+    };
+    localStorage.setItem('calculadoraAhorrosData', JSON.stringify(data));
+  }
+
+  function cargarDatos() {
+    const data = JSON.parse(localStorage.getItem('calculadoraAhorrosData'));
+    if (data) {
+      if (data.basico) {
+        edadInicioBasico.value = data.basico.edadInicio || '';
+        edadFinBasico.value = data.basico.edadFin || '';
+        aporteMensualBasico.value = data.basico.aporte || '';
+      }
+      if (data.avanzado) {
+        edadInicioAdv.value = data.avanzado.edadInicio || '';
+        edadCambio1Adv.value = data.avanzado.edadCambio1 || '';
+        edadCambio2Adv.value = data.avanzado.edadCambio2 || '';
+        edadFinAdv.value = data.avanzado.edadFin || '';
+        aporteTramo1.value = data.avanzado.aporte1 || '';
+        aporteTramo2.value = data.avanzado.aporte2 || '';
+        aporteTramo3.value = data.avanzado.aporte3 || '';
+        hitos = Array.isArray(data.avanzado.hitos) ? data.avanzado.hitos : [];
+        renderListaHitos();
       }
     }
+  }
 
-    function setupListeners() {
-      fields.forEach(field => {
-        document.getElementById(field).addEventListener("input", () => {
-          localStorage.setItem(field, document.getElementById(field).value);
-          calculate();
-        });
+  function validarEdadesBasico() {
+    const inicio = parseInt(edadInicioBasico.value);
+    const fin = parseInt(edadFinBasico.value);
+    if (isNaN(inicio) || isNaN(fin) || inicio < 0 || fin <= inicio || fin > 120) return false;
+    return true;
+  }
+  function validarEdadesAvanzado() {
+    const e0 = parseInt(edadInicioAdv.value);
+    const e1 = parseInt(edadCambio1Adv.value);
+    const e2 = parseInt(edadCambio2Adv.value);
+    const e3 = parseInt(edadFinAdv.value);
+    if ([e0,e1,e2,e3].some(v => isNaN(v))) return false;
+    if (!(0 <= e0 && e0 < e1 && e1 < e2 && e2 < e3 && e3 <= 120)) return false;
+    return true;
+  }
+  function validarAportesBasico() {
+    return !isNaN(parseFloat(aporteMensualBasico.value)) && parseFloat(aporteMensualBasico.value) >= 0;
+  }
+  function validarAportesAvanzado() {
+    const aportes = [aporteTramo1, aporteTramo2, aporteTramo3];
+    return aportes.every(inp => !isNaN(parseFloat(inp.value)) && parseFloat(inp.value) >= 0);
+  }
+  function validarHito(edad, gasto) {
+    if (isNaN(edad) || isNaN(gasto)) return false;
+    if (edad < 0 || edad > 120 || gasto < 0) return false;
+    return true;
+  }
+
+  // --- Cálculo Básico ---
+  // Para cada edad entre inicio y fin, aporta monto fijo.  
+  // Resultado: array con {edad, aporte, gastoHito, saldoAcumulado}
+  function calcularBasico() {
+    if (!validarEdadesBasico() || !validarAportesBasico()) return [];
+
+    const inicio = parseInt(edadInicioBasico.value);
+    const fin = parseInt(edadFinBasico.value);
+    const aporte = parseFloat(aporteMensualBasico.value);
+
+    let saldo = 0;
+    const resultados = [];
+
+    for(let edad = inicio; edad <= fin; edad++) {
+      saldo += aporte;
+      resultados.push({
+        edad,
+        aporte,
+        gastoHito: 0,
+        saldoAcumulado: saldo
       });
+    }
+    return resultados;
+  }
 
-      document.getElementById("toggleTable").addEventListener("click", () => {
-        const tableBox = document.getElementById("tableBox");
-        const toggleBtn = document.getElementById("toggleTable");
-        if (tableBox.style.display === "none") {
-          tableBox.style.display = "block";
-          toggleBtn.textContent = "Hide yearly breakdown";
-        } else {
-          tableBox.style.display = "none";
-          toggleBtn.textContent = "Show yearly breakdown";
-        }
-      });
+  // --- Cálculo Avanzado ---
+  // Tramos con aportes distintos, y hitos (gastos únicos)
+  // Tramos: 
+  // tramo1: desde edadInicioAdv (incl) hasta edadCambio1Adv (excl)
+  // tramo2: desde edadCambio1Adv (incl) hasta edadCambio2Adv (excl)
+  // tramo3: desde edadCambio2Adv (incl) hasta edadFinAdv (incl)
+  // hitos: gastos únicos que restan al saldo en la edad correspondiente
 
-      document.getElementById("toggleMode").addEventListener("click", () => {
-        document.body.classList.toggle("dark");
-        const isDark = document.body.classList.contains("dark");
-        localStorage.setItem("darkMode", isDark);
-        document.getElementById("toggleMode").textContent = isDark ? "☀️ Modo día" : "🌙 Modo noche";
+  function calcularAvanzado() {
+    if (!validarEdadesAvanzado() || !validarAportesAvanzado()) return [];
+
+    const e0 = parseInt(edadInicioAdv.value);
+    const e1 = parseInt(edadCambio1Adv.value);
+    const e2 = parseInt(edadCambio2Adv.value);
+    const e3 = parseInt(edadFinAdv.value);
+    const a1 = parseFloat(aporteTramo1.value);
+    const a2 = parseFloat(aporteTramo2.value);
+    const a3 = parseFloat(aporteTramo3.value);
+
+    let saldo = 0;
+    const resultados = [];
+
+    for(let edad = e0; edad <= e3; edad++) {
+      let aporte = 0;
+      if (edad >= e0 && edad < e1) aporte = a1;
+      else if (edad >= e1 && edad < e2) aporte = a2;
+      else if (edad >= e2 && edad <= e3) aporte = a3;
+
+      saldo += aporte;
+
+      // Ver si hay hitos en esta edad
+      const gastoHito = hitos
+        .filter(h => h.edad === edad)
+        .reduce((acc, h) => acc + h.gasto, 0);
+
+      saldo -= gastoHito;
+
+      resultados.push({
+        edad,
+        aporte,
+        gastoHito,
+        saldoAcumulado: saldo
       });
     }
 
-    function calculate() {
-      const age = parseInt(document.getElementById('age').value);
-      const targetAge = parseInt(document.getElementById('targetAge').value);
-      const current = parseFloat(document.getElementById('currentInvestment').value);
-      const monthly = parseFloat(document.getElementById('monthlySavings').value);
-      const returnRate = parseFloat(document.getElementById('returnRate').value) / 100;
-      const yearly = monthly * 12;
+    return resultados;
+  }
 
-      let balance = current;
-      let totalContributions = 0;
-      let totalInterest = 0;
-
-      let data = [];
-      let dataInflation = [];
-      let rows = "";
-
-      for (let i = 0; i <= (targetAge - age); i++) {
-        const currentAge = age + i;
-        const interest = balance * returnRate;
-        balance += interest + yearly;
-        totalContributions += yearly;
-        totalInterest += interest;
-
-        data.push(balance);
-        dataInflation.push(balance / Math.pow(1 + inflationRate, i));
-
-        rows += `
-          <tr>
-            <td>${currentAge}</td>
-            <td>$${yearly.toLocaleString()}</td>
-            <td>$${Math.round(interest).toLocaleString()}</td>
-            <td>$${Math.round(balance).toLocaleString()}</td>
-          </tr>
-        `;
-      }
-
-      const final = Math.round(balance);
-      const msg = `
-        <p><strong>Total savings at age ${targetAge}:</strong> $${final.toLocaleString()}</p>
-        <p><strong>Total contributions:</strong> $${totalContributions.toLocaleString()}</p>
-        <p><strong>Total interest earned:</strong> $${Math.round(totalInterest).toLocaleString()}</p>
-        <p>${final >= 1000000
-          ? `🎉 You could become a millionaire at age ${targetAge}!`
-          : `You could become a millionaire at age ${findMillionaireAge(current, monthly, returnRate)}. 
-            You need to save <strong>$${missingContribution(current, returnRate, targetAge - age)}</strong> per month to reach $1,000,000 by age ${targetAge}.`}
-        </p>
-      `;
-
-      document.getElementById("messageBox").innerHTML = msg;
-      document.getElementById("breakdownBody").innerHTML = rows;
-
-      drawChart(age, targetAge, data, dataInflation);
+  // --- Render tabla ---
+  // Mostrar resultados en tabla con columnas: Edad, Aporte, Gasto Hito, Saldo acumulado
+  function renderTabla(resultados) {
+    if (!resultados.length) {
+      tableContainer.innerHTML = '<p>No hay datos para mostrar.</p>';
+      return;
     }
+    let html = '<table><thead><tr><th>Edad</th><th>Aporte mensual ($)</th><th>Gasto único ($)</th><th>Saldo acumulado ($)</th></tr></thead><tbody>';
+    for (const r of resultados) {
+      html += `<tr>
+        <td>${r.edad}</td>
+        <td>${r.aporte.toFixed(2)}</td>
+        <td>${r.gastoHito.toFixed(2)}</td>
+        <td>${r.saldoAcumulado.toFixed(2)}</td>
+      </tr>`;
+    }
+    html += '</tbody></table>';
+    tableContainer.innerHTML = html;
+  }
 
-    function drawChart(startAge, endAge, values, adjusted) {
-      const ctx = document.getElementById('chart').getContext('2d');
-      if (window.myChart) window.myChart.destroy();
-      window.myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: Array.from({length: endAge - startAge + 1}, (_, i) => startAge + i),
-          datasets: [
-            {
-              label: "Balance",
-              data: values.map(v => v / 1000),
-              backgroundColor: '#007bff'
-            },
-            {
-              label: "Balance after inflation",
-              data: adjusted.map(v => v / 1000),
-              backgroundColor: '#00cc99'
-            }
-          ]
+  // --- Render gráfico ---
+  // Muestra saldo acumulado por edad en gráfico de línea
+  function renderChart(resultados) {
+    if (chart) {
+      chart.destroy();
+      chart = null;
+    }
+    if (!resultados.length) return;
+
+    const labels = resultados.map(r => r.edad);
+    const saldoData = resultados.map(r => r.saldoAcumulado);
+
+    chart = new Chart(chartCtx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Saldo acumulado ($)',
+          data: saldoData,
+          borderColor: 'rgba(0, 123, 255, 0.8)',
+          backgroundColor: 'rgba(0, 123, 255, 0.2)',
+          fill: true,
+          tension: 0.2,
+          pointRadius: 3
+        }]
+      },
+      options: {
+        responsive: true,
+        interaction: {
+          mode: 'nearest',
+          axis: 'x',
+          intersect: false,
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y: {
-              title: {
-                display: true,
-                text: 'Thousands of dollars'
-              }
-            },
-            x: {
-              title: {
-                display: true,
-                text: 'Your Age'
-              }
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Edad'
+            }
+          },
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Saldo acumulado ($)'
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: true
+          },
+          tooltip: {
+            enabled: true,
+            callbacks: {
+              label: ctx => `$${ctx.parsed.y.toFixed(2)}`
             }
           }
         }
-      });
-    }
-
-    function findMillionaireAge(current, monthly, rate) {
-      let age = parseInt(document.getElementById('age').value);
-      let balance = current;
-      while (balance < 1000000 && age < 100) {
-        balance *= (1 + rate);
-        balance += monthly * 12;
-        age++;
       }
-      return age;
+    });
+  }
+
+  // --- Mostrar/ocultar tabla ---
+  toggleTableBtn.addEventListener('click', () => {
+    showTable = !showTable;
+    tableContainer.style.display = showTable ? 'block' : 'none';
+    toggleTableBtn.textContent = showTable ? 'Ocultar tabla' : 'Mostrar tabla';
+  });
+
+  // --- Cambiar pestaña ---
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      if (tab.dataset.tab === currentTab) return;
+
+      // Cambiar clases
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      // Mostrar/ocultar contenidos
+      tabContents.forEach(tc => {
+        tc.style.display = (tc.id === tab.dataset.tab) ? '' : 'none';
+      });
+
+      currentTab = tab.dataset.tab;
+      calcularYRenderizar();
+    });
+  });
+
+  // --- Agregar hito ---
+  addHitoBtn.addEventListener('click', () => {
+    const edad = parseInt(edadHito.value);
+    const gasto = parseFloat(gastoHito.value);
+
+    if (!validarHito(edad, gasto)) {
+      alert('Por favor ingresa una edad y gasto válidos para el hito.');
+      return;
     }
 
-    function missingContribution(current, rate, years) {
-      const FV = 1000000;
-      const futureValueCurrent = current * Math.pow(1 + rate, years);
-      const monthlyRate = rate / 12;
-      const months = years * 12;
-      const requiredMonthly = (FV - futureValueCurrent) * monthlyRate / (Math.pow(1 + monthlyRate, months) - 1);
-      return Math.round(requiredMonthly);
+    hitos.push({ edad, gasto });
+    edadHito.value = '';
+    gastoHito.value = '';
+    renderListaHitos();
+    guardarDatos();
+    calcularYRenderizar();
+  });
+
+  // --- Render lista hitos ---
+  function renderListaHitos() {
+    if (hitos.length === 0) {
+      listaHitos.innerHTML = '<p>No hay hitos agregados.</p>';
+      return;
+    }
+    let html = '';
+    hitos.forEach((hito, i) => {
+      html += `
+        <div class="hitos-list-item">
+          <span>Edad: ${hito.edad}, Gasto: $${hito.gasto.toFixed(2)}</span>
+          <button data-index="${i}" title="Eliminar hito">&times;</button>
+        </div>`;
+    });
+    listaHitos.innerHTML = html;
+
+    // Agregar event listeners a botones eliminar
+    listaHitos.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.dataset.index);
+        hitos.splice(idx, 1);
+        renderListaHitos();
+        guardarDatos();
+        calcularYRenderizar();
+      });
+    });
+  }
+
+  // --- Calcular y renderizar todo ---
+  function calcularYRenderizar() {
+    guardarDatos();
+    let resultados = [];
+
+    if (currentTab === 'basico') {
+      resultados = calcularBasico();
+    } else {
+      resultados = calcularAvanzado();
     }
 
-    loadInputs();
-    setupListeners();
-    calculate();
-  </script>
+    renderTabla(resultados);
+    if (showTable) {
+      tableContainer.style.display = 'block';
+      toggleTableBtn.textContent = 'Ocultar tabla';
+    }
+    renderChart(resultados);
+  }
+
+  // --- Inputs auto-calculo ---
+  function agregarListenersForm(form) {
+    form.querySelectorAll('input[type=number]').forEach(input => {
+      input.addEventListener('input', () => {
+        calcularYRenderizar();
+      });
+    });
+  }
+  agregarListenersForm(formBasico);
+  agregarListenersForm(formAvanzado);
+
+  // --- Modo noche ---
+  function toggleModoNoche() {
+    document.body.classList.toggle('night');
+    const esNoche = document.body.classList.contains('night');
+    localStorage.setItem('modoNoche', esNoche ? '1' : '0');
+  }
+  modeToggleBtn.addEventListener('click', toggleModoNoche);
+
+  // --- Cargar modo noche ---
+  function cargarModoNoche() {
+    const modo = localStorage.getItem('modoNoche');
+    if (modo === '1') {
+      document.body.classList.add('night');
+    }
+  }
+
+  // --- Inicialización ---
+  function init() {
+    cargarDatos();
+    cargarModoNoche();
+    calcularYRenderizar();
+  }
+
+  init();
+</script>
 </body>
 </html>
