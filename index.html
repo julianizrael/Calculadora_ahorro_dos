@@ -9,6 +9,7 @@
     * {
       box-sizing: border-box;
     }
+
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -21,11 +22,16 @@
       margin-bottom: 30px;
     }
 
-    .form-container {
+    .content {
       max-width: 700px;
       margin: auto;
+      display: block;
+    }
+
+    .box {
       background: white;
       padding: 20px;
+      margin-bottom: 20px;
       border-radius: 10px;
       box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
     }
@@ -53,56 +59,84 @@
       font-size: 16px;
       border-radius: 5px;
       cursor: pointer;
-      margin-top: 10px;
     }
 
     .message {
       background: #e6f0ff;
       border-left: 4px solid #3399ff;
       padding: 15px;
-      margin: 20px 0;
       border-radius: 5px;
-    }
-
-    .chart-container {
-      position: relative;
-      width: 100%;
-      max-width: 800px;
-      margin: auto;
     }
 
     canvas {
       width: 100% !important;
       height: auto !important;
     }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 8px;
+      border: 1px solid #ccc;
+      text-align: right;
+    }
+
+    th {
+      background-color: #f0f0f0;
+    }
+
+    td:first-child, th:first-child {
+      text-align: center;
+    }
   </style>
 </head>
 <body>
   <h1>Millionaire Savings Plan</h1>
 
-  <div class="form-container">
-    <label>Your age:</label>
-    <input type="number" id="age" value="63" />
+  <div class="content">
+    <div class="box">
+      <label>Your age:</label>
+      <input type="number" id="age" value="63" />
 
-    <label>Millionaire target age:</label>
-    <input type="number" id="targetAge" value="65" />
+      <label>Millionaire target age:</label>
+      <input type="number" id="targetAge" value="65" />
 
-    <label>How much do you currently have invested?</label>
-    <input type="number" id="currentInvestment" value="500000" />
+      <label>How much do you currently have invested?</label>
+      <input type="number" id="currentInvestment" value="500000" />
 
-    <label>Savings per month:</label>
-    <input type="number" id="monthlySavings" value="2000" />
+      <label>Savings per month:</label>
+      <input type="number" id="monthlySavings" value="2000" />
 
-    <label>Rate of Return (%):</label>
-    <input type="number" id="returnRate" value="7" />
+      <label>Rate of Return (%):</label>
+      <input type="number" id="returnRate" value="7" />
 
-    <button onclick="calculate()">Calculate</button>
+      <button onclick="calculate()">Calculate</button>
+    </div>
 
-    <div class="message" id="messageBox">Your result will appear here.</div>
-  </div>
+    <div class="box message" id="messageBox">Your result will appear here.</div>
 
-  <div class="chart-container">
-    <canvas id="chart"></canvas>
+    <div class="box">
+      <canvas id="chart"></canvas>
+    </div>
+
+    <div class="box">
+      <h3>Yearly breakdown</h3>
+      <table id="breakdownTable">
+        <thead>
+          <tr>
+            <th>Age</th>
+            <th>Yearly Contribution</th>
+            <th>Interest Earned</th>
+            <th>Total Accumulated</th>
+          </tr>
+        </thead>
+        <tbody id="breakdownBody"></tbody>
+      </table>
+    </div>
   </div>
 
   <script>
@@ -114,25 +148,50 @@
       const current = parseFloat(document.getElementById('currentInvestment').value);
       const monthly = parseFloat(document.getElementById('monthlySavings').value);
       const returnRate = parseFloat(document.getElementById('returnRate').value) / 100;
+      const yearly = monthly * 12;
 
       let balance = current;
+      let totalContributions = 0;
+      let totalInterest = 0;
+
       let data = [];
       let dataInflation = [];
+      let rows = "";
 
-      for (let year = age; year <= targetAge; year++) {
-        balance *= (1 + returnRate);
-        balance += monthly * 12;
-        let adjusted = balance / Math.pow(1 + inflationRate, year - age);
+      for (let i = 0; i <= (targetAge - age); i++) {
+        const currentAge = age + i;
+        const interest = balance * returnRate;
+        balance += interest + yearly;
+        totalContributions += yearly;
+        totalInterest += interest;
+
         data.push(balance);
-        dataInflation.push(adjusted);
+        dataInflation.push(balance / Math.pow(1 + inflationRate, i));
+
+        rows += `
+          <tr>
+            <td>${currentAge}</td>
+            <td>$${yearly.toLocaleString()}</td>
+            <td>$${Math.round(interest).toLocaleString()}</td>
+            <td>$${Math.round(balance).toLocaleString()}</td>
+          </tr>
+        `;
       }
 
       const final = Math.round(balance);
-      const msg = final >= 1000000
-        ? `🎉 You could become a millionaire at age ${targetAge}!`
-        : `You could become a millionaire at age ${findMillionaireAge(current, monthly, returnRate)}. You need to save <strong>$${missingContribution(current, returnRate, targetAge - age)}</strong> per month to reach $1,000,000 by age ${targetAge}.`;
+      const msg = `
+        <p><strong>Total savings at age ${targetAge}:</strong> $${final.toLocaleString()}</p>
+        <p><strong>Total contributions:</strong> $${totalContributions.toLocaleString()}</p>
+        <p><strong>Total interest earned:</strong> $${Math.round(totalInterest).toLocaleString()}</p>
+        <p>${final >= 1000000
+          ? `🎉 You could become a millionaire at age ${targetAge}!`
+          : `You could become a millionaire at age ${findMillionaireAge(current, monthly, returnRate)}. 
+            You need to save <strong>$${missingContribution(current, returnRate, targetAge - age)}</strong> per month to reach $1,000,000 by age ${targetAge}.`}
+        </p>
+      `;
 
       document.getElementById("messageBox").innerHTML = msg;
+      document.getElementById("breakdownBody").innerHTML = rows;
 
       drawChart(age, targetAge, data, dataInflation);
     }
