@@ -6,15 +6,31 @@
   <title>Millionaire Savings Plan</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    * {
-      box-sizing: border-box;
+    :root {
+      --bg: #f9f9f9;
+      --text: #000;
+      --box-bg: #fff;
+      --border: #ccc;
+      --accent: #007bff;
+      --highlight: #e6f0ff;
+    }
+
+    body.dark {
+      --bg: #121212;
+      --text: #eee;
+      --box-bg: #1e1e1e;
+      --border: #444;
+      --accent: #66aaff;
+      --highlight: #1a2b40;
     }
 
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 20px;
-      background: #f9f9f9;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.3s, color 0.3s;
     }
 
     h1 {
@@ -29,11 +45,12 @@
     }
 
     .box {
-      background: white;
+      background: var(--box-bg);
       padding: 20px;
       margin-bottom: 20px;
       border-radius: 10px;
-      box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+      transition: background 0.3s;
     }
 
     label {
@@ -46,13 +63,15 @@
       width: 100%;
       padding: 8px;
       margin-bottom: 15px;
-      border: 1px solid #ccc;
+      border: 1px solid var(--border);
       border-radius: 5px;
+      background: var(--box-bg);
+      color: var(--text);
     }
 
     .message {
-      background: #e6f0ff;
-      border-left: 4px solid #3399ff;
+      background: var(--highlight);
+      border-left: 4px solid var(--accent);
       padding: 15px;
       border-radius: 5px;
     }
@@ -66,27 +85,47 @@
       width: 100%;
       border-collapse: collapse;
       margin-top: 10px;
+      font-size: 12px;
+      color: var(--text);
     }
 
     th, td {
-      padding: 8px;
-      border: 1px solid #ccc;
+      padding: 6px;
+      border: 1px solid var(--border);
       text-align: right;
     }
 
     th {
-      background-color: #f0f0f0;
+      background-color: var(--box-bg);
     }
 
     td:first-child, th:first-child {
       text-align: center;
     }
+
+    #toggleTable, #toggleMode {
+      display: block;
+      margin-bottom: 10px;
+      padding: 8px 12px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    #toggleMode {
+      float: right;
+      margin-top: -30px;
+    }
   </style>
 </head>
 <body>
   <h1>Millionaire Savings Plan</h1>
-
   <div class="content">
+    <button id="toggleMode">🌙 Modo noche</button>
+
     <div class="box">
       <label>Your age:</label>
       <input type="number" id="age" />
@@ -107,52 +146,71 @@
     <div class="box message" id="messageBox">Your result will appear here.</div>
 
     <div class="box">
-      <canvas id="chart"></canvas>
+      <button id="toggleTable">Show yearly breakdown</button>
+      <div id="tableBox" style="display: none;">
+        <h3>Yearly breakdown</h3>
+        <table id="breakdownTable">
+          <thead>
+            <tr>
+              <th>Age</th>
+              <th>Yearly Contribution</th>
+              <th>Interest Earned</th>
+              <th>Total Accumulated</th>
+            </tr>
+          </thead>
+          <tbody id="breakdownBody"></tbody>
+        </table>
+      </div>
     </div>
 
     <div class="box">
-      <h3>Yearly breakdown</h3>
-      <table id="breakdownTable">
-        <thead>
-          <tr>
-            <th>Age</th>
-            <th>Yearly Contribution</th>
-            <th>Interest Earned</th>
-            <th>Total Accumulated</th>
-          </tr>
-        </thead>
-        <tbody id="breakdownBody"></tbody>
-      </table>
+      <canvas id="chart"></canvas>
     </div>
   </div>
 
   <script>
     const inflationRate = 0.0322;
-
     const fields = ["age", "targetAge", "currentInvestment", "monthlySavings", "returnRate"];
 
-    // Cargar valores guardados o usar por defecto
     function loadInputs() {
-      const defaults = {
-        age: 63,
-        targetAge: 65,
-        currentInvestment: 500000,
-        monthlySavings: 2000,
-        returnRate: 7
-      };
+      const defaults = { age: 63, targetAge: 65, currentInvestment: 500000, monthlySavings: 2000, returnRate: 7 };
       fields.forEach(field => {
         const saved = localStorage.getItem(field);
         document.getElementById(field).value = saved !== null ? saved : defaults[field];
       });
+
+      const darkMode = localStorage.getItem("darkMode");
+      if (darkMode === "true") {
+        document.body.classList.add("dark");
+        document.getElementById("toggleMode").textContent = "☀️ Modo día";
+      }
     }
 
-    // Guardar en localStorage cada vez que se edita un campo
     function setupListeners() {
       fields.forEach(field => {
         document.getElementById(field).addEventListener("input", () => {
           localStorage.setItem(field, document.getElementById(field).value);
           calculate();
         });
+      });
+
+      document.getElementById("toggleTable").addEventListener("click", () => {
+        const tableBox = document.getElementById("tableBox");
+        const toggleBtn = document.getElementById("toggleTable");
+        if (tableBox.style.display === "none") {
+          tableBox.style.display = "block";
+          toggleBtn.textContent = "Hide yearly breakdown";
+        } else {
+          tableBox.style.display = "none";
+          toggleBtn.textContent = "Show yearly breakdown";
+        }
+      });
+
+      document.getElementById("toggleMode").addEventListener("click", () => {
+        document.body.classList.toggle("dark");
+        const isDark = document.body.classList.contains("dark");
+        localStorage.setItem("darkMode", isDark);
+        document.getElementById("toggleMode").textContent = isDark ? "☀️ Modo día" : "🌙 Modo noche";
       });
     }
 
