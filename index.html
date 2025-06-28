@@ -69,10 +69,10 @@
   #avanzado .input-group.monto-inicial {
     justify-content: flex-start;
   }
-  /* Avanzado filas edades y aportes en grid */
+  /* Avanzado filas edades y aportes en grid alternado */
   #avanzado .input-group.edades-aportes {
     display: grid;
-    grid-template-columns: repeat(7, minmax(110px, 1fr));
+    grid-template-columns: repeat(6, minmax(110px, 1fr));
     gap: 0.5rem 1rem;
     align-items: end;
   }
@@ -199,6 +199,12 @@
     box-shadow: 0 0 10px rgba(90, 125, 184, 0.4);
   }
 
+  /* Botón Agregar hito en línea propia */
+  #addHitoBtn {
+    margin-top: 0.5rem;
+    flex-shrink: 0;
+  }
+
   /* Responsive */
   @media (max-width: 600px) {
     #avanzado .input-group.edades-aportes {
@@ -222,22 +228,22 @@
   <form id="formBasico" onsubmit="return false;">
     <div class="input-group">
       <label>Edad inicio
-        <input type="number" id="edadInicioBasico" min="0" max="120" />
+        <input type="number" id="edadInicioBasico" min="0" max="120" value="25" />
       </label>
       <label>Edad fin
-        <input type="number" id="edadFinBasico" min="0" max="120" />
+        <input type="number" id="edadFinBasico" min="0" max="120" value="65" />
       </label>
       <label>Monto inicial
         <input type="number" id="montoInicialBasico" value="0" min="0" />
       </label>
       <label>Aporte mensual
-        <input type="number" id="aporteMensualBasico" min="0" />
+        <input type="number" id="aporteMensualBasico" min="0" value="100" />
       </label>
       <label>Rendimiento anual (%)
-        <input type="number" id="rendimientoBasico" min="0" step="0.01" />
+        <input type="number" id="rendimientoBasico" min="0" step="0.01" value="5" />
       </label>
       <label>Inflación anual (%)
-        <input type="number" id="inflacionBasico" min="0" step="0.01" />
+        <input type="number" id="inflacionBasico" min="0" step="0.01" value="3" />
       </label>
     </div>
   </form>
@@ -250,41 +256,38 @@
         <input type="number" id="montoInicialAdv" value="0" min="0" />
       </label>
     </div>
-    <div class="input-group edades-aportes">
+    <div class="input-group edades-aportes" aria-label="Edades y montos de aportes en tramos">
       <label>Edad inicio
-        <input type="number" id="edadInicioAdv" min="0" max="120" />
-      </label>
-      <label>Edad cambio 1
-        <input type="number" id="edadCambio1Adv" min="0" max="120" />
-      </label>
-      <label>Edad cambio 2
-        <input type="number" id="edadCambio2Adv" min="0" max="120" />
-      </label>
-      <label>Edad fin
-        <input type="number" id="edadFinAdv" min="0" max="120" />
+        <input type="number" id="edadInicioAdv" min="0" max="120" value="25" />
       </label>
       <label>Aporte tramo 1
-        <input type="number" id="aporteTramo1" min="0" />
+        <input type="number" id="aporteTramo1" min="0" value="1200" />
+      </label>
+
+      <label>Edad cambio 1
+        <input type="number" id="edadCambio1Adv" min="0" max="120" value="35" />
       </label>
       <label>Aporte tramo 2
-        <input type="number" id="aporteTramo2" min="0" />
+        <input type="number" id="aporteTramo2" min="0" value="1500" />
+      </label>
+
+      <label>Edad cambio 2
+        <input type="number" id="edadCambio2Adv" min="0" max="120" value="50" />
       </label>
       <label>Aporte tramo 3
-        <input type="number" id="aporteTramo3" min="0" />
+        <input type="number" id="aporteTramo3" min="0" value="1800" />
       </label>
     </div>
-    <div class="input-group">
+    <div class="input-group" style="flex-wrap: nowrap; gap: 1rem;">
       <label>Edad hito
         <input type="number" id="edadHito" min="0" max="120" />
       </label>
       <label>Gasto hito
         <input type="number" id="gastoHito" min="0" />
       </label>
-      <div>
-        <button type="button" id="addHitoBtn">Agregar hito</button>
-      </div>
+      <button type="button" id="addHitoBtn">Agregar hito</button>
     </div>
-    <div id="listaHitos"></div>
+    <div id="listaHitos" aria-live="polite"></div>
   </form>
 </div>
 
@@ -297,7 +300,7 @@
 
 <div id="tableContainer"></div>
 
-<canvas id="chartGeneral"></canvas>
+<canvas id="chartGeneral" aria-label="Gráfico de saldo nominal y saldo real" role="img"></canvas>
 
 <script>
   let hitos = [];
@@ -422,14 +425,27 @@
     const real = data.map(r => r.saldo / Math.pow(1 + inflacion, r.edad - e0));
 
     if (chartGeneral) chartGeneral.destroy();
-
-    chartGeneral = new Chart(document.getElementById('chartGeneral').getContext('2d'), {
+    chartGeneral = new Chart(document.getElementById('chartGeneral'), {
       type: 'line',
       data: {
         labels,
         datasets: [
-          { label: 'Saldo Nominal', data: nominal, borderColor: '#0047b3', backgroundColor: 'rgba(0,71,179,0.2)', fill: true, tension: 0.2 },
-          { label: 'Saldo Real', data: real, borderColor: '#0a7d1a', backgroundColor: 'rgba(10,125,26,0.2)', fill: true, tension: 0.2 }
+          {
+            label: 'Saldo Nominal',
+            data: nominal,
+            borderColor: '#003366',
+            backgroundColor: 'rgba(0, 51, 102, 0.3)',
+            fill: true,
+            tension: 0.3,
+          },
+          {
+            label: 'Saldo Real',
+            data: real,
+            borderColor: '#1a73e8',
+            backgroundColor: 'rgba(26, 115, 232, 0.3)',
+            fill: true,
+            tension: 0.3,
+          }
         ]
       },
       options: {
@@ -437,9 +453,19 @@
         plugins: {
           legend: {
             labels: {
-              color: document.body.classList.contains('night') ? '#cbd6f7' : '#003366'
+              color: document.body.classList.contains('night') ? '#cbd6f7' : '#003366',
+              font: { weight: '700' }
             }
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
           }
+        },
+        interaction: {
+          mode: 'nearest',
+          axis: 'x',
+          intersect: false
         },
         scales: {
           x: {
@@ -470,7 +496,7 @@
       }
     });
 
-    // Cálculos resumen
+    // Resumen
     let montoInvertido = 0;
     if(document.getElementById('basico').classList.contains('active')){
       const e0 = +document.getElementById('edadInicioBasico').value;
@@ -536,6 +562,9 @@
       hitos.push({ edad, gasto });
       renderHitos();
       autoCalcular();
+      // Limpiar inputs
+      document.getElementById('edadHito').value = '';
+      document.getElementById('gastoHito').value = '';
     }
   });
 
