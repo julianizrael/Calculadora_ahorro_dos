@@ -21,15 +21,9 @@
       margin-bottom: 30px;
     }
 
-    .container {
-      display: flex;
-      flex-direction: row;
-      gap: 30px;
-      flex-wrap: wrap;
-    }
-
-    .form, .results {
-      flex: 1 1 300px;
+    .form-container {
+      max-width: 700px;
+      margin: auto;
       background: white;
       padding: 20px;
       border-radius: 10px;
@@ -59,53 +53,56 @@
       font-size: 16px;
       border-radius: 5px;
       cursor: pointer;
+      margin-top: 10px;
     }
 
     .message {
       background: #e6f0ff;
       border-left: 4px solid #3399ff;
       padding: 15px;
-      margin-bottom: 20px;
+      margin: 20px 0;
       border-radius: 5px;
+    }
+
+    .chart-container {
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      margin: auto;
     }
 
     canvas {
       width: 100% !important;
       height: auto !important;
     }
-
-    @media (max-width: 768px) {
-      .container {
-        flex-direction: column;
-      }
-    }
   </style>
 </head>
 <body>
   <h1>Millionaire Savings Plan</h1>
-  <div class="container">
-    <div class="form">
-      <label>Your age:</label>
-      <input type="number" id="age" value="63" />
 
-      <label>Millionaire target age:</label>
-      <input type="number" id="targetAge" value="65" />
+  <div class="form-container">
+    <label>Your age:</label>
+    <input type="number" id="age" value="63" />
 
-      <label>How much do you currently have invested?</label>
-      <input type="number" id="currentInvestment" value="500000" />
+    <label>Millionaire target age:</label>
+    <input type="number" id="targetAge" value="65" />
 
-      <label>Savings per month:</label>
-      <input type="number" id="monthlySavings" value="2000" />
+    <label>How much do you currently have invested?</label>
+    <input type="number" id="currentInvestment" value="500000" />
 
-      <label>Rate of Return (%):</label>
-      <input type="number" id="returnRate" value="7" />
+    <label>Savings per month:</label>
+    <input type="number" id="monthlySavings" value="2000" />
 
-      <button onclick="calculate()">Calculate</button>
-    </div>
-    <div class="results">
-      <div class="message" id="messageBox">Your result will appear here.</div>
-      <canvas id="chart"></canvas>
-    </div>
+    <label>Rate of Return (%):</label>
+    <input type="number" id="returnRate" value="7" />
+
+    <button onclick="calculate()">Calculate</button>
+
+    <div class="message" id="messageBox">Your result will appear here.</div>
+  </div>
+
+  <div class="chart-container">
+    <canvas id="chart"></canvas>
   </div>
 
   <script>
