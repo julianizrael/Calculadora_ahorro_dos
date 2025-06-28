@@ -173,34 +173,38 @@
   <script>
     const camposBasico = [
       ['Edad inicio', 'edadInicioBasico', 25],
-      ['Edad objetivo', 'edadFinBasico', 65],
+      ['Edad fin', 'edadFinBasico', 65],
       ['Monto inicial', 'montoInicialBasico', 0],
       ['Aporte mensual', 'aporteMensualBasico', 100],
       ['Rendimiento anual (%)', 'rendimientoBasico', 5],
       ['Inflación anual (%)', 'inflacionBasico', 3],
     ];
     const camposAvanzado = [
-  ['Monto inicial', 'montoInicialAdv', 0],
-  ['Edad actual (Etapa 1)', 'edadInicioAdv', 25],
-  ['Aporte etapa 1', 'aporteTramo1', 1200],
-  ['Edad inico etapa 2', 'edadCambio1Adv', 35],
-  ['Aporte etapa 2', 'aporteTramo2', 1500],
-  ['Edad etapa 3 ', 'edadCambio2Adv', 50],
-  ['Aporte etapa 3', 'aporteTramo3', 1800],
-  ['Edad objetivo', 'edadFinAdv', 65],
-  ['Rendimiento anual (%)', 'rendimientoAdv', 5],
-  ['Inflación anual (%)', 'inflacionAdv', 3],
+      ['Monto inicial', 'montoInicialAdv', 0],
+      ['Edad actual (Etapa 1)', 'edadInicioAdv', 25],
+      ['Aporte etapa 1', 'aporteTramo1', 1200],
+      ['Edad inico etapa 2', 'edadCambio1Adv', 35],
+      ['Aporte etapa 2', 'aporteTramo2', 1500],
+      ['Edad etapa 3 ', 'edadCambio2Adv', 50],
+      ['Aporte etapa 3', 'aporteTramo3', 1800],
+      ['Edad objetivo', 'edadFinAdv', 65],
+      ['Rendimiento anual (%)', 'rendimientoAdv', 5],
+      ['Inflación anual (%)', 'inflacionAdv', 3],
     ];
+
     function generarInputs(campos, formId) {
       const form = document.getElementById(formId);
       campos.forEach(([labelText, id, valor]) => {
+        const value = localStorage.getItem(id) ?? valor;
         const label = document.createElement('label');
-        label.innerHTML = `${labelText}<input type="number" id="${id}" value="${valor}">`;
+        label.innerHTML = `${labelText}<input type="number" id="${id}" value="${value}">`;
         form.appendChild(label);
       });
     }
+
     generarInputs(camposBasico, 'formBasico');
     generarInputs(camposAvanzado, 'formAvanzado');
+
     document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -210,9 +214,14 @@
         autoCalcular();
       });
     });
+
     document.addEventListener('input', e => {
-      if (e.target.tagName === 'INPUT') autoCalcular();
+      if (e.target.tagName === 'INPUT') {
+        localStorage.setItem(e.target.id, e.target.value);
+        autoCalcular();
+      }
     });
+
     let chartGeneral;
     function autoCalcular() {
       const tab = document.querySelector('.tab.active').dataset.tab;
