@@ -48,6 +48,52 @@
     .tab-content.active {
       display: block;
     }
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.25rem;
+      box-sizing: border-box;
+    }
+    form {
+      display: grid;
+      gap: 1rem;
+      max-width: 600px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table, th, td {
+      border: 1px solid #003366;
+    }
+    th, td {
+      padding: 0.5rem;
+      text-align: center;
+    }
+    canvas {
+      max-width: 900px;
+      display: block;
+      margin: 2rem auto;
+    }
+    #resumen {
+      max-width: 600px;
+      margin: 1rem auto;
+      font-weight: bold;
+    }
+    #tableContainer {
+      max-width: 900px;
+      margin: 1rem auto;
+      overflow-x: auto;
+    }
+    button {
+      margin-right: 1rem;
+      padding: 0.5rem 1rem;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -58,29 +104,11 @@
   </div>
 
   <div id="basico" class="tab-content active">
-    <form id="formBasico" onsubmit="return false;">
-      <label>Edad inicio: <input type="number" id="edadInicioBasico" value="25"></label>
-      <label>Edad fin: <input type="number" id="edadFinBasico" value="65"></label>
-      <label>Monto inicial: <input type="number" id="montoInicialBasico" value="0"></label>
-      <label>Aporte mensual: <input type="number" id="aporteMensualBasico" value="100"></label>
-      <label>Rendimiento anual (%): <input type="number" id="rendimientoBasico" value="5"></label>
-      <label>Inflación anual (%): <input type="number" id="inflacionBasico" value="3"></label>
-    </form>
+    <form id="formBasico" onsubmit="return false;"></form>
   </div>
 
   <div id="avanzado" class="tab-content">
-    <form id="formAvanzado" onsubmit="return false;">
-      <label>Monto inicial: <input type="number" id="montoInicialAdv" value="0"></label>
-      <label>Edad inicio: <input type="number" id="edadInicioAdv" value="25"></label>
-      <label>Aporte tramo 1: <input type="number" id="aporteTramo1" value="1200"></label>
-      <label>Edad cambio 1: <input type="number" id="edadCambio1Adv" value="35"></label>
-      <label>Aporte tramo 2: <input type="number" id="aporteTramo2" value="1500"></label>
-      <label>Edad cambio 2: <input type="number" id="edadCambio2Adv" value="50"></label>
-      <label>Aporte tramo 3: <input type="number" id="aporteTramo3" value="1800"></label>
-      <label>Edad fin: <input type="number" id="edadFinAdv" value="65"></label>
-      <label>Rendimiento anual (%): <input type="number" id="rendimientoAdv" value="5"></label>
-      <label>Inflación anual (%): <input type="number" id="inflacionAdv" value="3"></label>
-    </form>
+    <form id="formAvanzado" onsubmit="return false;"></form>
   </div>
 
   <div id="resumen"></div>
@@ -92,6 +120,40 @@
   <canvas id="chartGeneral"></canvas>
 
   <script>
+    const camposBasico = [
+      ['Edad inicio', 'edadInicioBasico', 25],
+      ['Edad fin', 'edadFinBasico', 65],
+      ['Monto inicial', 'montoInicialBasico', 0],
+      ['Aporte mensual', 'aporteMensualBasico', 100],
+      ['Rendimiento anual (%)', 'rendimientoBasico', 5],
+      ['Inflación anual (%)', 'inflacionBasico', 3],
+    ];
+
+    const camposAvanzado = [
+      ['Monto inicial', 'montoInicialAdv', 0],
+      ['Edad inicio', 'edadInicioAdv', 25],
+      ['Aporte tramo 1', 'aporteTramo1', 1200],
+      ['Edad cambio 1', 'edadCambio1Adv', 35],
+      ['Aporte tramo 2', 'aporteTramo2', 1500],
+      ['Edad cambio 2', 'edadCambio2Adv', 50],
+      ['Aporte tramo 3', 'aporteTramo3', 1800],
+      ['Edad fin', 'edadFinAdv', 65],
+      ['Rendimiento anual (%)', 'rendimientoAdv', 5],
+      ['Inflación anual (%)', 'inflacionAdv', 3],
+    ];
+
+    function generarInputs(campos, formId) {
+      const form = document.getElementById(formId);
+      campos.forEach(([labelText, id, valor]) => {
+        const label = document.createElement('label');
+        label.innerHTML = `${labelText}: <input type="number" id="${id}" value="${valor}">`;
+        form.appendChild(label);
+      });
+    }
+
+    generarInputs(camposBasico, 'formBasico');
+    generarInputs(camposAvanzado, 'formAvanzado');
+
     document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -102,34 +164,32 @@
       });
     });
 
-    document.querySelectorAll('input').forEach(input => {
-      input.addEventListener('input', autoCalcular);
+    document.addEventListener('input', e => {
+      if (e.target.tagName === 'INPUT') autoCalcular();
     });
 
+    let chartGeneral;
+
     function autoCalcular() {
-      if (document.querySelector('.tab.active').dataset.tab === 'basico') calcularBasico();
-      else calcularAvanzado();
+      const tab = document.querySelector('.tab.active').dataset.tab;
+      tab === 'basico' ? calcularBasico() : calcularAvanzado();
     }
 
     function calcularBasico() {
-      const edadInicio = +document.getElementById('edadInicioBasico').value;
-      const edadFin = +document.getElementById('edadFinBasico').value;
-      const montoInicial = +document.getElementById('montoInicialBasico').value;
-      const aporteMensual = +document.getElementById('aporteMensualBasico').value * 12;
+      const e0 = +document.getElementById('edadInicioBasico').value;
+      const eF = +document.getElementById('edadFinBasico').value;
+      const aporte = +document.getElementById('aporteMensualBasico').value * 12;
       const rendimiento = +document.getElementById('rendimientoBasico').value / 100;
       const inflacion = +document.getElementById('inflacionBasico').value / 100;
-      if (!edadInicio || !edadFin || edadFin < edadInicio) return;
-
-      let saldo = montoInicial;
-      const data = [];
-
-      for (let edad = edadInicio; edad <= edadFin; edad++) {
-        saldo += aporteMensual;
+      let saldo = +document.getElementById('montoInicialBasico').value;
+      if (!e0 || !eF || eF < e0) return;
+      const datos = [];
+      for (let edad = e0; edad <= eF; edad++) {
+        saldo += aporte;
         saldo *= 1 + rendimiento;
-        data.push({ edad, saldo });
+        datos.push({ edad, saldo });
       }
-
-      renderResultados(data, edadInicio, inflacion);
+      renderResultados(datos, e0, inflacion);
     }
 
     function calcularAvanzado() {
@@ -142,38 +202,31 @@
       const a3 = +document.getElementById('aporteTramo3').value * 12;
       const rendimiento = +document.getElementById('rendimientoAdv').value / 100;
       const inflacion = +document.getElementById('inflacionAdv').value / 100;
-      const inicial = +document.getElementById('montoInicialAdv').value;
-
-      let saldo = inicial;
-      const data = [];
-
+      let saldo = +document.getElementById('montoInicialAdv').value;
+      if (!e0 || !eF || eF < e0) return;
+      const datos = [];
       for (let edad = e0; edad <= eF; edad++) {
         const aporte = edad < e1 ? a1 : edad < e2 ? a2 : a3;
         saldo += aporte;
         saldo *= 1 + rendimiento;
-        data.push({ edad, saldo });
+        datos.push({ edad, saldo });
       }
-
-      renderResultados(data, e0, inflacion);
+      renderResultados(datos, e0, inflacion);
     }
 
-    function renderResultados(data, e0, inflacion) {
-      if (!data.length) return;
-      const labels = data.map(d => d.edad);
-      const nominal = data.map(d => d.saldo);
-      const real = data.map(d => d.saldo / Math.pow(1 + inflacion, d.edad - e0));
+    function renderResultados(datos, e0, inflacion) {
+      const tabla = datos.map(d => {
+        const real = d.saldo / Math.pow(1 + inflacion, d.edad - e0);
+        return `<tr><td>${d.edad}</td><td>${d.saldo.toFixed(2)}</td><td>${real.toFixed(2)}</td></tr>`;
+      }).join('');
+      document.getElementById('tableContainer').innerHTML = `<table><thead><tr><th>Edad</th><th>Saldo Nominal</th><th>Saldo Real</th></tr></thead><tbody>${tabla}</tbody></table>`;
 
-      document.getElementById('tableContainer').innerHTML = `
-        <table>
-          <thead><tr><th>Edad</th><th>Saldo Nominal</th><th>Saldo Real</th></tr></thead>
-          <tbody>
-            ${data.map((d, i) => `<tr><td>${d.edad}</td><td>${d.saldo.toFixed(2)}</td><td>${real[i].toFixed(2)}</td></tr>`).join('')}
-          </tbody>
-        </table>`;
+      const labels = datos.map(d => d.edad);
+      const nominal = datos.map(d => d.saldo);
+      const real = datos.map(d => d.saldo / Math.pow(1 + inflacion, d.edad - e0));
 
-      const ctx = document.getElementById('chartGeneral');
-      if (window.chartGeneral) window.chartGeneral.destroy();
-      window.chartGeneral = new Chart(ctx, {
+      if (chartGeneral) chartGeneral.destroy();
+      chartGeneral = new Chart(document.getElementById('chartGeneral'), {
         type: 'line',
         data: {
           labels,
@@ -205,25 +258,31 @@
             }
           },
           scales: {
-            x: {
-              ticks: {
-                color: document.body.classList.contains('night') ? '#cbd6f7' : '#003366'
-              }
-            },
-            y: {
-              ticks: {
-                color: document.body.classList.contains('night') ? '#cbd6f7' : '#003366'
-              }
-            }
+            x: { ticks: { color: document.body.classList.contains('night') ? '#cbd6f7' : '#003366' } },
+            y: { ticks: { color: document.body.classList.contains('night') ? '#cbd6f7' : '#003366' } }
           }
         }
       });
 
-      const final = data[data.length - 1];
+      const final = datos[datos.length - 1];
       const realFinal = final.saldo / Math.pow(1 + inflacion, final.edad - e0);
       document.getElementById('resumen').textContent =
         `A los ${final.edad} años tendrás $${final.saldo.toFixed(2)} (equivalente a $${realFinal.toFixed(2)} de hoy).`;
     }
+
+    document.getElementById('toggleTableBtn').addEventListener('click', () => {
+      const cont = document.getElementById('tableContainer');
+      const visible = cont.style.display !== 'none';
+      cont.style.display = visible ? 'none' : 'block';
+      document.getElementById('toggleTableBtn').textContent = visible ? 'Mostrar tabla' : 'Ocultar tabla';
+    });
+
+    document.getElementById('toggleNightBtn').addEventListener('click', () => {
+      document.body.classList.toggle('night');
+      autoCalcular();
+    });
+
+    autoCalcular();
   </script>
 </body>
 </html>
