@@ -50,17 +50,6 @@
       border-radius: 5px;
     }
 
-    button {
-      width: 100%;
-      padding: 10px;
-      background: #007bff;
-      color: white;
-      border: none;
-      font-size: 16px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
     .message {
       background: #e6f0ff;
       border-left: 4px solid #3399ff;
@@ -100,21 +89,19 @@
   <div class="content">
     <div class="box">
       <label>Your age:</label>
-      <input type="number" id="age" value="63" />
+      <input type="number" id="age" />
 
       <label>Millionaire target age:</label>
-      <input type="number" id="targetAge" value="65" />
+      <input type="number" id="targetAge" />
 
       <label>How much do you currently have invested?</label>
-      <input type="number" id="currentInvestment" value="500000" />
+      <input type="number" id="currentInvestment" />
 
       <label>Savings per month:</label>
-      <input type="number" id="monthlySavings" value="2000" />
+      <input type="number" id="monthlySavings" />
 
       <label>Rate of Return (%):</label>
-      <input type="number" id="returnRate" value="7" />
-
-      <button onclick="calculate()">Calculate</button>
+      <input type="number" id="returnRate" />
     </div>
 
     <div class="box message" id="messageBox">Your result will appear here.</div>
@@ -141,6 +128,33 @@
 
   <script>
     const inflationRate = 0.0322;
+
+    const fields = ["age", "targetAge", "currentInvestment", "monthlySavings", "returnRate"];
+
+    // Cargar valores guardados o usar por defecto
+    function loadInputs() {
+      const defaults = {
+        age: 63,
+        targetAge: 65,
+        currentInvestment: 500000,
+        monthlySavings: 2000,
+        returnRate: 7
+      };
+      fields.forEach(field => {
+        const saved = localStorage.getItem(field);
+        document.getElementById(field).value = saved !== null ? saved : defaults[field];
+      });
+    }
+
+    // Guardar en localStorage cada vez que se edita un campo
+    function setupListeners() {
+      fields.forEach(field => {
+        document.getElementById(field).addEventListener("input", () => {
+          localStorage.setItem(field, document.getElementById(field).value);
+          calculate();
+        });
+      });
+    }
 
     function calculate() {
       const age = parseInt(document.getElementById('age').value);
@@ -257,6 +271,8 @@
       return Math.round(requiredMonthly);
     }
 
+    loadInputs();
+    setupListeners();
     calculate();
   </script>
 </body>
