@@ -34,15 +34,14 @@
       display: block;
     }
     .input-group {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 1rem;
       margin-bottom: 1rem;
     }
     .input-group div {
       display: flex;
       flex-direction: column;
-      min-width: 130px;
     }
     .input-group label {
       font-size: 0.9rem;
@@ -86,11 +85,20 @@
       cursor: pointer;
     }
     canvas {
-      max-width: 800px;
-      margin-top: 2rem;
+      width: 100% !important;
+      max-width: 1000px;
       background: #fff;
       padding: 1rem;
       border-radius: 0.5rem;
+      margin: 1rem auto;
+      display: block;
+    }
+    #resumenFinal {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -139,10 +147,10 @@
     </form>
   </div>
 
+  <div id="resumenFinal"></div>
   <button id="toggleTableBtn">Ocultar tabla</button>
   <div id="tableContainer"></div>
-  <canvas id="chartNominal"></canvas>
-  <canvas id="chartReal"></canvas>
+  <canvas id="chartUnico"></canvas>
 
   <script>
     let hitos = [];
@@ -159,12 +167,14 @@
       const resultados = [];
 
       for (let edad = e0; edad <= eF; edad++) {
-        saldo += aporteMensual * 12;
-        saldo *= 1 + rendimiento;
+        for (let mes = 0; mes < 12; mes++) {
+          saldo += aporteMensual;
+          saldo *= Math.pow(1 + rendimiento, 1 / 12);
+        }
         resultados.push({ edad, saldo });
       }
 
-      renderResultados(resultados, e0, inflacion);
+      renderResultados(resultados, e0, inflacion, inicial, aporteMensual * 12 * (eF - e0 + 1));
     }
 
     function calcularAvanzado() {
@@ -172,27 +182,32 @@
       const e1 = +document.getElementById('edadCambio1Adv').value;
       const e2 = +document.getElementById('edadCambio2Adv').value;
       const eF = +document.getElementById('edadFinAdv').value;
-      const a1 = +document.getElementById('aporteTramo1').value * 12;
-      const a2 = +document.getElementById('aporteTramo2').value * 12;
-      const a3 = +document.getElementById('aporteTramo3').value * 12;
+      const a1 = +document.getElementById('aporteTramo1').value;
+      const a2 = +document.getElementById('aporteTramo2').value;
+      const a3 = +document.getElementById('aporteTramo3').value;
       const rendimiento = +document.getElementById('rendimientoAdv').value / 100;
       const inflacion = +document.getElementById('inflacionAdv').value / 100;
       const inicial = +document.getElementById('montoInicialAdv').value;
       let saldo = inicial;
+      let invertido = 0;
       const resultados = [];
 
       for (let edad = e0; edad <= eF; edad++) {
-        let aporte = edad < e1 ? a1 : edad < e2 ? a2 : a3;
+        let aporteMensual = edad < e1 ? a1 : edad < e2 ? a2 : a3;
         let gastos = hitos.filter(h => h.edad === edad).reduce((acc, h) => acc + h.gasto, 0);
-        saldo += aporte - gastos;
-        saldo *= 1 + rendimiento;
+        for (let mes = 0; mes < 12; mes++) {
+          saldo += aporteMensual;
+          invertido += aporteMensual;
+          saldo *= Math.pow(1 + rendimiento, 1 / 12);
+        }
+        saldo -= gastos;
         resultados.push({ edad, saldo });
       }
 
-      renderResultados(resultados, e0, inflacion);
+      renderResultados(resultados, e0, inflacion, inicial, invertido);
     }
 
-    function renderResultados(data, e0, inflacion) {
+    function renderResultados(data, e0, inflacion, inicial, invertido) {
       const table = data.map(r => {
         const real = r.saldo / Math.pow(1 + inflacion, r.edad - e0);
         return `<tr><td>${r.edad}</td><td>${r.saldo.toFixed(2)}</td><td>${real.toFixed(2)}</td></tr>`;
@@ -204,17 +219,26 @@
       const nominal = data.map(r => r.saldo);
       const real = data.map(r => r.saldo / Math.pow(1 + inflacion, r.edad - e0));
 
-      new Chart(document.getElementById('chartNominal'), {
+      new Chart(document.getElementById('chartUnico'), {
         type: 'line',
-        data: { labels, datasets: [{ label: 'Saldo Nominal', data: nominal, borderColor: 'blue', fill: false }] },
+        data: {
+          labels,
+          datasets: [
+            { label: 'Saldo Nominal', data: nominal, borderColor: 'blue', fill: false },
+            { label: 'Saldo Real', data: real, borderColor: 'green', fill: false }
+          ]
+        },
         options: { responsive: true }
       });
 
-      new Chart(document.getElementById('chartReal'), {
-        type: 'line',
-        data: { labels, datasets: [{ label: 'Saldo Real', data: real, borderColor: 'green', fill: false }] },
-        options: { responsive: true }
-      });
+      const final = data[data.length - 1].saldo;
+      const generado = final - inicial - invertido;
+      const edadMillon = data.find(r => r.saldo >= 1_000_000)?.edad || '-';
+      document.getElementById('resumenFinal').innerHTML = `
+        Monto final: $${final.toFixed(2)}<br>
+        Monto invertido: $${invertido.toFixed(2)}<br>
+        Generado por inversiones: $${generado.toFixed(2)}<br>
+        Edad del millón: ${edadMillon}`;
     }
 
     function autoCalcular() {
