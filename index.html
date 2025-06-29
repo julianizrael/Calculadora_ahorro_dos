@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Calculadora de Ahorro</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <style>
     :root {
       --primary: #2563eb;
@@ -172,10 +172,86 @@
       gap: 0.3rem;
       color: var(--text);
       font-size: 0.9rem;
+      position: relative;
     }
 
     body.night label {
       color: var(--dark-text);
+    }
+
+    /* Tooltip styles */
+    .tooltip-container {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .tooltip-icon {
+      width: 16px;
+      height: 16px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: help;
+      transition: all 0.3s ease;
+    }
+
+    .tooltip-icon:hover {
+      background: var(--primary-light);
+      transform: scale(1.1);
+    }
+
+    .tooltip {
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100%);
+      background: var(--dark-bg);
+      color: var(--dark-text);
+      padding: 0.8rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 400;
+      line-height: 1.4;
+      max-width: 250px;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      z-index: 1000;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
+    }
+
+    body.night .tooltip {
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: var(--dark-bg);
+    }
+
+    body.night .tooltip::after {
+      border-top-color: var(--bg);
+    }
+
+    .tooltip-icon:hover + .tooltip,
+    .tooltip:hover {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(-100%) translateY(-5px);
     }
 
     input[type="number"] {
@@ -341,22 +417,83 @@
       background: rgba(255, 255, 255, 0.05);
     }
 
-    canvas {
-      width: 100% !important;
+    /* 3D Chart Container */
+    #chartContainer {
+      width: 100%;
       max-width: 1000px;
-      height: 400px !important;
+      height: 400px;
       margin: 0.8rem auto;
-      display: block;
       background: var(--bg);
       border-radius: 12px;
-      padding: 0.8rem;
       box-shadow: var(--shadow-lg);
       border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
     }
 
-    body.night canvas {
+    body.night #chartContainer {
       background: var(--dark-bg-alt);
       border-color: var(--dark-border);
+    }
+
+    #chart3d {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .chart-legend {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 0.5rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      z-index: 10;
+    }
+
+    body.night .chart-legend {
+      background: rgba(0, 0, 0, 0.8);
+      color: var(--dark-text);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+    }
+
+    .chart-controls {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 10;
+    }
+
+    .chart-btn {
+      padding: 0.3rem 0.6rem;
+      background: rgba(37, 99, 235, 0.8);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .chart-btn:hover {
+      background: rgba(37, 99, 235, 1);
+      transform: scale(1.05);
     }
 
     @media (max-width: 768px) {
@@ -393,8 +530,24 @@
         align-items: center;
       }
 
-      canvas {
-        height: 300px !important;
+      #chartContainer {
+        height: 300px;
+      }
+
+      .tooltip {
+        max-width: 200px;
+        left: 0;
+        transform: translateX(0) translateY(-100%);
+      }
+
+      .tooltip::after {
+        left: 20px;
+        transform: translateX(0);
+      }
+
+      .tooltip-icon:hover + .tooltip,
+      .tooltip:hover {
+        transform: translateX(0) translateY(-100%) translateY(-5px);
       }
     }
   </style>
@@ -423,10 +576,28 @@
 
     <div class="controls">
       <button id="toggleTableBtn">👁️ Ocultar tabla</button>
+      <button id="resetViewBtn">🔄 Resetear vista</button>
     </div>
 
     <div id="tableContainer"></div>
-    <canvas id="chartGeneral"></canvas>
+    
+    <div id="chartContainer">
+      <canvas id="chart3d"></canvas>
+      <div class="chart-legend">
+        <div class="legend-item">
+          <div class="legend-color" style="background: #2563eb;"></div>
+          <span>Saldo Nominal</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: #dc2626;"></div>
+          <span>Saldo Real</span>
+        </div>
+      </div>
+      <div class="chart-controls">
+        <button class="chart-btn" id="animateBtn">▶️ Animar</button>
+        <button class="chart-btn" id="viewBtn">👁️ Vista</button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -440,16 +611,16 @@
     ];
 
     const camposAvanzado = [
-      ['Monto inicial', 'montoInicialAdv', 0],
-      ['Edad actual (Etapa 1)', 'edadInicioAdv', 25],
-      ['Aporte mensual etapa 1', 'aporteTramo1', 1200],
-      ['Edad inicio etapa 2', 'edadCambio1Adv', 35],
-      ['Aporte mensual etapa 2', 'aporteTramo2', 1500],
-      ['Edad etapa 3', 'edadCambio2Adv', 50],
-      ['Aporte mensual etapa 3', 'aporteTramo3', 1800],
-      ['Edad objetivo', 'edadFinAdv', 65],
-      ['Rendimiento anual (%)', 'rendimientoAdv', 5],
-      ['Inflación anual (%)', 'inflacionAdv', 3],
+      ['Monto inicial', 'montoInicialAdv', 0, 'Dinero que ya tienes ahorrado para empezar'],
+      ['Edad actual (Etapa 1)', 'edadInicioAdv', 25, 'Tu edad actual para comenzar la primera etapa de ahorro'],
+      ['Aporte mensual etapa 1', 'aporteTramo1', 1200, 'Cuánto planeas ahorrar mensualmente en tus primeros años (ej: 25-35 años)'],
+      ['Edad inicio etapa 2', 'edadCambio1Adv', 35, 'Edad en que cambiarás tu estrategia de ahorro (ej: cuando tengas mejor sueldo)'],
+      ['Aporte mensual etapa 2', 'aporteTramo2', 1500, 'Nuevo monto mensual en la segunda etapa (ej: 35-50 años)'],
+      ['Edad etapa 3', 'edadCambio2Adv', 50, 'Edad para la tercera etapa (ej: cuando estés en tu mejor momento económico)'],
+      ['Aporte mensual etapa 3', 'aporteTramo3', 1800, 'Monto mensual en la etapa final antes del retiro (ej: 50-65 años)'],
+      ['Edad objetivo', 'edadFinAdv', 65, 'Edad en la que planeas jubilarte o necesitar el dinero'],
+      ['Rendimiento anual (%)', 'rendimientoAdv', 5, 'Rentabilidad promedio anual esperada de tus inversiones'],
+      ['Inflación anual (%)', 'inflacionAdv', 3, 'Inflación promedio anual esperada (reduce el poder adquisitivo)'],
     ];
 
     // Función para formatear números con separadores de miles
@@ -459,10 +630,23 @@
 
     function generarInputs(campos, formId) {
       const form = document.getElementById(formId);
-      campos.forEach(([labelText, id, valor]) => {
+      campos.forEach(([labelText, id, valor, tooltip]) => {
         const value = localStorage.getItem(id) ?? valor;
         const label = document.createElement('label');
-        label.innerHTML = `${labelText}<input type="number" id="${id}" value="${value}">`;
+        
+        if (tooltip) {
+          label.innerHTML = `
+            <div class="tooltip-container">
+              ${labelText}
+              <div class="tooltip-icon">?</div>
+              <div class="tooltip">${tooltip}</div>
+            </div>
+            <input type="number" id="${id}" value="${value}">
+          `;
+        } else {
+          label.innerHTML = `${labelText}<input type="number" id="${id}" value="${value}">`;
+        }
+        
         form.appendChild(label);
       });
     }
@@ -487,7 +671,97 @@
       }
     });
 
-    let chartGeneral;
+    // Three.js 3D Chart
+    let scene, camera, renderer, chart3D;
+    let nominalBars = [], realBars = [];
+    let animationId;
+    let isAnimating = false;
+    let currentViewMode = 0; // 0: perspective, 1: top, 2: side
+
+    function init3DChart() {
+      const container = document.getElementById('chart3d');
+      const containerRect = container.getBoundingClientRect();
+      
+      scene = new THREE.Scene();
+      const isDark = document.body.classList.contains('night');
+      scene.background = new THREE.Color(isDark ? 0x1e293b : 0xffffff);
+      
+      camera = new THREE.PerspectiveCamera(75, containerRect.width / containerRect.height, 0.1, 1000);
+      camera.position.set(15, 10, 15);
+      camera.lookAt(0, 0, 0);
+      
+      renderer = new THREE.WebGLRenderer({ canvas: container, antialias: true });
+      renderer.setSize(containerRect.width, containerRect.height);
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      
+      // Lighting
+      const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+      scene.add(ambientLight);
+      
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      directionalLight.position.set(10, 10, 5);
+      directionalLight.castShadow = true;
+      directionalLight.shadow.mapSize.width = 2048;
+      directionalLight.shadow.mapSize.height = 2048;
+      scene.add(directionalLight);
+      
+      // Add grid
+      const gridHelper = new THREE.GridHelper(20, 20, 0x888888, 0x444444);
+      scene.add(gridHelper);
+      
+      animate3D();
+    }
+
+    function animate3D() {
+      animationId = requestAnimationFrame(animate3D);
+      
+      if (isAnimating) {
+        scene.rotation.y += 0.005;
+      }
+      
+      renderer.render(scene, camera);
+    }
+
+    function update3DChart(datos, inflacion, e0) {
+      // Clear previous bars
+      nominalBars.forEach(bar => scene.remove(bar));
+      realBars.forEach(bar => scene.remove(bar));
+      nominalBars = [];
+      realBars = [];
+      
+      if (datos.length === 0) return;
+      
+      const maxValue = Math.max(...datos.map(d => d.saldo));
+      const scale = 8 / maxValue; // Scale to fit in scene
+      
+      datos.forEach((d, i) => {
+        const x = (i - datos.length / 2) * 0.8;
+        const nominalHeight = d.saldo * scale;
+        const realValue = d.saldo / Math.pow(1 + inflacion, d.edad - e0);
+        const realHeight = realValue * scale;
+        
+        // Nominal bar (blue)
+        const nominalGeometry = new THREE.BoxGeometry(0.3, nominalHeight, 0.3);
+        const nominalMaterial = new THREE.MeshLambertMaterial({ color: 0x2563eb });
+        const nominalBar = new THREE.Mesh(nominalGeometry, nominalMaterial);
+        nominalBar.position.set(x - 0.2, nominalHeight / 2, 0);
+        nominalBar.castShadow = true;
+        nominalBar.receiveShadow = true;
+        scene.add(nominalBar);
+        nominalBars.push(nominalBar);
+        
+        // Real bar (red)
+        const realGeometry = new THREE.BoxGeometry(0.3, realHeight, 0.3);
+        const realMaterial = new THREE.MeshLambertMaterial({ color: 0xdc2626 });
+        const realBar = new THREE.Mesh(realGeometry, realMaterial);
+        realBar.position.set(x + 0.2, realHeight / 2, 0);
+        realBar.castShadow = true;
+        realBar.receiveShadow = true;
+        scene.add(realBar);
+        realBars.push(realBar);
+      });
+    }
 
     function autoCalcular() {
       const tab = document.querySelector('.tab.active').dataset.tab;
@@ -564,80 +838,8 @@
         </table>
       `;
 
-      const labels = datos.map(d => d.edad);
-      const nominal = datos.map(d => d.saldo);
-      const real = datos.map(d => d.saldo / Math.pow(1 + inflacion, d.edad - e0));
-
-      if (chartGeneral) chartGeneral.destroy();
-      
-      const isDark = document.body.classList.contains('night');
-      const textColor = isDark ? '#f1f5f9' : '#1e293b';
-      
-      chartGeneral = new Chart(document.getElementById('chartGeneral'), {
-        type: 'line',
-        data: {
-          labels,
-          datasets: [
-            {
-              label: 'Saldo Nominal',
-              data: nominal,
-              borderColor: '#2563eb',
-              backgroundColor: 'rgba(37, 99, 235, 0.1)',
-              fill: true,
-              tension: 0.4,
-              borderWidth: 3,
-              pointRadius: 4,
-              pointHoverRadius: 6
-            },
-            {
-              label: 'Saldo Real',
-              data: real,
-              borderColor: '#dc2626',
-              backgroundColor: 'rgba(220, 38, 38, 0.1)',
-              fill: true,
-              tension: 0.4,
-              borderWidth: 3,
-              pointRadius: 4,
-              pointHoverRadius: 6
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              position: 'top',
-              labels: {
-                color: textColor,
-                font: {
-                  size: 14,
-                  weight: 600
-                }
-              }
-            }
-          },
-          scales: {
-            x: { 
-              ticks: { 
-                color: textColor,
-                font: { weight: 600 }
-              },
-              grid: {
-                color: isDark ? '#334155' : '#e2e8f0'
-              }
-            },
-            y: { 
-              ticks: { 
-                color: textColor,
-                font: { weight: 600 }
-              },
-              grid: {
-                color: isDark ? '#334155' : '#e2e8f0'
-              }
-            }
-          }
-        }
-      });
+      // Update 3D chart
+      update3DChart(datos, inflacion, e0);
 
       // Calcular datos para el resumen mejorado
       const final = datos[datos.length - 1];
@@ -658,13 +860,13 @@
         <div class="resume-grid">
           <div class="resume-item">
             <h3>🎯 Monto Final</h3>
-            <div class="value">$${formatearNumero(final.saldo)}</div>
+            <div class="value">${formatearNumero(final.saldo)}</div>
             <div class="subtitle">A los ${final.edad} años</div>
           </div>
           
           <div class="resume-item">
             <h3>💪 Poder Adquisitivo</h3>
-            <div class="value">$${formatearNumero(realFinal)}</div>
+            <div class="value">${formatearNumero(realFinal)}</div>
             <div class="subtitle">Equivalente hoy</div>
           </div>
           
@@ -676,13 +878,14 @@
           
           <div class="resume-item">
             <h3>📈 Generado por Inversión</h3>
-            <div class="value">$${formatearNumero(generadoPorInversion)}</div>
-            <div class="subtitle">vs $${formatearNumero(totalAportadoFinal)} aportados</div>
+            <div class="value">${formatearNumero(generadoPorInversion)}</div>
+            <div class="subtitle">vs ${formatearNumero(totalAportadoFinal)} aportados</div>
           </div>
         </div>
       `;
     }
 
+    // Event listeners
     document.getElementById('toggleTableBtn').addEventListener('click', () => {
       const cont = document.getElementById('tableContainer');
       const visible = cont.style.display !== 'none';
@@ -694,11 +897,129 @@
       document.body.classList.toggle('night');
       const isDark = document.body.classList.contains('night');
       document.getElementById('toggleNightBtn').textContent = isDark ? '☀️ Modo día' : '🌙 Modo noche';
+      
+      // Update 3D scene background
+      if (scene) {
+        scene.background = new THREE.Color(isDark ? 0x1e293b : 0xffffff);
+      }
+      
       autoCalcular();
     });
 
-    // Inicializar
-    autoCalcular();
+    document.getElementById('animateBtn').addEventListener('click', () => {
+      isAnimating = !isAnimating;
+      document.getElementById('animateBtn').textContent = isAnimating ? '⏸️ Parar' : '▶️ Animar';
+    });
+
+    document.getElementById('viewBtn').addEventListener('click', () => {
+      currentViewMode = (currentViewMode + 1) % 3;
+      
+      switch(currentViewMode) {
+        case 0: // Perspective
+          camera.position.set(15, 10, 15);
+          camera.lookAt(0, 0, 0);
+          break;
+        case 1: // Top view
+          camera.position.set(0, 20, 0);
+          camera.lookAt(0, 0, 0);
+          break;
+        case 2: // Side view
+          camera.position.set(20, 5, 0);
+          camera.lookAt(0, 0, 0);
+          break;
+      }
+    });
+
+    document.getElementById('resetViewBtn').addEventListener('click', () => {
+      camera.position.set(15, 10, 15);
+      camera.lookAt(0, 0, 0);
+      currentViewMode = 0;
+      isAnimating = false;
+      document.getElementById('animateBtn').textContent = '▶️ Animar';
+      scene.rotation.y = 0;
+    });
+
+    // Mouse controls for 3D chart
+    let mouseX = 0, mouseY = 0;
+    let isMouseDown = false;
+
+    document.getElementById('chart3d').addEventListener('mousedown', (e) => {
+      isMouseDown = true;
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    document.addEventListener('mouseup', () => {
+      isMouseDown = false;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!isMouseDown) return;
+      
+      const deltaX = e.clientX - mouseX;
+      const deltaY = e.clientY - mouseY;
+      
+      camera.position.x = camera.position.x * Math.cos(deltaX * 0.01) - camera.position.z * Math.sin(deltaX * 0.01);
+      camera.position.z = camera.position.x * Math.sin(deltaX * 0.01) + camera.position.z * Math.cos(deltaX * 0.01);
+      camera.position.y += deltaY * 0.05;
+      
+      camera.lookAt(0, 0, 0);
+      
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    // Touch controls for mobile
+    let touchStartX = 0, touchStartY = 0;
+
+    document.getElementById('chart3d').addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    });
+
+    document.getElementById('chart3d').addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      const deltaX = e.touches[0].clientX - touchStartX;
+      const deltaY = e.touches[0].clientY - touchStartY;
+      
+      camera.position.x = camera.position.x * Math.cos(deltaX * 0.005) - camera.position.z * Math.sin(deltaX * 0.005);
+      camera.position.z = camera.position.x * Math.sin(deltaX * 0.005) + camera.position.z * Math.cos(deltaX * 0.005);
+      camera.position.y += deltaY * 0.02;
+      
+      camera.lookAt(0, 0, 0);
+      
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    });
+
+    // Resize handler
+    window.addEventListener('resize', () => {
+      if (renderer && camera) {
+        const container = document.getElementById('chart3d');
+        const containerRect = container.getBoundingClientRect();
+        
+        camera.aspect = containerRect.width / containerRect.height;
+        camera.updateProjectionMatrix();
+        renderer.setSize(containerRect.width, containerRect.height);
+      }
+    });
+
+    // Initialize everything
+    document.addEventListener('DOMContentLoaded', () => {
+      init3DChart();
+      autoCalcular();
+    });
+
+    // Initialize if DOM is already loaded
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        init3DChart();
+        autoCalcular();
+      });
+    } else {
+      init3DChart();
+      autoCalcular();
+    }
   </script>
 </body>
 </html>
