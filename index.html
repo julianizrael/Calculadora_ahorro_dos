@@ -1,1025 +1,881 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Calculadora de Ahorro</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <style>
-    :root {
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --primary-light: #3b82f6;
-      --secondary: #f1f5f9;
-      --accent: #06b6d4;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --text: #1e293b;
-      --text-light: #64748b;
-      --bg: #ffffff;
-      --bg-alt: #f8fafc;
-      --border: #e2e8f0;
-      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-      
-      /* Dark mode */
-      --dark-bg: #0f172a;
-      --dark-bg-alt: #1e293b;
-      --dark-text: #f1f5f9;
-      --dark-text-light: #94a3b8;
-      --dark-border: #334155;
-      --dark-input-bg: #334155;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Inter', 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, var(--bg) 0%, var(--bg-alt) 100%);
-      color: var(--text);
-      transition: all 0.3s ease;
-      min-height: 100vh;
-      line-height: 1.4;
-    }
-
-    body.night {
-      background: linear-gradient(135deg, var(--dark-bg) 0%, var(--dark-bg-alt) 100%);
-      color: var(--dark-text);
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0.5rem;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.5rem;
-    }
-
-    h1 {
-      font-size: clamp(1.5rem, 4vw, 2rem);
-      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      font-weight: 800;
-      margin: 0;
-    }
-
-    .night-toggle {
-      padding: 0.4rem 0.8rem;
-      border-radius: 20px;
-      border: none;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-      color: white;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      font-family: inherit;
-      font-size: 0.8rem;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .night-toggle:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-lg);
-    }
-
-    .tabs {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 0.5rem;
-      gap: 0.4rem;
-    }
-
-    .tab {
-      padding: 0.5rem 1.5rem;
-      background: var(--secondary);
-      color: var(--text);
-      cursor: pointer;
-      border-radius: 10px;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      border: 2px solid transparent;
-      position: relative;
-      overflow: hidden;
-      font-size: 0.9rem;
-    }
-
-    body.night .tab {
-      background: var(--dark-bg-alt);
-      color: var(--dark-text);
-    }
-
-    .tab:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow);
-    }
-
-    .tab.active {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-      color: white;
-      border-color: var(--primary-dark);
-      box-shadow: var(--shadow-lg);
-    }
-
-    .tab-content {
-      display: none;
-      background: var(--bg);
-      border-radius: 15px;
-      padding: 1rem;
-      box-shadow: var(--shadow-lg);
-      border: 1px solid var(--border);
-      backdrop-filter: blur(10px);
-      margin-bottom: 0.5rem;
-    }
-
-    body.night .tab-content {
-      background: var(--dark-bg-alt);
-      border-color: var(--dark-border);
-    }
-
-    .tab-content.active {
-      display: block;
-      animation: fadeIn 0.3s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    form {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 0.8rem;
-    }
-
-    label {
-      font-weight: 600;
-      display: flex;
-      flex-direction: column;
-      gap: 0.3rem;
-      color: var(--text);
-      font-size: 0.9rem;
-      position: relative;
-    }
-
-    body.night label {
-      color: var(--dark-text);
-    }
-
-    /* Tooltip styles */
-    .tooltip-container {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-    }
-
-    .tooltip-icon {
-      width: 16px;
-      height: 16px;
-      background: var(--primary);
-      color: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      font-weight: bold;
-      cursor: help;
-      transition: all 0.3s ease;
-    }
-
-    .tooltip-icon:hover {
-      background: var(--primary-light);
-      transform: scale(1.1);
-    }
-
-    .tooltip {
-      position: absolute;
-      top: -8px;
-      left: 50%;
-      transform: translateX(-50%) translateY(-100%);
-      background: var(--dark-bg);
-      color: var(--dark-text);
-      padding: 0.8rem;
-      border-radius: 8px;
-      font-size: 0.8rem;
-      font-weight: 400;
-      line-height: 1.4;
-      max-width: 250px;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s ease;
-      z-index: 1000;
-      box-shadow: var(--shadow-lg);
-      border: 1px solid var(--border);
-    }
-
-    body.night .tooltip {
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    .tooltip::after {
-      content: '';
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      border: 6px solid transparent;
-      border-top-color: var(--dark-bg);
-    }
-
-    body.night .tooltip::after {
-      border-top-color: var(--bg);
-    }
-
-    .tooltip-icon:hover + .tooltip,
-    .tooltip:hover {
-      opacity: 1;
-      visibility: visible;
-      transform: translateX(-50%) translateY(-100%) translateY(-5px);
-    }
-
-    input[type="number"] {
-      padding: 0.6rem;
-      border-radius: 10px;
-      border: 2px solid var(--border);
-      background: var(--bg);
-      font-size: 0.9rem;
-      transition: all 0.3s ease;
-      font-family: inherit;
-    }
-
-    body.night input[type="number"] {
-      background: var(--dark-input-bg);
-      color: var(--dark-text);
-      border-color: var(--dark-border);
-    }
-
-    input[type="number"]:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-      transform: translateY(-1px);
-    }
-
-    .resume-card {
-      max-width: 900px;
-      margin: 0.5rem auto;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-      padding: 0.8rem;
-      border-radius: 12px;
-      color: white;
-      box-shadow: var(--shadow-lg);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .resume-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
-      pointer-events: none;
-    }
-
-    .resume-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 0.6rem;
-      margin-top: 0.3rem;
-    }
-
-    .resume-item {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 0.6rem;
-      border-radius: 8px;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      text-align: center;
-    }
-
-    .resume-item h3 {
-      font-size: 0.75rem;
-      opacity: 0.9;
-      margin-bottom: 0.2rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .resume-item .value {
-      font-size: 1.1rem;
-      font-weight: 800;
-      margin-bottom: 0.1rem;
-    }
-
-    .resume-item .subtitle {
-      font-size: 0.75rem;
-      opacity: 0.8;
-    }
-
-    button {
-      padding: 0.6rem 1.2rem;
-      border-radius: 10px;
-      border: none;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-      color: white;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      font-family: inherit;
-      font-size: 0.9rem;
-    }
-
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-lg);
-    }
-
-    button:active {
-      transform: translateY(0);
-    }
-
-    .controls {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-      margin: 0.8rem 0;
-    }
-
-    #tableContainer {
-      max-width: 1000px;
-      margin: 0.8rem auto;
-      overflow-x: auto;
-      background: var(--bg);
-      border-radius: 12px;
-      box-shadow: var(--shadow-lg);
-      border: 1px solid var(--border);
-    }
-
-    body.night #tableContainer {
-      background: var(--dark-bg-alt);
-      border-color: var(--dark-border);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th, td {
-      padding: 0.7rem 0.6rem;
-      text-align: center;
-      border-bottom: 1px solid var(--border);
-      font-size: 0.9rem;
-    }
-
-    body.night th,
-    body.night td {
-      border-color: var(--dark-border);
-    }
-
-    th {
-      background: var(--secondary);
-      font-weight: 700;
-      text-transform: uppercase;
-      font-size: 0.8rem;
-      letter-spacing: 0.5px;
-    }
-
-    body.night th {
-      background: var(--dark-input-bg);
-    }
-
-    tr:hover {
-      background: var(--secondary);
-    }
-
-    body.night tr:hover {
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    /* 3D Chart Container */
-    #chartContainer {
-      width: 100%;
-      max-width: 1000px;
-      height: 400px;
-      margin: 0.8rem auto;
-      background: var(--bg);
-      border-radius: 12px;
-      box-shadow: var(--shadow-lg);
-      border: 1px solid var(--border);
-      position: relative;
-      overflow: hidden;
-    }
-
-    body.night #chartContainer {
-      background: var(--dark-bg-alt);
-      border-color: var(--dark-border);
-    }
-
-    #chart3d {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    .chart-legend {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(255, 255, 255, 0.9);
-      padding: 0.5rem;
-      border-radius: 8px;
-      font-size: 0.8rem;
-      z-index: 10;
-    }
-
-    body.night .chart-legend {
-      background: rgba(0, 0, 0, 0.8);
-      color: var(--dark-text);
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-      margin-bottom: 0.2rem;
-    }
-
-    .legend-color {
-      width: 12px;
-      height: 12px;
-      border-radius: 2px;
-    }
-
-    .chart-controls {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
-      display: flex;
-      gap: 0.5rem;
-      z-index: 10;
-    }
-
-    .chart-btn {
-      padding: 0.3rem 0.6rem;
-      background: rgba(37, 99, 235, 0.8);
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 0.7rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .chart-btn:hover {
-      background: rgba(37, 99, 235, 1);
-      transform: scale(1.05);
-    }
-
-    @media (max-width: 768px) {
-      .container {
-        padding: 0.5rem;
-      }
-      
-      .header {
-        flex-direction: column;
-        gap: 0.5rem;
-        align-items: center;
-      }
-      
-      .tabs {
-        flex-direction: column;
-        align-items: center;
-      }
-      
-      .tab {
-        width: 180px;
-        text-align: center;
-      }
-      
-      form {
-        grid-template-columns: 1fr;
-      }
-      
-      .resume-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .controls {
-        flex-direction: column;
-        align-items: center;
-      }
-
-      #chartContainer {
-        height: 300px;
-      }
-
-      .tooltip {
-        max-width: 200px;
-        left: 0;
-        transform: translateX(0) translateY(-100%);
-      }
-
-      .tooltip::after {
-        left: 20px;
-        transform: translateX(0);
-      }
-
-      .tooltip-icon:hover + .tooltip,
-      .tooltip:hover {
-        transform: translateX(0) translateY(-100%) translateY(-5px);
-      }
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculadora de Ahorro</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #3b82f6;
+            --secondary: #f1f5f9;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --bg: #ffffff;
+            --bg-alt: #f8fafc;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            
+            /* Dark mode */
+            --dark-bg: #0f172a;
+            --dark-bg-alt: #1e293b;
+            --dark-text: #f1f5f9;
+            --dark-text-light: #94a3b8;
+            --dark-border: #334155;
+            --dark-input-bg: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, var(--bg-alt) 100%);
+            color: var(--text);
+            transition: all 0.3s ease;
+            min-height: 100vh;
+            line-height: 1.4;
+        }
+
+        body.night {
+            background: linear-gradient(135deg, var(--dark-bg) 0%, var(--dark-bg-alt) 100%);
+            color: var(--dark-text);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0.5rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .night-toggle {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            border: none;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .night-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+            gap: 0.4rem;
+        }
+
+        .tab {
+            padding: 0.5rem 1.5rem;
+            background: var(--secondary);
+            color: var(--text);
+            cursor: pointer;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+            font-size: 0.9rem;
+        }
+
+        body.night .tab {
+            background: var(--dark-bg-alt);
+            color: var(--dark-text);
+        }
+
+        .tab:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            border-color: var(--primary-dark);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .tab-content {
+            display: none;
+            background: var(--bg);
+            border-radius: 15px;
+            padding: 1rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+            margin-bottom: 0.5rem;
+        }
+
+        body.night .tab-content {
+            background: var(--dark-bg-alt);
+            border-color: var(--dark-border);
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 0.8rem;
+        }
+
+        label {
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            color: var(--text);
+            font-size: 0.9rem;
+            position: relative;
+        }
+
+        body.night label {
+            color: var(--dark-text);
+        }
+
+        /* Tooltip styles */
+        .tooltip-container {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .tooltip-icon {
+            width: 16px;
+            height: 16px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: help;
+            transition: all 0.3s ease;
+        }
+
+        .tooltip-icon:hover {
+            background: var(--primary-light);
+            transform: scale(1.1);
+        }
+
+        .tooltip {
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100%);
+            background: var(--dark-bg);
+            color: var(--dark-text);
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 400;
+            line-height: 1.4;
+            max-width: 250px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+        }
+
+        body.night .tooltip {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: var(--dark-bg);
+        }
+
+        body.night .tooltip::after {
+            border-top-color: var(--bg);
+        }
+
+        .tooltip-icon:hover + .tooltip,
+        .tooltip:hover {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-100%) translateY(-5px);
+        }
+
+        input[type="number"] {
+            padding: 0.6rem;
+            border-radius: 10px;
+            border: 2px solid var(--border);
+            background: var(--bg);
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        body.night input[type="number"] {
+            background: var(--dark-input-bg);
+            color: var(--dark-text);
+            border-color: var(--dark-border);
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .resume-card {
+            max-width: 900px;
+            margin: 0.5rem auto;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            padding: 0.8rem;
+            border-radius: 12px;
+            color: white;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .resume-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .resume-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.6rem;
+            margin-top: 0.3rem;
+        }
+
+        .resume-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.6rem;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        .resume-item h3 {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            margin-bottom: 0.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .resume-item .value {
+            font-size: 1.1rem;
+            font-weight: 800;
+            margin-bottom: 0.1rem;
+        }
+
+        .resume-item .subtitle {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        button {
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 0.8rem 0;
+        }
+
+        #tableContainer {
+            max-width: 1000px;
+            margin: 0.8rem auto;
+            overflow-x: auto;
+            background: var(--bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+        }
+
+        body.night #tableContainer {
+            background: var(--dark-bg-alt);
+            border-color: var(--dark-border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 0.7rem 0.6rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        body.night th,
+        body.night td {
+            border-color: var(--dark-border);
+        }
+
+        th {
+            background: var(--secondary);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        body.night th {
+            background: var(--dark-input-bg);
+        }
+
+        tr:hover {
+            background: var(--secondary);
+        }
+
+        body.night tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* 2D Chart Container */
+        #chartContainer {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0.8rem auto;
+            background: var(--bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            padding: 1rem;
+        }
+
+        body.night #chartContainer {
+            background: var(--dark-bg-alt);
+            border-color: var(--dark-border);
+        }
+        
+        #savingChart {
+            max-height: 400px; /* Limita la altura para evitar que se estire demasiado en pantallas grandes */
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0.5rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: center;
+            }
+            
+            .tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .tab {
+                width: 180px;
+                text-align: center;
+            }
+            
+            form {
+                grid-template-columns: 1fr;
+            }
+            
+            .resume-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .tooltip {
+                max-width: 200px;
+                left: 0;
+                transform: translateX(0) translateY(-100%);
+            }
+
+            .tooltip::after {
+                left: 20px;
+                transform: translateX(0);
+            }
+
+            .tooltip-icon:hover + .tooltip,
+            .tooltip:hover {
+                transform: translateX(0) translateY(-100%) translateY(-5px);
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>💰 Calculadora de Ahorro</h1>
-      <button id="toggleNightBtn" class="night-toggle">🌙 Modo noche</button>
-    </div>
-    
-    <div class="tabs">
-      <div class="tab active" data-tab="basico">📊 Básico</div>
-      <div class="tab" data-tab="avanzado">🎯 Avanzado</div>
-    </div>
-
-    <div id="basico" class="tab-content active">
-      <form id="formBasico" onsubmit="return false;"></form>
-    </div>
-
-    <div id="avanzado" class="tab-content">
-      <form id="formAvanzado" onsubmit="return false;"></form>
-    </div>
-
-    <div id="resumen" class="resume-card"></div>
-
-    <div class="controls">
-      <button id="toggleTableBtn">👁️ Ocultar tabla</button>
-      <button id="resetViewBtn">🔄 Resetear vista</button>
-    </div>
-
-    <div id="tableContainer"></div>
-    
-    <div id="chartContainer">
-      <canvas id="chart3d"></canvas>
-      <div class="chart-legend">
-        <div class="legend-item">
-          <div class="legend-color" style="background: #2563eb;"></div>
-          <span>Saldo Nominal</span>
+    <div class="container">
+        <div class="header">
+            <h1>💰 Calculadora de Ahorro</h1>
+            <button id="toggleNightBtn" class="night-toggle">🌙 Modo noche</button>
         </div>
-        <div class="legend-item">
-          <div class="legend-color" style="background: #dc2626;"></div>
-          <span>Saldo Real</span>
-        </div>
-      </div>
-      <div class="chart-controls">
-        <button class="chart-btn" id="animateBtn">▶️ Animar</button>
-        <button class="chart-btn" id="viewBtn">👁️ Vista</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const camposBasico = [
-      ['Edad inicio', 'edadInicioBasico', 25],
-      ['Edad fin', 'edadFinBasico', 65],
-      ['Monto inicial', 'montoInicialBasico', 0],
-      ['Aporte mensual', 'aporteMensualBasico', 100],
-      ['Rendimiento anual estimado (%)', 'rendimientoBasico', 5],
-      ['Inflación anual estimada (%)', 'inflacionBasico', 3],
-    ];
-
-    const camposAvanzado = [
-      ['Monto inicial', 'montoInicialAdv', 0, 'Dinero que ya tienes ahorrado para empezar'],
-      ['Edad actual (Etapa 1)', 'edadInicioAdv', 25, 'Tu edad actual para comenzar la primera etapa de ahorro'],
-      ['Aporte mensual etapa 1', 'aporteTramo1', 1200, 'Cuánto planeas ahorrar mensualmente en tus primeros años (ej: 25-35 años)'],
-      ['Edad inicio etapa 2', 'edadCambio1Adv', 35, 'Edad en que cambiarás tu estrategia de ahorro (ej: cuando tengas mejor sueldo)'],
-      ['Aporte mensual etapa 2', 'aporteTramo2', 1500, 'Nuevo monto mensual en la segunda etapa (ej: 35-50 años)'],
-      ['Edad etapa 3', 'edadCambio2Adv', 50, 'Edad para la tercera etapa (ej: cuando estés en tu mejor momento económico)'],
-      ['Aporte mensual etapa 3', 'aporteTramo3', 1800, 'Monto mensual en la etapa final antes del retiro (ej: 50-65 años)'],
-      ['Edad objetivo', 'edadFinAdv', 65, 'Edad en la que planeas jubilarte o necesitar el dinero'],
-      ['Rendimiento anual (%)', 'rendimientoAdv', 5, 'Rentabilidad promedio anual esperada de tus inversiones'],
-      ['Inflación anual (%)', 'inflacionAdv', 3, 'Inflación promedio anual esperada (reduce el poder adquisitivo)'],
-    ];
-
-    // Función para formatear números con separadores de miles
-    function formatearNumero(numero) {
-      return Math.round(numero).toLocaleString();
-    }
-
-    function generarInputs(campos, formId) {
-      const form = document.getElementById(formId);
-      campos.forEach(([labelText, id, valor, tooltip]) => {
-        const value = localStorage.getItem(id) ?? valor;
-        const label = document.createElement('label');
         
-        if (tooltip) {
-          label.innerHTML = `
-            <div class="tooltip-container">
-              ${labelText}
-              <div class="tooltip-icon">?</div>
-              <div class="tooltip">${tooltip}</div>
-            </div>
-            <input type="number" id="${id}" value="${value}">
-          `;
-        } else {
-          label.innerHTML = `${labelText}<input type="number" id="${id}" value="${value}">`;
+        <div class="tabs">
+            <div class="tab active" data-tab="basico">📊 Básico</div>
+            <div class="tab" data-tab="avanzado">🎯 Avanzado</div>
+        </div>
+
+        <div id="basico" class="tab-content active">
+            <form id="formBasico" onsubmit="return false;"></form>
+        </div>
+
+        <div id="avanzado" class="tab-content">
+            <form id="formAvanzado" onsubmit="return false;"></form>
+        </div>
+
+        <div id="resumen" class="resume-card"></div>
+
+        <div class="controls">
+            <button id="toggleTableBtn">👁️ Ocultar tabla</button>
+        </div>
+
+        <div id="tableContainer"></div>
+        
+        <div id="chartContainer">
+            <canvas id="savingChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const camposBasico = [
+            ['Edad inicio', 'edadInicioBasico', 25],
+            ['Edad fin', 'edadFinBasico', 65],
+            ['Monto inicial', 'montoInicialBasico', 0],
+            ['Aporte mensual', 'aporteMensualBasico', 100],
+            ['Rendimiento anual estimado (%)', 'rendimientoBasico', 5],
+            ['Inflación anual estimada (%)', 'inflacionBasico', 3],
+        ];
+
+        const camposAvanzado = [
+            ['Monto inicial', 'montoInicialAdv', 0, 'Dinero que ya tienes ahorrado para empezar'],
+            ['Edad actual (Etapa 1)', 'edadInicioAdv', 25, 'Tu edad actual para comenzar la primera etapa de ahorro'],
+            ['Aporte mensual etapa 1', 'aporteTramo1', 1200, 'Cuánto planeas ahorrar mensualmente en tus primeros años (ej: 25-35 años)'],
+            ['Edad inicio etapa 2', 'edadCambio1Adv', 35, 'Edad en que cambiarás tu estrategia de ahorro (ej: cuando tengas mejor sueldo)'],
+            ['Aporte mensual etapa 2', 'aporteTramo2', 1500, 'Nuevo monto mensual en la segunda etapa (ej: 35-50 años)'],
+            ['Edad etapa 3', 'edadCambio2Adv', 50, 'Edad para la tercera etapa (ej: cuando estés en tu mejor momento económico)'],
+            ['Aporte mensual etapa 3', 'aporteTramo3', 1800, 'Monto mensual en la etapa final antes del retiro (ej: 50-65 años)'],
+            ['Edad objetivo', 'edadFinAdv', 65, 'Edad en la que planeas jubilarte o necesitar el dinero'],
+            ['Rendimiento anual (%)', 'rendimientoAdv', 5, 'Rentabilidad promedio anual esperada de tus inversiones'],
+            ['Inflación anual (%)', 'inflacionAdv', 3, 'Inflación promedio anual esperada (reduce el poder adquisitivo)'],
+        ];
+
+        // Función para formatear números con separadores de miles
+        function formatearNumero(numero) {
+            return Math.round(numero).toLocaleString();
         }
-        
-        form.appendChild(label);
-      });
-    }
 
-    generarInputs(camposBasico, 'formBasico');
-    generarInputs(camposAvanzado, 'formAvanzado');
-
-    document.querySelectorAll('.tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-        tab.classList.add('active');
-        document.getElementById(tab.dataset.tab).classList.add('active');
-        autoCalcular();
-      });
-    });
-
-    document.addEventListener('input', e => {
-      if (e.target.tagName === 'INPUT') {
-        localStorage.setItem(e.target.id, e.target.value);
-        autoCalcular();
-      }
-    });
-
-    // Three.js 3D Chart
-    let scene, camera, renderer, chart3D;
-    let nominalBars = [], realBars = [];
-    let animationId;
-    let isAnimating = false;
-    let currentViewMode = 0; // 0: perspective, 1: top, 2: side
-
-    function init3DChart() {
-      const container = document.getElementById('chart3d');
-      const containerRect = container.getBoundingClientRect();
-      
-      scene = new THREE.Scene();
-      const isDark = document.body.classList.contains('night');
-      scene.background = new THREE.Color(isDark ? 0x1e293b : 0xffffff);
-      
-      camera = new THREE.PerspectiveCamera(75, containerRect.width / containerRect.height, 0.1, 1000);
-      camera.position.set(15, 10, 15);
-      camera.lookAt(0, 0, 0);
-      
-      renderer = new THREE.WebGLRenderer({ canvas: container, antialias: true });
-      renderer.setSize(containerRect.width, containerRect.height);
-      renderer.shadowMap.enabled = true;
-      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-      
-      // Lighting
-      const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
-      scene.add(ambientLight);
-      
-      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-      directionalLight.position.set(10, 10, 5);
-      directionalLight.castShadow = true;
-      directionalLight.shadow.mapSize.width = 2048;
-      directionalLight.shadow.mapSize.height = 2048;
-      scene.add(directionalLight);
-      
-      // Add grid
-      const gridHelper = new THREE.GridHelper(20, 20, 0x888888, 0x444444);
-      scene.add(gridHelper);
-      
-      animate3D();
-    }
-
-    function animate3D() {
-      animationId = requestAnimationFrame(animate3D);
-      
-      if (isAnimating) {
-        scene.rotation.y += 0.005;
-      }
-      
-      renderer.render(scene, camera);
-    }
-
-    function update3DChart(datos, inflacion, e0) {
-      // Clear previous bars
-      nominalBars.forEach(bar => scene.remove(bar));
-      realBars.forEach(bar => scene.remove(bar));
-      nominalBars = [];
-      realBars = [];
-      
-      if (datos.length === 0) return;
-      
-      const maxValue = Math.max(...datos.map(d => d.saldo));
-      const scale = 8 / maxValue; // Scale to fit in scene
-      
-      datos.forEach((d, i) => {
-        const x = (i - datos.length / 2) * 0.8;
-        const nominalHeight = d.saldo * scale;
-        const realValue = d.saldo / Math.pow(1 + inflacion, d.edad - e0);
-        const realHeight = realValue * scale;
-        
-        // Nominal bar (blue)
-        const nominalGeometry = new THREE.BoxGeometry(0.3, nominalHeight, 0.3);
-        const nominalMaterial = new THREE.MeshLambertMaterial({ color: 0x2563eb });
-        const nominalBar = new THREE.Mesh(nominalGeometry, nominalMaterial);
-        nominalBar.position.set(x - 0.2, nominalHeight / 2, 0);
-        nominalBar.castShadow = true;
-        nominalBar.receiveShadow = true;
-        scene.add(nominalBar);
-        nominalBars.push(nominalBar);
-        
-        // Real bar (red)
-        const realGeometry = new THREE.BoxGeometry(0.3, realHeight, 0.3);
-        const realMaterial = new THREE.MeshLambertMaterial({ color: 0xdc2626 });
-        const realBar = new THREE.Mesh(realGeometry, realMaterial);
-        realBar.position.set(x + 0.2, realHeight / 2, 0);
-        realBar.castShadow = true;
-        realBar.receiveShadow = true;
-        scene.add(realBar);
-        realBars.push(realBar);
-      });
-    }
-
-    function autoCalcular() {
-      const tab = document.querySelector('.tab.active').dataset.tab;
-      tab === 'basico' ? calcularBasico() : calcularAvanzado();
-    }
-
-    function calcularBasico() {
-      const e0 = +document.getElementById('edadInicioBasico').value;
-      const eF = +document.getElementById('edadFinBasico').value;
-      const aporte = +document.getElementById('aporteMensualBasico').value * 12;
-      const rendimiento = +document.getElementById('rendimientoBasico').value / 100;
-      const inflacion = +document.getElementById('inflacionBasico').value / 100;
-      let saldo = +document.getElementById('montoInicialBasico').value;
-      
-      if (!e0 || !eF || eF < e0) return;
-      
-      const datos = [];
-      let totalAportado = saldo;
-      
-      for (let edad = e0; edad <= eF; edad++) {
-        saldo += aporte;
-        totalAportado += aporte;
-        saldo *= 1 + rendimiento;
-        datos.push({ edad, saldo, totalAportado });
-      }
-      
-      renderResultados(datos, e0, inflacion, totalAportado);
-    }
-
-    function calcularAvanzado() {
-      const e0 = +document.getElementById('edadInicioAdv').value;
-      const e1 = +document.getElementById('edadCambio1Adv').value;
-      const e2 = +document.getElementById('edadCambio2Adv').value;
-      const eF = +document.getElementById('edadFinAdv').value;
-      const a1 = +document.getElementById('aporteTramo1').value * 12;
-      const a2 = +document.getElementById('aporteTramo2').value * 12;
-      const a3 = +document.getElementById('aporteTramo3').value * 12;
-      const rendimiento = +document.getElementById('rendimientoAdv').value / 100;
-      const inflacion = +document.getElementById('inflacionAdv').value / 100;
-      let saldo = +document.getElementById('montoInicialAdv').value;
-      
-      if (!e0 || !eF || eF < e0) return;
-      
-      const datos = [];
-      let totalAportado = saldo;
-      
-      for (let edad = e0; edad <= eF; edad++) {
-        const aporte = edad < e1 ? a1 : edad < e2 ? a2 : a3;
-        saldo += aporte;
-        totalAportado += aporte;
-        saldo *= 1 + rendimiento;
-        datos.push({ edad, saldo, totalAportado });
-      }
-      
-      renderResultados(datos, e0, inflacion, totalAportado);
-    }
-
-    function renderResultados(datos, e0, inflacion, totalAportadoFinal) {
-      const tabla = datos.map(d => {
-        const real = d.saldo / Math.pow(1 + inflacion, d.edad - e0);
-        return `<tr><td>${d.edad}</td><td>$${formatearNumero(d.saldo)}</td><td>$${formatearNumero(real)}</td></tr>`;
-      }).join('');
-      
-      document.getElementById('tableContainer').innerHTML = `
-        <table>
-          <thead>
-            <tr>
-              <th>Edad</th>
-              <th>Saldo Nominal</th>
-              <th>Saldo Real</th>
-            </tr>
-          </thead>
-          <tbody>${tabla}</tbody>
-        </table>
-      `;
-
-      // Update 3D chart
-      update3DChart(datos, inflacion, e0);
-
-      // Calcular datos para el resumen mejorado
-      const final = datos[datos.length - 1];
-      const realFinal = final.saldo / Math.pow(1 + inflacion, final.edad - e0);
-      const generadoPorInversion = final.saldo - totalAportadoFinal;
-      
-      // Encontrar edad al millón
-      let edadAlMillon = 'No alcanzado';
-      for (let i = 0; i < datos.length; i++) {
-        if (datos[i].saldo >= 1000000) {
-          edadAlMillon = datos[i].edad;
-          break;
+        function generarInputs(campos, formId) {
+            const form = document.getElementById(formId);
+            form.innerHTML = ''; // Limpiar el formulario antes de generar los inputs
+            campos.forEach(([labelText, id, valor, tooltip]) => {
+                const value = localStorage.getItem(id) ?? valor;
+                const label = document.createElement('label');
+                
+                if (tooltip) {
+                    label.innerHTML = `
+                        <div class="tooltip-container">
+                            ${labelText}
+                            <div class="tooltip-icon">?</div>
+                            <div class="tooltip">${tooltip}</div>
+                        </div>
+                        <input type="number" id="${id}" value="${value}">
+                    `;
+                } else {
+                    label.innerHTML = `${labelText}<input type="number" id="${id}" value="${value}">`;
+                }
+                
+                form.appendChild(label);
+            });
         }
-      }
 
-      // Crear resumen mejorado
-      document.getElementById('resumen').innerHTML = `
-        <div class="resume-grid">
-          <div class="resume-item">
-            <h3>🎯 Monto Final</h3>
-            <div class="value">${formatearNumero(final.saldo)}</div>
-            <div class="subtitle">A los ${final.edad} años</div>
-          </div>
-          
-          <div class="resume-item">
-            <h3>💪 Poder Adquisitivo</h3>
-            <div class="value">${formatearNumero(realFinal)}</div>
-            <div class="subtitle">Equivalente hoy</div>
-          </div>
-          
-          <div class="resume-item">
-            <h3>🚀 Edad al Millón</h3>
-            <div class="value">${edadAlMillon === 'No alcanzado' ? '❌' : edadAlMillon}</div>
-            <div class="subtitle">${edadAlMillon === 'No alcanzado' ? 'No se alcanza' : 'años'}</div>
-          </div>
-          
-          <div class="resume-item">
-            <h3>📈 Generado por Inversión</h3>
-            <div class="value">${formatearNumero(generadoPorInversion)}</div>
-            <div class="subtitle">vs ${formatearNumero(totalAportadoFinal)} aportados</div>
-          </div>
-        </div>
-      `;
-    }
+        generarInputs(camposBasico, 'formBasico');
+        generarInputs(camposAvanzado, 'formAvanzado');
 
-    // Event listeners
-    document.getElementById('toggleTableBtn').addEventListener('click', () => {
-      const cont = document.getElementById('tableContainer');
-      const visible = cont.style.display !== 'none';
-      cont.style.display = visible ? 'none' : 'block';
-      document.getElementById('toggleTableBtn').textContent = visible ? '👁️ Mostrar tabla' : '👁️ Ocultar tabla';
-    });
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+                autoCalcular();
+            });
+        });
 
-    document.getElementById('toggleNightBtn').addEventListener('click', () => {
-      document.body.classList.toggle('night');
-      const isDark = document.body.classList.contains('night');
-      document.getElementById('toggleNightBtn').textContent = isDark ? '☀️ Modo día' : '🌙 Modo noche';
-      
-      // Update 3D scene background
-      if (scene) {
-        scene.background = new THREE.Color(isDark ? 0x1e293b : 0xffffff);
-      }
-      
-      autoCalcular();
-    });
-
-    document.getElementById('animateBtn').addEventListener('click', () => {
-      isAnimating = !isAnimating;
-      document.getElementById('animateBtn').textContent = isAnimating ? '⏸️ Parar' : '▶️ Animar';
-    });
-
-    document.getElementById('viewBtn').addEventListener('click', () => {
-      currentViewMode = (currentViewMode + 1) % 3;
-      
-      switch(currentViewMode) {
-        case 0: // Perspective
-          camera.position.set(15, 10, 15);
-          camera.lookAt(0, 0, 0);
-          break;
-        case 1: // Top view
-          camera.position.set(0, 20, 0);
-          camera.lookAt(0, 0, 0);
-          break;
-        case 2: // Side view
-          camera.position.set(20, 5, 0);
-          camera.lookAt(0, 0, 0);
-          break;
-      }
-    });
-
-    document.getElementById('resetViewBtn').addEventListener('click', () => {
-      camera.position.set(15, 10, 15);
-      camera.lookAt(0, 0, 0);
-      currentViewMode = 0;
-      isAnimating = false;
-      document.getElementById('animateBtn').textContent = '▶️ Animar';
-      scene.rotation.y = 0;
-    });
-
-    // Mouse controls for 3D chart
-    let mouseX = 0, mouseY = 0;
-    let isMouseDown = false;
-
-    document.getElementById('chart3d').addEventListener('mousedown', (e) => {
-      isMouseDown = true;
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    });
-
-    document.addEventListener('mouseup', () => {
-      isMouseDown = false;
-    });
-
-    document.addEventListener('mousemove', (e) => {
-      if (!isMouseDown) return;
-      
-      const deltaX = e.clientX - mouseX;
-      const deltaY = e.clientY - mouseY;
-      
-      camera.position.x = camera.position.x * Math.cos(deltaX * 0.01) - camera.position.z * Math.sin(deltaX * 0.01);
-      camera.position.z = camera.position.x * Math.sin(deltaX * 0.01) + camera.position.z * Math.cos(deltaX * 0.01);
-      camera.position.y += deltaY * 0.05;
-      
-      camera.lookAt(0, 0, 0);
-      
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    });
-
-    // Touch controls for mobile
-    let touchStartX = 0, touchStartY = 0;
-
-    document.getElementById('chart3d').addEventListener('touchstart', (e) => {
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-    });
-
-    document.getElementById('chart3d').addEventListener('touchmove', (e) => {
-      e.preventDefault();
-      const deltaX = e.touches[0].clientX - touchStartX;
-      const deltaY = e.touches[0].clientY - touchStartY;
-      
-      camera.position.x = camera.position.x * Math.cos(deltaX * 0.005) - camera.position.z * Math.sin(deltaX * 0.005);
-      camera.position.z = camera.position.x * Math.sin(deltaX * 0.005) + camera.position.z * Math.cos(deltaX * 0.005);
-      camera.position.y += deltaY * 0.02;
-      
-      camera.lookAt(0, 0, 0);
-      
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-    });
-
-    // Resize handler
-    window.addEventListener('resize', () => {
-      if (renderer && camera) {
-        const container = document.getElementById('chart3d');
-        const containerRect = container.getBoundingClientRect();
+        document.addEventListener('input', e => {
+            if (e.target.tagName === 'INPUT') {
+                localStorage.setItem(e.target.id, e.target.value);
+                autoCalcular();
+            }
+        });
         
-        camera.aspect = containerRect.width / containerRect.height;
-        camera.updateProjectionMatrix();
-        renderer.setSize(containerRect.width, containerRect.height);
-      }
-    });
+        let myChart; // Variable para almacenar la instancia del gráfico
 
-    // Initialize everything
-    document.addEventListener('DOMContentLoaded', () => {
-      init3DChart();
-      autoCalcular();
-    });
+        function renderChart2D(datos, inflacion, e0) {
+            const ctx = document.getElementById('savingChart').getContext('2d');
+            const years = datos.map(d => d.edad);
+            const nominalData = datos.map(d => d.saldo);
+            const realData = datos.map(d => d.saldo / Math.pow(1 + inflacion, d.edad - e0));
+            
+            // Si ya existe un gráfico, lo destruye para que no se superpongan
+            if (myChart) {
+                myChart.destroy();
+            }
+            
+            const isDark = document.body.classList.contains('night');
+            const gridColor = isDark ? 'rgba(148, 163, 184, 0.2)' : 'rgba(226, 232, 240, 0.8)';
+            const textColor = isDark ? '#f1f5f9' : '#1e293b';
 
-    // Initialize if DOM is already loaded
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => {
-        init3DChart();
-        autoCalcular();
-      });
-    } else {
-      init3DChart();
-      autoCalcular();
-    }
-  </script>
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: years,
+                    datasets: [{
+                        label: 'Saldo Nominal',
+                        data: nominalData,
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4,
+                    }, {
+                        label: 'Poder Adquisitivo Real',
+                        data: realData,
+                        borderColor: '#dc2626',
+                        backgroundColor: 'rgba(220, 38, 38, 0.2)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: textColor,
+                                font: {
+                                    family: 'Inter, "Segoe UI", sans-serif',
+                                    size: 12
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Proyección de Ahorros por Año',
+                            color: textColor,
+                            font: {
+                                family: 'Inter, "Segoe UI", sans-serif',
+                                size: 16,
+                                weight: 'bold'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += `$${formatearNumero(context.parsed.y)}`;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Edad',
+                                color: textColor,
+                                font: {
+                                    family: 'Inter, "Segoe UI", sans-serif',
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Saldo (en $)',
+                                color: textColor,
+                                font: {
+                                    family: 'Inter, "Segoe UI", sans-serif',
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor,
+                                callback: function(value, index, values) {
+                                    return `$${formatearNumero(value)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function autoCalcular() {
+            const tab = document.querySelector('.tab.active').dataset.tab;
+            tab === 'basico' ? calcularBasico() : calcularAvanzado();
+        }
+
+        function calcularBasico() {
+            const e0 = +document.getElementById('edadInicioBasico').value;
+            const eF = +document.getElementById('edadFinBasico').value;
+            const aporteMensual = +document.getElementById('aporteMensualBasico').value;
+            const rendimiento = +document.getElementById('rendimientoBasico').value / 100;
+            const inflacion = +document.getElementById('inflacionBasico').value / 100;
+            let saldo = +document.getElementById('montoInicialBasico').value;
+            
+            if (!e0 || !eF || eF < e0) return;
+            
+            const datos = [];
+            let totalAportado = saldo;
+            
+            for (let edad = e0; edad <= eF; edad++) {
+                if (edad > e0) { // No aplicar el aporte en el primer año para no duplicar el monto inicial
+                    saldo += aporteMensual * 12;
+                    totalAportado += aporteMensual * 12;
+                }
+                saldo *= 1 + rendimiento;
+                datos.push({ edad, saldo, totalAportado });
+            }
+            
+            renderResultados(datos, e0, inflacion, totalAportado);
+        }
+
+        function calcularAvanzado() {
+            const e0 = +document.getElementById('edadInicioAdv').value;
+            const e1 = +document.getElementById('edadCambio1Adv').value;
+            const e2 = +document.getElementById('edadCambio2Adv').value;
+            const eF = +document.getElementById('edadFinAdv').value;
+            const a1 = +document.getElementById('aporteTramo1').value * 12;
+            const a2 = +document.getElementById('aporteTramo2').value * 12;
+            const a3 = +document.getElementById('aporteTramo3').value * 12;
+            const rendimiento = +document.getElementById('rendimientoAdv').value / 100;
+            const inflacion = +document.getElementById('inflacionAdv').value / 100;
+            let saldo = +document.getElementById('montoInicialAdv').value;
+            
+            if (!e0 || !eF || eF < e0) return;
+            
+            const datos = [];
+            let totalAportado = saldo;
+            
+            for (let edad = e0; edad <= eF; edad++) {
+                let aporte = 0;
+                if (edad > e0) { // No aplicar el aporte en el primer año
+                    aporte = edad < e1 ? a1 : edad < e2 ? a2 : a3;
+                    saldo += aporte;
+                    totalAportado += aporte;
+                }
+                saldo *= 1 + rendimiento;
+                datos.push({ edad, saldo, totalAportado });
+            }
+            
+            renderResultados(datos, e0, inflacion, totalAportado);
+        }
+
+        function renderResultados(datos, e0, inflacion, totalAportadoFinal) {
+            const tabla = datos.map(d => {
+                const real = d.saldo / Math.pow(1 + inflacion, d.edad - e0);
+                return `<tr><td>${d.edad}</td><td>$${formatearNumero(d.saldo)}</td><td>$${formatearNumero(real)}</td></tr>`;
+            }).join('');
+            
+            document.getElementById('tableContainer').innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Edad</th>
+                            <th>Saldo Nominal</th>
+                            <th>Saldo Real</th>
+                        </tr>
+                    </thead>
+                    <tbody>${tabla}</tbody>
+                </table>
+            `;
+
+            // Renderiza el nuevo gráfico 2D
+            renderChart2D(datos, inflacion, e0);
+
+            // Calcular datos para el resumen mejorado
+            const final = datos[datos.length - 1];
+            const realFinal = final.saldo / Math.pow(1 + inflacion, final.edad - e0);
+            const generadoPorInversion = final.saldo - totalAportadoFinal;
+            
+            // Encontrar edad al millón
+            let edadAlMillon = 'No alcanzado';
+            for (let i = 0; i < datos.length; i++) {
+                if (datos[i].saldo >= 1000000) {
+                    edadAlMillon = datos[i].edad;
+                    break;
+                }
+            }
+
+            // Crear resumen mejorado
+            document.getElementById('resumen').innerHTML = `
+                <div class="resume-grid">
+                    <div class="resume-item">
+                        <h3>🎯 Monto Final</h3>
+                        <div class="value">$${formatearNumero(final.saldo)}</div>
+                        <div class="subtitle">A los ${final.edad} años</div>
+                    </div>
+                    
+                    <div class="resume-item">
+                        <h3>💪 Poder Adquisitivo</h3>
+                        <div class="value">$${formatearNumero(realFinal)}</div>
+                        <div class="subtitle">Equivalente hoy</div>
+                    </div>
+                    
+                    <div class="resume-item">
+                        <h3>🚀 Edad al Millón</h3>
+                        <div class="value">${edadAlMillon === 'No alcanzado' ? '❌' : edadAlMillon}</div>
+                        <div class="subtitle">${edadAlMillon === 'No alcanzado' ? 'No se alcanza' : 'años'}</div>
+                    </div>
+                    
+                    <div class="resume-item">
+                        <h3>📈 Generado por Inversión</h3>
+                        <div class="value">$${formatearNumero(generadoPorInversion)}</div>
+                        <div class="subtitle">vs $${formatearNumero(totalAportadoFinal)} aportados</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Event listeners
+        document.getElementById('toggleTableBtn').addEventListener('click', () => {
+            const cont = document.getElementById('tableContainer');
+            const visible = cont.style.display !== 'none';
+            cont.style.display = visible ? 'none' : 'block';
+            document.getElementById('toggleTableBtn').textContent = visible ? '👁️ Mostrar tabla' : '👁️ Ocultar tabla';
+        });
+
+        document.getElementById('toggleNightBtn').addEventListener('click', () => {
+            document.body.classList.toggle('night');
+            const isDark = document.body.classList.contains('night');
+            document.getElementById('toggleNightBtn').textContent = isDark ? '☀️ Modo día' : '🌙 Modo noche';
+            
+            // Actualiza el color del texto y la cuadrícula del gráfico al cambiar el tema
+            if (myChart) {
+                const gridColor = isDark ? 'rgba(148, 163, 184, 0.2)' : 'rgba(226, 232, 240, 0.8)';
+                const textColor = isDark ? '#f1f5f9' : '#1e293b';
+                myChart.options.scales.x.grid.color = gridColor;
+                myChart.options.scales.y.grid.color = gridColor;
+                myChart.options.scales.x.ticks.color = textColor;
+                myChart.options.scales.y.ticks.color = textColor;
+                myChart.options.scales.x.title.color = textColor;
+                myChart.options.scales.y.title.color = textColor;
+                myChart.options.plugins.legend.labels.color = textColor;
+                myChart.options.plugins.title.color = textColor;
+                myChart.update();
+            }
+        });
+        
+        // Inicializa todo
+        document.addEventListener('DOMContentLoaded', autoCalcular);
+
+    </script>
 </body>
 </html>
