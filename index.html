@@ -54,24 +54,51 @@
     .container {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 2rem 1rem;
+      padding: 1.5rem 1rem;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
     }
 
     h1 {
-      text-align: center;
-      font-size: clamp(2rem, 4vw, 3rem);
-      margin-bottom: 2rem;
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
       background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
       font-weight: 800;
+      margin: 0;
+    }
+
+    .night-toggle {
+      padding: 0.5rem 1rem;
+      border-radius: 25px;
+      border: none;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      font-family: inherit;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .night-toggle:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
     }
 
     .tabs {
       display: flex;
       justify-content: center;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
       gap: 0.5rem;
     }
 
@@ -173,10 +200,10 @@
 
     .resume-card {
       max-width: 900px;
-      margin: 2rem auto;
+      margin: 1.5rem auto;
       background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-      padding: 2rem;
-      border-radius: 20px;
+      padding: 1.25rem;
+      border-radius: 16px;
       color: white;
       box-shadow: var(--shadow-lg);
       position: relative;
@@ -196,35 +223,36 @@
 
     .resume-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.5rem;
-      margin-top: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 0.75rem;
     }
 
     .resume-item {
       background: rgba(255, 255, 255, 0.1);
-      padding: 1.5rem;
-      border-radius: 12px;
+      padding: 1rem;
+      border-radius: 10px;
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
     }
 
     .resume-item h3 {
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       opacity: 0.9;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.25rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
     .resume-item .value {
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       font-weight: 800;
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.15rem;
     }
 
     .resume-item .subtitle {
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       opacity: 0.8;
     }
 
@@ -255,12 +283,12 @@
       justify-content: center;
       gap: 1rem;
       flex-wrap: wrap;
-      margin: 2rem 0;
+      margin: 1.5rem 0;
     }
 
     #tableContainer {
       max-width: 1000px;
-      margin: 2rem auto;
+      margin: 1.5rem auto;
       overflow-x: auto;
       background: var(--bg);
       border-radius: 16px;
@@ -313,7 +341,7 @@
       width: 100% !important;
       max-width: 1000px;
       height: 500px !important;
-      margin: 2rem auto;
+      margin: 1.5rem auto;
       display: block;
       background: var(--bg);
       border-radius: 16px;
@@ -330,6 +358,12 @@
     @media (max-width: 768px) {
       .container {
         padding: 1rem;
+      }
+      
+      .header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
       }
       
       .tabs {
@@ -359,7 +393,10 @@
 </head>
 <body>
   <div class="container">
-    <h1>💰 Calculadora de Ahorro</h1>
+    <div class="header">
+      <h1>💰 Calculadora de Ahorro</h1>
+      <button id="toggleNightBtn" class="night-toggle">🌙 Modo noche</button>
+    </div>
     
     <div class="tabs">
       <div class="tab active" data-tab="basico">📊 Básico</div>
@@ -378,7 +415,6 @@
 
     <div class="controls">
       <button id="toggleTableBtn">👁️ Ocultar tabla</button>
-      <button id="toggleNightBtn">🌙 Modo noche</button>
     </div>
 
     <div id="tableContainer"></div>
