@@ -147,7 +147,7 @@
             display: none;
             background: var(--bg);
             border-radius: 20px;
-            padding: 2rem;
+            padding: 1rem;
             box-shadow: var(--shadow-lg);
             border: 1px solid var(--border);
             margin-bottom: 1.5rem;
@@ -974,6 +974,17 @@
                 calcularAvanzado();
             }
         }
+        
+        function cambiarPestana(tabName) {
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            document.querySelector(`.tab[data-tab="${tabName}"]`).classList.add('active');
+            
+            // Recalculate after changing tabs
+            autoCalcular();
+        }
 
         // --- SECCIÓN DE EVENT LISTENERS ---
         document.getElementById('toggleTableBtn').addEventListener('click', () => {
@@ -1009,6 +1020,12 @@
             autoCalcular();
         });
 
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                cambiarPestana(tab.dataset.tab);
+            });
+        });
+
         // --- SECCIÓN DE INICIALIZACIÓN ---
         function init() {
             generarInputs(camposBasico, 'formBasico');
@@ -1020,6 +1037,11 @@
                 addDeductionInput(45, 50000);
             }
 
+            // Listen for input changes in both forms to recalculate
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                input.addEventListener('input', autoCalcular);
+            });
+            
             // Calculate on page load
             autoCalcular();
         }
