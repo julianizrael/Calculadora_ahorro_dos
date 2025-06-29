@@ -7,169 +7,384 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
-      --azul-claro: #d6e0ff;
-      --azul-oscuro: #003366;
-      --noche-bg: #121b2a;
-      --noche-texto: #cbd6f7;
-      --noche-input-bg: #1a2945;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-light: #3b82f6;
+      --secondary: #f1f5f9;
+      --accent: #06b6d4;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --text: #1e293b;
+      --text-light: #64748b;
+      --bg: #ffffff;
+      --bg-alt: #f8fafc;
+      --border: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      
+      /* Dark mode */
+      --dark-bg: #0f172a;
+      --dark-bg-alt: #1e293b;
+      --dark-text: #f1f5f9;
+      --dark-text-light: #94a3b8;
+      --dark-border: #334155;
+      --dark-input-bg: #334155;
     }
-    body {
-      font-family: 'Segoe UI', sans-serif;
+
+    * {
       margin: 0;
-      padding: 1rem;
-      background: #f7f9fc;
-      color: var(--azul-oscuro);
-      transition: background 0.3s, color 0.3s;
+      padding: 0;
+      box-sizing: border-box;
     }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, var(--bg) 0%, var(--bg-alt) 100%);
+      color: var(--text);
+      transition: all 0.3s ease;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
     body.night {
-      background: var(--noche-bg);
-      color: var(--noche-texto);
+      background: linear-gradient(135deg, var(--dark-bg) 0%, var(--dark-bg-alt) 100%);
+      color: var(--dark-text);
     }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
     h1 {
       text-align: center;
-      font-size: 2rem;
-      margin-bottom: 1rem;
+      font-size: clamp(2rem, 4vw, 3rem);
+      margin-bottom: 2rem;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 800;
     }
+
     .tabs {
       display: flex;
       justify-content: center;
-      margin-bottom: 1rem;
+      margin-bottom: 2rem;
+      gap: 0.5rem;
     }
+
     .tab {
-      padding: 0.5rem 1.5rem;
-      margin: 0 0.5rem;
-      background: var(--azul-claro);
-      color: var(--azul-oscuro);
+      padding: 0.75rem 2rem;
+      background: var(--secondary);
+      color: var(--text);
       cursor: pointer;
-      border-radius: 1rem;
+      border-radius: 12px;
       font-weight: 600;
-      transition: background 0.3s, color 0.3s;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      position: relative;
+      overflow: hidden;
     }
+
+    body.night .tab {
+      background: var(--dark-bg-alt);
+      color: var(--dark-text);
+    }
+
+    .tab:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
     .tab.active {
-      background: var(--azul-oscuro);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
       color: white;
+      border-color: var(--primary-dark);
+      box-shadow: var(--shadow-lg);
     }
+
     .tab-content {
       display: none;
-      background: white;
-      border-radius: 1rem;
-      padding: 1.5rem;
-      box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
-      max-width: 1000px;
-      margin: 0 auto;
+      background: var(--bg);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(10px);
     }
+
+    body.night .tab-content {
+      background: var(--dark-bg-alt);
+      border-color: var(--dark-border);
+    }
+
     .tab-content.active {
       display: block;
+      animation: fadeIn 0.3s ease;
     }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     form {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
     }
+
     label {
       font-weight: 600;
       display: flex;
       flex-direction: column;
+      gap: 0.5rem;
+      color: var(--text);
     }
+
+    body.night label {
+      color: var(--dark-text);
+    }
+
     input[type="number"] {
-      padding: 0.5rem;
-      border-radius: 0.5rem;
-      border: 1px solid var(--azul-oscuro);
-      background: #eef2ff;
+      padding: 1rem;
+      border-radius: 12px;
+      border: 2px solid var(--border);
+      background: var(--bg);
       font-size: 1rem;
+      transition: all 0.3s ease;
+      font-family: inherit;
     }
+
     body.night input[type="number"] {
-      background: var(--noche-input-bg);
-      color: var(--noche-texto);
-      border-color: #5a7db8;
+      background: var(--dark-input-bg);
+      color: var(--dark-text);
+      border-color: var(--dark-border);
     }
+
+    input[type="number"]:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .resume-card {
+      max-width: 900px;
+      margin: 2rem auto;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      padding: 2rem;
+      border-radius: 20px;
+      color: white;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .resume-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .resume-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .resume-item {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 1.5rem;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .resume-item h3 {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .resume-item .value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 0.25rem;
+    }
+
+    .resume-item .subtitle {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
     button {
-      padding: 0.6rem 1rem;
-      border-radius: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
       border: none;
-      background: var(--azul-oscuro);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
       color: white;
       cursor: pointer;
-      font-weight: bold;
-      transition: background 0.3s;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      font-family: inherit;
+      font-size: 1rem;
     }
+
     button:hover {
-      background: #001f4d;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
     }
-    #resumen {
-      max-width: 900px;
-      margin: 1.5rem auto;
-      background: var(--azul-claro);
-      padding: 1rem;
-      border-radius: 1rem;
-      font-weight: bold;
-      box-shadow: 0 0 8px rgba(0, 51, 102, 0.1);
+
+    button:active {
+      transform: translateY(0);
     }
-    body.night #resumen {
-      background: #1f2f4a;
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin: 2rem 0;
     }
+
     #tableContainer {
       max-width: 1000px;
-      margin: 1rem auto;
+      margin: 2rem auto;
       overflow-x: auto;
-      background: white;
-      border-radius: 0.5rem;
-      box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+      background: var(--bg);
+      border-radius: 16px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
     }
+
     body.night #tableContainer {
-      background: var(--noche-input-bg);
+      background: var(--dark-bg-alt);
+      border-color: var(--dark-border);
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
     }
+
     th, td {
-      padding: 0.75rem;
+      padding: 1rem 0.75rem;
       text-align: center;
-      border: 1px solid var(--azul-oscuro);
+      border-bottom: 1px solid var(--border);
     }
+
+    body.night th,
+    body.night td {
+      border-color: var(--dark-border);
+    }
+
+    th {
+      background: var(--secondary);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.875rem;
+      letter-spacing: 0.5px;
+    }
+
+    body.night th {
+      background: var(--dark-input-bg);
+    }
+
+    tr:hover {
+      background: var(--secondary);
+    }
+
+    body.night tr:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
     canvas {
       width: 100% !important;
       max-width: 1000px;
       height: 500px !important;
       margin: 2rem auto;
       display: block;
-      background: white;
-      border-radius: 1rem;
+      background: var(--bg);
+      border-radius: 16px;
       padding: 1rem;
-      box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
     }
+
     body.night canvas {
-      background: #1a2945;
+      background: var(--dark-bg-alt);
+      border-color: var(--dark-border);
     }
-    .controls {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-      margin-bottom: 2rem;
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+      
+      .tabs {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .tab {
+        width: 200px;
+        text-align: center;
+      }
+      
+      form {
+        grid-template-columns: 1fr;
+      }
+      
+      .resume-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .controls {
+        flex-direction: column;
+        align-items: center;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Calculadora de Ahorro</h1>
-  <div class="tabs">
-    <div class="tab active" data-tab="basico">Básico</div>
-    <div class="tab" data-tab="avanzado">Avanzado</div>
+  <div class="container">
+    <h1>💰 Calculadora de Ahorro</h1>
+    
+    <div class="tabs">
+      <div class="tab active" data-tab="basico">📊 Básico</div>
+      <div class="tab" data-tab="avanzado">🎯 Avanzado</div>
+    </div>
+
+    <div id="basico" class="tab-content active">
+      <form id="formBasico" onsubmit="return false;"></form>
+    </div>
+
+    <div id="avanzado" class="tab-content">
+      <form id="formAvanzado" onsubmit="return false;"></form>
+    </div>
+
+    <div id="resumen" class="resume-card"></div>
+
+    <div class="controls">
+      <button id="toggleTableBtn">👁️ Ocultar tabla</button>
+      <button id="toggleNightBtn">🌙 Modo noche</button>
+    </div>
+
+    <div id="tableContainer"></div>
+    <canvas id="chartGeneral"></canvas>
   </div>
-  <div id="basico" class="tab-content active">
-    <form id="formBasico" onsubmit="return false;"></form>
-  </div>
-  <div id="avanzado" class="tab-content">
-    <form id="formAvanzado" onsubmit="return false;"></form>
-  </div>
-  <div id="resumen"></div>
-  <div class="controls">
-    <button id="toggleTableBtn">Ocultar tabla</button>
-    <button id="toggleNightBtn">Modo noche</button>
-  </div>
-  <div id="tableContainer"></div>
-  <canvas id="chartGeneral"></canvas>
+
   <script>
     const camposBasico = [
       ['Edad inicio', 'edadInicioBasico', 25],
@@ -179,18 +394,24 @@
       ['Rendimiento anual (%)', 'rendimientoBasico', 5],
       ['Inflación anual (%)', 'inflacionBasico', 3],
     ];
+
     const camposAvanzado = [
       ['Monto inicial', 'montoInicialAdv', 0],
       ['Edad actual (Etapa 1)', 'edadInicioAdv', 25],
       ['Aporte etapa 1', 'aporteTramo1', 1200],
-      ['Edad inico etapa 2', 'edadCambio1Adv', 35],
+      ['Edad inicio etapa 2', 'edadCambio1Adv', 35],
       ['Aporte etapa 2', 'aporteTramo2', 1500],
-      ['Edad etapa 3 ', 'edadCambio2Adv', 50],
+      ['Edad etapa 3', 'edadCambio2Adv', 50],
       ['Aporte etapa 3', 'aporteTramo3', 1800],
       ['Edad objetivo', 'edadFinAdv', 65],
       ['Rendimiento anual (%)', 'rendimientoAdv', 5],
       ['Inflación anual (%)', 'inflacionAdv', 3],
     ];
+
+    // Función para formatear números con separadores de miles
+    function formatearNumero(numero) {
+      return Math.round(numero).toLocaleString();
+    }
 
     function generarInputs(campos, formId) {
       const form = document.getElementById(formId);
@@ -223,10 +444,12 @@
     });
 
     let chartGeneral;
+
     function autoCalcular() {
       const tab = document.querySelector('.tab.active').dataset.tab;
       tab === 'basico' ? calcularBasico() : calcularAvanzado();
     }
+
     function calcularBasico() {
       const e0 = +document.getElementById('edadInicioBasico').value;
       const eF = +document.getElementById('edadFinBasico').value;
@@ -234,15 +457,22 @@
       const rendimiento = +document.getElementById('rendimientoBasico').value / 100;
       const inflacion = +document.getElementById('inflacionBasico').value / 100;
       let saldo = +document.getElementById('montoInicialBasico').value;
+      
       if (!e0 || !eF || eF < e0) return;
+      
       const datos = [];
+      let totalAportado = saldo;
+      
       for (let edad = e0; edad <= eF; edad++) {
         saldo += aporte;
+        totalAportado += aporte;
         saldo *= 1 + rendimiento;
-        datos.push({ edad, saldo });
+        datos.push({ edad, saldo, totalAportado });
       }
-      renderResultados(datos, e0, inflacion);
+      
+      renderResultados(datos, e0, inflacion, totalAportado);
     }
+
     function calcularAvanzado() {
       const e0 = +document.getElementById('edadInicioAdv').value;
       const e1 = +document.getElementById('edadCambio1Adv').value;
@@ -254,26 +484,51 @@
       const rendimiento = +document.getElementById('rendimientoAdv').value / 100;
       const inflacion = +document.getElementById('inflacionAdv').value / 100;
       let saldo = +document.getElementById('montoInicialAdv').value;
+      
       if (!e0 || !eF || eF < e0) return;
+      
       const datos = [];
+      let totalAportado = saldo;
+      
       for (let edad = e0; edad <= eF; edad++) {
         const aporte = edad < e1 ? a1 : edad < e2 ? a2 : a3;
         saldo += aporte;
+        totalAportado += aporte;
         saldo *= 1 + rendimiento;
-        datos.push({ edad, saldo });
+        datos.push({ edad, saldo, totalAportado });
       }
-      renderResultados(datos, e0, inflacion);
+      
+      renderResultados(datos, e0, inflacion, totalAportado);
     }
-    function renderResultados(datos, e0, inflacion) {
+
+    function renderResultados(datos, e0, inflacion, totalAportadoFinal) {
       const tabla = datos.map(d => {
         const real = d.saldo / Math.pow(1 + inflacion, d.edad - e0);
-        return `<tr><td>${d.edad}</td><td>${d.saldo.toFixed(2)}</td><td>${real.toFixed(2)}</td></tr>`;
+        return `<tr><td>${d.edad}</td><td>$${formatearNumero(d.saldo)}</td><td>$${formatearNumero(real)}</td></tr>`;
       }).join('');
-      document.getElementById('tableContainer').innerHTML = `<table><thead><tr><th>Edad</th><th>Saldo Nominal</th><th>Saldo Real</th></tr></thead><tbody>${tabla}</tbody></table>`;
+      
+      document.getElementById('tableContainer').innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Edad</th>
+              <th>Saldo Nominal</th>
+              <th>Saldo Real</th>
+            </tr>
+          </thead>
+          <tbody>${tabla}</tbody>
+        </table>
+      `;
+
       const labels = datos.map(d => d.edad);
       const nominal = datos.map(d => d.saldo);
       const real = datos.map(d => d.saldo / Math.pow(1 + inflacion, d.edad - e0));
+
       if (chartGeneral) chartGeneral.destroy();
+      
+      const isDark = document.body.classList.contains('night');
+      const textColor = isDark ? '#f1f5f9' : '#1e293b';
+      
       chartGeneral = new Chart(document.getElementById('chartGeneral'), {
         type: 'line',
         data: {
@@ -282,18 +537,24 @@
             {
               label: 'Saldo Nominal',
               data: nominal,
-              borderColor: '#3366cc',
-              backgroundColor: 'rgba(51, 102, 204, 0.1)',
+              borderColor: '#2563eb',
+              backgroundColor: 'rgba(37, 99, 235, 0.1)',
               fill: true,
-              tension: 0.3
+              tension: 0.4,
+              borderWidth: 3,
+              pointRadius: 4,
+              pointHoverRadius: 6
             },
             {
               label: 'Saldo Real',
               data: real,
-              borderColor: '#dc3912',
-              backgroundColor: 'rgba(220, 57, 18, 0.1)',
+              borderColor: '#dc2626',
+              backgroundColor: 'rgba(220, 38, 38, 0.1)',
               fill: true,
-              tension: 0.3
+              tension: 0.4,
+              borderWidth: 3,
+              pointRadius: 4,
+              pointHoverRadius: 6
             }
           ]
         },
@@ -303,30 +564,96 @@
             legend: {
               position: 'top',
               labels: {
-                color: document.body.classList.contains('night') ? '#cbd6f7' : '#003366'
+                color: textColor,
+                font: {
+                  size: 14,
+                  weight: 600
+                }
               }
             }
           },
           scales: {
-            x: { ticks: { color: document.body.classList.contains('night') ? '#cbd6f7' : '#003366' } },
-            y: { ticks: { color: document.body.classList.contains('night') ? '#cbd6f7' : '#003366' } }
+            x: { 
+              ticks: { 
+                color: textColor,
+                font: { weight: 600 }
+              },
+              grid: {
+                color: isDark ? '#334155' : '#e2e8f0'
+              }
+            },
+            y: { 
+              ticks: { 
+                color: textColor,
+                font: { weight: 600 }
+              },
+              grid: {
+                color: isDark ? '#334155' : '#e2e8f0'
+              }
+            }
           }
         }
       });
+
+      // Calcular datos para el resumen mejorado
       const final = datos[datos.length - 1];
       const realFinal = final.saldo / Math.pow(1 + inflacion, final.edad - e0);
-      document.getElementById('resumen').textContent = `A los ${final.edad} años tendrás $${final.saldo.toFixed(2)} (equivalente a $${realFinal.toFixed(2)} de hoy).`;
+      const generadoPorInversion = final.saldo - totalAportadoFinal;
+      
+      // Encontrar edad al millón
+      let edadAlMillon = 'No alcanzado';
+      for (let i = 0; i < datos.length; i++) {
+        if (datos[i].saldo >= 1000000) {
+          edadAlMillon = datos[i].edad;
+          break;
+        }
+      }
+
+      // Crear resumen mejorado
+      document.getElementById('resumen').innerHTML = `
+        <div class="resume-grid">
+          <div class="resume-item">
+            <h3>🎯 Monto Final</h3>
+            <div class="value">$${formatearNumero(final.saldo)}</div>
+            <div class="subtitle">A los ${final.edad} años</div>
+          </div>
+          
+          <div class="resume-item">
+            <h3>💪 Poder Adquisitivo</h3>
+            <div class="value">$${formatearNumero(realFinal)}</div>
+            <div class="subtitle">Equivalente hoy</div>
+          </div>
+          
+          <div class="resume-item">
+            <h3>🚀 Edad al Millón</h3>
+            <div class="value">${edadAlMillon === 'No alcanzado' ? '❌' : edadAlMillon}</div>
+            <div class="subtitle">${edadAlMillon === 'No alcanzado' ? 'No se alcanza' : 'años'}</div>
+          </div>
+          
+          <div class="resume-item">
+            <h3>📈 Generado por Inversión</h3>
+            <div class="value">$${formatearNumero(generadoPorInversion)}</div>
+            <div class="subtitle">vs $${formatearNumero(totalAportadoFinal)} aportados</div>
+          </div>
+        </div>
+      `;
     }
+
     document.getElementById('toggleTableBtn').addEventListener('click', () => {
       const cont = document.getElementById('tableContainer');
       const visible = cont.style.display !== 'none';
       cont.style.display = visible ? 'none' : 'block';
-      document.getElementById('toggleTableBtn').textContent = visible ? 'Mostrar tabla' : 'Ocultar tabla';
+      document.getElementById('toggleTableBtn').textContent = visible ? '👁️ Mostrar tabla' : '👁️ Ocultar tabla';
     });
+
     document.getElementById('toggleNightBtn').addEventListener('click', () => {
       document.body.classList.toggle('night');
+      const isDark = document.body.classList.contains('night');
+      document.getElementById('toggleNightBtn').textContent = isDark ? '☀️ Modo día' : '🌙 Modo noche';
       autoCalcular();
     });
+
+    // Inicializar
     autoCalcular();
   </script>
 </body>
