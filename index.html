@@ -10,7 +10,7 @@
             --primary: #2563eb;
             --primary-dark: #1d4ed8;
             --primary-light: #3b82f6;
-            --secondary: #f1f5f9;
+            --secondary: #eef2f6; /* Lighter secondary */
             --accent: #06b6d4;
             --success: #10b981;
             --warning: #f59e0b;
@@ -19,8 +19,8 @@
             --bg: #ffffff;
             --bg-alt: #f8fafc;
             --border: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.1), 0 3px 6px -3px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 15px 25px -5px rgba(0, 0, 0, 0.1), 0 5px 10px -5px rgba(0, 0, 0, 0.04);
             
             /* Dark mode */
             --dark-bg: #0f172a;
@@ -41,9 +41,10 @@
             font-family: 'Inter', 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, var(--bg) 0%, var(--bg-alt) 100%);
             color: var(--text);
-            transition: all 0.3s ease;
+            transition: all 0.5s ease;
             min-height: 100vh;
             line-height: 1.4;
+            padding: 1rem 0;
         }
 
         body.night {
@@ -52,68 +53,76 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
-            padding: 0.5rem;
+            padding: 0 1rem;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
         h1 {
-            font-size: clamp(1.5rem, 4vw, 2rem);
-            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            font-size: clamp(2rem, 5vw, 2.8rem);
+            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            font-weight: 800;
+            font-weight: 900;
             margin: 0;
+            line-height: 1.2;
         }
 
         .night-toggle {
-            padding: 0.4rem 0.8rem;
-            border-radius: 20px;
+            padding: 0.6rem 1.2rem;
+            border-radius: 30px;
             border: none;
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
             color: white;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 700;
             transition: all 0.3s ease;
             font-family: inherit;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             display: flex;
             align-items: center;
-            gap: 0.4rem;
+            gap: 0.5rem;
+            box-shadow: var(--shadow);
         }
 
         .night-toggle:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
             box-shadow: var(--shadow-lg);
         }
 
         .tabs {
             display: flex;
             justify-content: center;
-            margin-bottom: 0.5rem;
-            gap: 0.4rem;
+            margin-bottom: 1.5rem;
+            gap: 0.75rem;
+            flex-wrap: wrap;
         }
 
         .tab {
-            padding: 0.5rem 1.5rem;
+            padding: 0.8rem 2rem;
             background: var(--secondary);
             color: var(--text);
             cursor: pointer;
-            border-radius: 10px;
+            border-radius: 12px;
             font-weight: 600;
             transition: all 0.3s ease;
             border: 2px solid transparent;
             position: relative;
             overflow: hidden;
-            font-size: 0.9rem;
+            font-size: 1rem;
+            flex-grow: 1;
+            text-align: center;
+            max-width: 250px;
         }
 
         body.night .tab {
@@ -122,7 +131,7 @@
         }
 
         .tab:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
             box-shadow: var(--shadow);
         }
 
@@ -131,17 +140,19 @@
             color: white;
             border-color: var(--primary-dark);
             box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
         }
 
         .tab-content {
             display: none;
             background: var(--bg);
-            border-radius: 15px;
-            padding: 1rem;
+            border-radius: 20px;
+            padding: 2rem;
             box-shadow: var(--shadow-lg);
             border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
             backdrop-filter: blur(10px);
-            margin-bottom: 0.5rem;
+            -webkit-backdrop-filter: blur(10px);
         }
 
         body.night .tab-content {
@@ -151,32 +162,78 @@
 
         .tab-content.active {
             display: block;
-            animation: fadeIn 0.3s ease;
+            animation: fadeIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         form {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 0.8rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .form-section {
+            display: contents; /* Allows child elements to be placed in the grid */
+        }
+        
+        .form-section-title {
+            grid-column: 1 / -1; /* Spans across all columns */
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        body.night .form-section-title {
+            color: var(--primary-light);
+            border-color: var(--dark-border);
         }
 
         label {
             font-weight: 600;
             display: flex;
             flex-direction: column;
-            gap: 0.3rem;
+            gap: 0.5rem;
             color: var(--text);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             position: relative;
         }
 
         body.night label {
             color: var(--dark-text);
+        }
+        
+        .deductions-container {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .deduction-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+        
+        .deduction-item button {
+            padding: 0.6rem;
+            background: #ef4444; /* Red color for remove button */
+            align-self: flex-end;
+            margin-bottom: 0.1rem;
+            box-shadow: none;
+        }
+        
+        .deduction-item button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
         }
 
         /* Tooltip styles */
@@ -188,15 +245,15 @@
         }
 
         .tooltip-icon {
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
             background: var(--primary);
             color: white;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: bold;
             cursor: help;
             transition: all 0.3s ease;
@@ -214,12 +271,12 @@
             transform: translateX(-50%) translateY(-100%);
             background: var(--dark-bg);
             color: var(--dark-text);
-            padding: 0.8rem;
-            border-radius: 8px;
-            font-size: 0.8rem;
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
             font-weight: 400;
-            line-height: 1.4;
-            max-width: 250px;
+            line-height: 1.5;
+            max-width: 280px;
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s ease;
@@ -239,7 +296,7 @@
             top: 100%;
             left: 50%;
             transform: translateX(-50%);
-            border: 6px solid transparent;
+            border: 8px solid transparent;
             border-top-color: var(--dark-bg);
         }
 
@@ -251,17 +308,18 @@
         .tooltip:hover {
             opacity: 1;
             visibility: visible;
-            transform: translateX(-50%) translateY(-100%) translateY(-5px);
+            transform: translateX(-50%) translateY(-100%) translateY(-10px);
         }
 
         input[type="number"] {
-            padding: 0.6rem;
-            border-radius: 10px;
+            padding: 0.8rem;
+            border-radius: 12px;
             border: 2px solid var(--border);
             background: var(--bg);
-            font-size: 0.9rem;
+            font-size: 1rem;
             transition: all 0.3s ease;
             font-family: inherit;
+            font-weight: 500;
         }
 
         body.night input[type="number"] {
@@ -273,16 +331,25 @@
         input[type="number"]:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-            transform: translateY(-1px);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        input[type="number"]::placeholder {
+            color: var(--text-light);
+            font-weight: 400;
+        }
+        
+        body.night input[type="number"]::placeholder {
+            color: var(--dark-text-light);
         }
 
         .resume-card {
-            max-width: 900px;
-            margin: 0.5rem auto;
+            max-width: 1000px;
+            margin: 1.5rem auto;
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            padding: 0.8rem;
-            border-radius: 12px;
+            padding: 1.5rem;
+            border-radius: 20px;
             color: white;
             box-shadow: var(--shadow-lg);
             position: relative;
@@ -296,65 +363,76 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+            background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.15) 0%, transparent 40%);
             pointer-events: none;
         }
 
         .resume-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 0.6rem;
-            margin-top: 0.3rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 0.5rem;
         }
 
         .resume-item {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 0.6rem;
-            border-radius: 8px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+            padding: 1rem;
+            border-radius: 12px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .resume-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
         }
 
         .resume-item h3 {
-            font-size: 0.75rem;
+            font-size: 0.85rem;
             opacity: 0.9;
-            margin-bottom: 0.2rem;
+            margin-bottom: 0.4rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
+            font-weight: 700;
         }
 
         .resume-item .value {
-            font-size: 1.1rem;
-            font-weight: 800;
-            margin-bottom: 0.1rem;
+            font-size: 1.5rem;
+            font-weight: 900;
+            margin-bottom: 0.2rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
         }
 
         .resume-item .subtitle {
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             opacity: 0.8;
+            font-weight: 400;
         }
 
         button {
-            padding: 0.6rem 1.2rem;
-            border-radius: 10px;
+            padding: 0.8rem 1.6rem;
+            border-radius: 12px;
             border: none;
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
             color: white;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 700;
             transition: all 0.3s ease;
             font-family: inherit;
-            font-size: 0.9rem;
+            font-size: 1rem;
+            box-shadow: var(--shadow);
         }
 
         button:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
             box-shadow: var(--shadow-lg);
         }
 
         button:active {
             transform: translateY(0);
+            box-shadow: var(--shadow);
         }
 
         .controls {
@@ -362,15 +440,15 @@
             justify-content: center;
             gap: 1rem;
             flex-wrap: wrap;
-            margin: 0.8rem 0;
+            margin: 1.5rem 0;
         }
 
         #tableContainer {
             max-width: 1000px;
-            margin: 0.8rem auto;
+            margin: 1.5rem auto;
             overflow-x: auto;
             background: var(--bg);
-            border-radius: 12px;
+            border-radius: 20px;
             box-shadow: var(--shadow-lg);
             border: 1px solid var(--border);
         }
@@ -383,13 +461,14 @@
         table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 600px;
         }
 
         th, td {
-            padding: 0.7rem 0.6rem;
+            padding: 1rem 0.8rem;
             text-align: center;
             border-bottom: 1px solid var(--border);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
         }
 
         body.night th,
@@ -399,10 +478,10 @@
 
         th {
             background: var(--secondary);
-            font-weight: 700;
+            font-weight: 800;
             text-transform: uppercase;
             font-size: 0.8rem;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
         }
 
         body.night th {
@@ -416,17 +495,23 @@
         body.night tr:hover {
             background: rgba(255, 255, 255, 0.05);
         }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
 
         /* 2D Chart Container */
         #chartContainer {
             width: 100%;
             max-width: 1000px;
-            margin: 0.8rem auto;
+            height: 500px; /* Increased height for better visualization */
+            margin: 1.5rem auto;
             background: var(--bg);
-            border-radius: 12px;
+            border-radius: 20px;
             box-shadow: var(--shadow-lg);
             border: 1px solid var(--border);
-            padding: 1rem;
+            padding: 1.5rem;
+            position: relative;
         }
 
         body.night #chartContainer {
@@ -435,28 +520,38 @@
         }
         
         #savingChart {
-            max-height: 400px; /* Limita la altura para evitar que se estire demasiado en pantallas grandes */
+            width: 100% !important;
+            height: 100% !important;
         }
-
+        
         @media (max-width: 768px) {
             .container {
-                padding: 0.5rem;
+                padding: 0 0.5rem;
             }
             
             .header {
                 flex-direction: column;
-                gap: 0.5rem;
+                gap: 1rem;
                 align-items: center;
+                margin-bottom: 1rem;
+            }
+            
+            h1 {
+                text-align: center;
             }
             
             .tabs {
                 flex-direction: column;
-                align-items: center;
+                align-items: stretch;
+                gap: 0.5rem;
             }
             
             .tab {
-                width: 180px;
-                text-align: center;
+                max-width: 100%;
+            }
+            
+            .tab-content {
+                padding: 1.5rem;
             }
             
             form {
@@ -467,9 +562,13 @@
                 grid-template-columns: 1fr;
             }
             
-            .controls {
-                flex-direction: column;
-                align-items: center;
+            .deduction-item {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.75rem;
+            }
+            
+            .deduction-item button {
+                grid-column: 1 / -1;
             }
 
             .tooltip {
@@ -507,7 +606,17 @@
         </div>
 
         <div id="avanzado" class="tab-content">
-            <form id="formAvanzado" onsubmit="return false;"></form>
+            <form id="formAvanzado" onsubmit="return false;">
+                <div class="form-section">
+                    <div class="form-section-title">Parámetros Principales</div>
+                    </div>
+                <div class="form-section deductions-section">
+                    <div class="form-section-title">Deducciones por gastos</div>
+                    <div class="deductions-container" id="deductionsContainer">
+                        </div>
+                    <button type="button" id="addDeductionBtn">➕ Añadir gasto</button>
+                </div>
+            </form>
         </div>
 
         <div id="resumen" class="resume-card"></div>
@@ -524,6 +633,7 @@
     </div>
 
     <script>
+        // --- SECCIÓN DE CONFIGURACIÓN ---
         const camposBasico = [
             ['Edad inicio', 'edadInicioBasico', 25],
             ['Edad fin', 'edadFinBasico', 65],
@@ -546,14 +656,19 @@
             ['Inflación anual (%)', 'inflacionAdv', 3, 'Inflación promedio anual esperada (reduce el poder adquisitivo)'],
         ];
 
-        // Función para formatear números con separadores de miles
+        // --- SECCIÓN DE UTILIDADES ---
         function formatearNumero(numero) {
             return Math.round(numero).toLocaleString();
         }
 
+        // --- SECCIÓN DE RENDERIZACIÓN DE LA UI ---
         function generarInputs(campos, formId) {
             const form = document.getElementById(formId);
-            form.innerHTML = ''; // Limpiar el formulario antes de generar los inputs
+            // Si el formulario es avanzado, insertamos los inputs en la sección principal
+            const targetElement = formId === 'formAvanzado' ? form.querySelector('.form-section') : form;
+            
+            targetElement.innerHTML = formId === 'formAvanzado' ? '<div class="form-section-title">Parámetros Principales</div>' : '';
+
             campos.forEach(([labelText, id, valor, tooltip]) => {
                 const value = localStorage.getItem(id) ?? valor;
                 const label = document.createElement('label');
@@ -570,49 +685,55 @@
                 } else {
                     label.innerHTML = `${labelText}<input type="number" id="${id}" value="${value}">`;
                 }
-                
-                form.appendChild(label);
+                targetElement.appendChild(label);
             });
         }
-
-        generarInputs(camposBasico, 'formBasico');
-        generarInputs(camposAvanzado, 'formAvanzado');
-
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-                tab.classList.add('active');
-                document.getElementById(tab.dataset.tab).classList.add('active');
+        
+        function addDeductionInput(edad = '', monto = '') {
+            const container = document.getElementById('deductionsContainer');
+            const div = document.createElement('div');
+            div.className = 'deduction-item';
+            div.innerHTML = `
+                <label>
+                    Edad del gasto
+                    <input type="number" class="deduction-age" value="${edad}" placeholder="Ej: 40" min="0">
+                </label>
+                <label>
+                    Monto anual
+                    <input type="number" class="deduction-amount" value="${monto}" placeholder="Ej: 5000" min="0">
+                </label>
+                <button type="button" class="remove-deduction-btn">➖ Eliminar</button>
+            `;
+            container.appendChild(div);
+            
+            // Add event listener to the new remove button
+            div.querySelector('.remove-deduction-btn').addEventListener('click', () => {
+                div.remove();
                 autoCalcular();
             });
-        });
-
-        document.addEventListener('input', e => {
-            if (e.target.tagName === 'INPUT') {
-                localStorage.setItem(e.target.id, e.target.value);
-                autoCalcular();
-            }
-        });
-        
-        let myChart; // Variable para almacenar la instancia del gráfico
+            
+            // Add event listener to the new inputs
+            div.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', autoCalcular);
+            });
+        }
 
         function renderChart2D(datos, inflacion, e0) {
             const ctx = document.getElementById('savingChart').getContext('2d');
             const years = datos.map(d => d.edad);
             const nominalData = datos.map(d => d.saldo);
-            const realData = datos.map(d => d.saldo / Math.pow(1 + inflacion, d.edad - e0));
+            const realData = datos.map(d => d.saldoReal); // Use saldoReal from the data array
             
             // Si ya existe un gráfico, lo destruye para que no se superpongan
-            if (myChart) {
-                myChart.destroy();
+            if (window.myChart) {
+                window.myChart.destroy();
             }
             
             const isDark = document.body.classList.contains('night');
             const gridColor = isDark ? 'rgba(148, 163, 184, 0.2)' : 'rgba(226, 232, 240, 0.8)';
             const textColor = isDark ? '#f1f5f9' : '#1e293b';
 
-            myChart = new Chart(ctx, {
+            window.myChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: years,
@@ -621,7 +742,7 @@
                         data: nominalData,
                         borderColor: '#2563eb',
                         backgroundColor: 'rgba(37, 99, 235, 0.2)',
-                        borderWidth: 2,
+                        borderWidth: 3,
                         fill: false,
                         tension: 0.4,
                     }, {
@@ -629,7 +750,7 @@
                         data: realData,
                         borderColor: '#dc2626',
                         backgroundColor: 'rgba(220, 38, 38, 0.2)',
-                        borderWidth: 2,
+                        borderWidth: 3,
                         fill: false,
                         tension: 0.4,
                     }]
@@ -641,32 +762,21 @@
                         legend: {
                             labels: {
                                 color: textColor,
-                                font: {
-                                    family: 'Inter, "Segoe UI", sans-serif',
-                                    size: 12
-                                }
+                                font: { family: 'Inter, "Segoe UI", sans-serif', size: 14 }
                             }
                         },
                         title: {
                             display: true,
                             text: 'Proyección de Ahorros por Año',
                             color: textColor,
-                            font: {
-                                family: 'Inter, "Segoe UI", sans-serif',
-                                size: 16,
-                                weight: 'bold'
-                            }
+                            font: { family: 'Inter, "Segoe UI", sans-serif', size: 20, weight: 'bold' }
                         },
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
                                     let label = context.dataset.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    if (context.parsed.y !== null) {
-                                        label += `$${formatearNumero(context.parsed.y)}`;
-                                    }
+                                    if (label) { label += ': '; }
+                                    if (context.parsed.y !== null) { label += `$${formatearNumero(context.parsed.y)}`; }
                                     return label;
                                 }
                             }
@@ -678,36 +788,22 @@
                                 display: true,
                                 text: 'Edad',
                                 color: textColor,
-                                font: {
-                                    family: 'Inter, "Segoe UI", sans-serif',
-                                    size: 14,
-                                    weight: 'bold'
-                                }
+                                font: { family: 'Inter, "Segoe UI", sans-serif', size: 16, weight: 'bold' }
                             },
-                            grid: {
-                                color: gridColor
-                            },
-                            ticks: {
-                                color: textColor
-                            }
+                            grid: { color: gridColor },
+                            ticks: { color: textColor }
                         },
                         y: {
                             title: {
                                 display: true,
                                 text: 'Saldo (en $)',
                                 color: textColor,
-                                font: {
-                                    family: 'Inter, "Segoe UI", sans-serif',
-                                    size: 14,
-                                    weight: 'bold'
-                                }
+                                font: { family: 'Inter, "Segoe UI", sans-serif', size: 16, weight: 'bold' }
                             },
-                            grid: {
-                                color: gridColor
-                            },
+                            grid: { color: gridColor },
                             ticks: {
                                 color: textColor,
-                                callback: function(value, index, values) {
+                                callback: function(value) {
                                     return `$${formatearNumero(value)}`;
                                 }
                             }
@@ -717,71 +813,9 @@
             });
         }
 
-        function autoCalcular() {
-            const tab = document.querySelector('.tab.active').dataset.tab;
-            tab === 'basico' ? calcularBasico() : calcularAvanzado();
-        }
-
-        function calcularBasico() {
-            const e0 = +document.getElementById('edadInicioBasico').value;
-            const eF = +document.getElementById('edadFinBasico').value;
-            const aporteMensual = +document.getElementById('aporteMensualBasico').value;
-            const rendimiento = +document.getElementById('rendimientoBasico').value / 100;
-            const inflacion = +document.getElementById('inflacionBasico').value / 100;
-            let saldo = +document.getElementById('montoInicialBasico').value;
-            
-            if (!e0 || !eF || eF < e0) return;
-            
-            const datos = [];
-            let totalAportado = saldo;
-            
-            for (let edad = e0; edad <= eF; edad++) {
-                if (edad > e0) { // No aplicar el aporte en el primer año para no duplicar el monto inicial
-                    saldo += aporteMensual * 12;
-                    totalAportado += aporteMensual * 12;
-                }
-                saldo *= 1 + rendimiento;
-                datos.push({ edad, saldo, totalAportado });
-            }
-            
-            renderResultados(datos, e0, inflacion, totalAportado);
-        }
-
-        function calcularAvanzado() {
-            const e0 = +document.getElementById('edadInicioAdv').value;
-            const e1 = +document.getElementById('edadCambio1Adv').value;
-            const e2 = +document.getElementById('edadCambio2Adv').value;
-            const eF = +document.getElementById('edadFinAdv').value;
-            const a1 = +document.getElementById('aporteTramo1').value * 12;
-            const a2 = +document.getElementById('aporteTramo2').value * 12;
-            const a3 = +document.getElementById('aporteTramo3').value * 12;
-            const rendimiento = +document.getElementById('rendimientoAdv').value / 100;
-            const inflacion = +document.getElementById('inflacionAdv').value / 100;
-            let saldo = +document.getElementById('montoInicialAdv').value;
-            
-            if (!e0 || !eF || eF < e0) return;
-            
-            const datos = [];
-            let totalAportado = saldo;
-            
-            for (let edad = e0; edad <= eF; edad++) {
-                let aporte = 0;
-                if (edad > e0) { // No aplicar el aporte en el primer año
-                    aporte = edad < e1 ? a1 : edad < e2 ? a2 : a3;
-                    saldo += aporte;
-                    totalAportado += aporte;
-                }
-                saldo *= 1 + rendimiento;
-                datos.push({ edad, saldo, totalAportado });
-            }
-            
-            renderResultados(datos, e0, inflacion, totalAportado);
-        }
-
         function renderResultados(datos, e0, inflacion, totalAportadoFinal) {
             const tabla = datos.map(d => {
-                const real = d.saldo / Math.pow(1 + inflacion, d.edad - e0);
-                return `<tr><td>${d.edad}</td><td>$${formatearNumero(d.saldo)}</td><td>$${formatearNumero(real)}</td></tr>`;
+                return `<tr><td>${d.edad}</td><td>$${formatearNumero(d.saldo)}</td><td>$${formatearNumero(d.saldoReal)}</td></tr>`;
             }).join('');
             
             document.getElementById('tableContainer').innerHTML = `
@@ -797,15 +831,12 @@
                 </table>
             `;
 
-            // Renderiza el nuevo gráfico 2D
             renderChart2D(datos, inflacion, e0);
 
-            // Calcular datos para el resumen mejorado
             const final = datos[datos.length - 1];
-            const realFinal = final.saldo / Math.pow(1 + inflacion, final.edad - e0);
+            const realFinal = final.saldoReal;
             const generadoPorInversion = final.saldo - totalAportadoFinal;
             
-            // Encontrar edad al millón
             let edadAlMillon = 'No alcanzado';
             for (let i = 0; i < datos.length; i++) {
                 if (datos[i].saldo >= 1000000) {
@@ -814,7 +845,6 @@
                 }
             }
 
-            // Crear resumen mejorado
             document.getElementById('resumen').innerHTML = `
                 <div class="resume-grid">
                     <div class="resume-item">
@@ -844,7 +874,108 @@
             `;
         }
 
-        // Event listeners
+        // --- SECCIÓN DE CÁLCULOS ---
+        function getDeductions() {
+            const deductions = {};
+            document.querySelectorAll('.deduction-item').forEach(item => {
+                const age = parseInt(item.querySelector('.deduction-age').value);
+                const amount = parseFloat(item.querySelector('.deduction-amount').value);
+                if (!isNaN(age) && !isNaN(amount) && amount > 0) {
+                    deductions[age] = (deductions[age] || 0) + amount;
+                }
+            });
+            return deductions;
+        }
+
+        function calcularBasico() {
+            const e0 = +document.getElementById('edadInicioBasico').value;
+            const eF = +document.getElementById('edadFinBasico').value;
+            const aporteMensual = +document.getElementById('aporteMensualBasico').value;
+            const rendimiento = +document.getElementById('rendimientoBasico').value / 100;
+            const inflacion = +document.getElementById('inflacionBasico').value / 100;
+            let saldo = +document.getElementById('montoInicialBasico').value;
+            
+            if (!e0 || !eF || eF < e0) return;
+            
+            const datos = [];
+            let totalAportado = 0;
+            
+            for (let edad = e0; edad <= eF; edad++) {
+                // Aportes anuales
+                const aporteAnual = aporteMensual * 12;
+                if (edad === e0) {
+                    // Start with initial amount, no contribution on year 0
+                    totalAportado += +document.getElementById('montoInicialBasico').value;
+                } else {
+                    saldo += aporteAnual;
+                    totalAportado += aporteAnual;
+                }
+                
+                // Calculate new balance with return
+                saldo *= (1 + rendimiento);
+                
+                const real = saldo / Math.pow(1 + inflacion, edad - e0);
+                datos.push({ edad, saldo, saldoReal: real, totalAportado });
+            }
+            
+            renderResultados(datos, e0, inflacion, totalAportado);
+        }
+
+        function calcularAvanzado() {
+            const e0 = +document.getElementById('edadInicioAdv').value;
+            const e1 = +document.getElementById('edadCambio1Adv').value;
+            const e2 = +document.getElementById('edadCambio2Adv').value;
+            const eF = +document.getElementById('edadFinAdv').value;
+            const a1 = +document.getElementById('aporteTramo1').value * 12;
+            const a2 = +document.getElementById('aporteTramo2').value * 12;
+            const a3 = +document.getElementById('aporteTramo3').value * 12;
+            const rendimiento = +document.getElementById('rendimientoAdv').value / 100;
+            const inflacion = +document.getElementById('inflacionAdv').value / 100;
+            let saldo = +document.getElementById('montoInicialAdv').value;
+
+            const deducciones = getDeductions();
+            
+            if (!e0 || !eF || eF < e0) return;
+            
+            const datos = [];
+            let totalAportado = 0;
+            
+            for (let edad = e0; edad <= eF; edad++) {
+                let aporteAnual = 0;
+                if (edad === e0) {
+                    totalAportado += +document.getElementById('montoInicialAdv').value;
+                } else {
+                    aporteAnual = edad < e1 ? a1 : edad < e2 ? a2 : a3;
+                    saldo += aporteAnual;
+                    totalAportado += aporteAnual;
+                }
+                
+                // Apply deductions for the current age
+                if (deducciones[edad]) {
+                    saldo -= deducciones[edad];
+                    totalAportado += deducciones[edad]; // Deductions are also a form of spending money
+                }
+                
+                // Calculate new balance with return
+                saldo *= (1 + rendimiento);
+                
+                const real = saldo / Math.pow(1 + inflacion, edad - e0);
+                datos.push({ edad, saldo, saldoReal: real, totalAportado });
+            }
+            
+            renderResultados(datos, e0, inflacion, totalAportado);
+        }
+
+        function autoCalcular() {
+            const tab = document.querySelector('.tab.active').dataset.tab;
+            if (tab === 'basico') {
+                calcularBasico();
+            } else {
+                calcularAvanzado();
+            }
+        }
+
+        // --- SECCIÓN DE EVENT LISTENERS ---
         document.getElementById('toggleTableBtn').addEventListener('click', () => {
             const cont = document.getElementById('tableContainer');
             const visible = cont.style.display !== 'none';
@@ -857,25 +988,43 @@
             const isDark = document.body.classList.contains('night');
             document.getElementById('toggleNightBtn').textContent = isDark ? '☀️ Modo día' : '🌙 Modo noche';
             
-            // Actualiza el color del texto y la cuadrícula del gráfico al cambiar el tema
-            if (myChart) {
+            // Update chart theme
+            if (window.myChart) {
                 const gridColor = isDark ? 'rgba(148, 163, 184, 0.2)' : 'rgba(226, 232, 240, 0.8)';
                 const textColor = isDark ? '#f1f5f9' : '#1e293b';
-                myChart.options.scales.x.grid.color = gridColor;
-                myChart.options.scales.y.grid.color = gridColor;
-                myChart.options.scales.x.ticks.color = textColor;
-                myChart.options.scales.y.ticks.color = textColor;
-                myChart.options.scales.x.title.color = textColor;
-                myChart.options.scales.y.title.color = textColor;
-                myChart.options.plugins.legend.labels.color = textColor;
-                myChart.options.plugins.title.color = textColor;
-                myChart.update();
+                window.myChart.options.scales.x.grid.color = gridColor;
+                window.myChart.options.scales.y.grid.color = gridColor;
+                window.myChart.options.scales.x.ticks.color = textColor;
+                window.myChart.options.scales.y.ticks.color = textColor;
+                window.myChart.options.scales.x.title.color = textColor;
+                window.myChart.options.scales.y.title.color = textColor;
+                window.myChart.options.plugins.legend.labels.color = textColor;
+                window.myChart.options.plugins.title.color = textColor;
+                window.myChart.update();
             }
         });
         
-        // Inicializa todo
-        document.addEventListener('DOMContentLoaded', autoCalcular);
+        document.getElementById('addDeductionBtn').addEventListener('click', () => {
+            addDeductionInput();
+            autoCalcular();
+        });
 
+        // --- SECCIÓN DE INICIALIZACIÓN ---
+        function init() {
+            generarInputs(camposBasico, 'formBasico');
+            generarInputs(camposAvanzado, 'formAvanzado');
+            
+            // Generate some default deduction inputs for demonstration
+            if (document.getElementById('deductionsContainer').children.length === 0) {
+                addDeductionInput(30, 20000);
+                addDeductionInput(45, 50000);
+            }
+
+            // Calculate on page load
+            autoCalcular();
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
