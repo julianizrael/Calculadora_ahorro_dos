@@ -657,7 +657,6 @@
         // --- SECCIÓN DE RENDERIZACIÓN DE LA UI ---
         function generarInputs(campos, formId) {
             const form = document.getElementById(formId);
-            // Si el formulario es avanzado, insertamos los inputs en la sección principal
             const targetElement = formId === 'formAvanzado' ? form.querySelector('.form-section') : form;
             
             targetElement.innerHTML = formId === 'formAvanzado' ? '<div class="form-section-title">Parámetros Principales</div>' : '';
@@ -699,13 +698,11 @@
             `;
             container.appendChild(div);
             
-            // Add event listener to the new remove button
             div.querySelector('.remove-deduction-btn').addEventListener('click', () => {
                 div.remove();
                 autoCalcular();
             });
             
-            // Add event listener to the new inputs
             div.querySelectorAll('input').forEach(input => {
                 input.addEventListener('input', autoCalcular);
             });
@@ -715,9 +712,8 @@
             const ctx = document.getElementById('savingChart').getContext('2d');
             const years = datos.map(d => d.edad);
             const nominalData = datos.map(d => d.saldo);
-            const realData = datos.map(d => d.saldoReal); // Use saldoReal from the data array
+            const realData = datos.map(d => d.saldoReal);
             
-            // Si ya existe un gráfico, lo destruye para que no se superpongan
             if (window.myChart) {
                 window.myChart.destroy();
             }
@@ -891,22 +887,24 @@
             if (!e0 || !eF || eF < e0) return;
             
             const datos = [];
-            let totalAportado = 0;
+            let totalAportado = +document.getElementById('montoInicialBasico').value;
             
             for (let edad = e0; edad <= eF; edad++) {
-                // Aportes anuales
                 const aporteAnual = aporteMensual * 12;
-                if (edad === e0) {
-                    // Start with initial amount, no contribution on year 0
-                    totalAportado += +document.getElementById('montoInicialBasico').value;
+
+                // En el primer año y siguientes, se suma el aporte y luego se aplica el rendimiento
+                if (edad > e0) {
+                    saldo += aporteAnual;
+                    totalAportado += aporteAnual;
                 } else {
                     saldo += aporteAnual;
                     totalAportado += aporteAnual;
                 }
                 
-                // Calculate new balance with return
+                // Aplicar el rendimiento anual al saldo
                 saldo *= (1 + rendimiento);
                 
+                // Aplicar la inflación para el cálculo del saldo real
                 const real = saldo / Math.pow(1 + inflacion, edad - e0);
                 datos.push({ edad, saldo, saldoReal: real, totalAportado });
             }
@@ -931,17 +929,14 @@
             if (!e0 || !eF || eF < e0) return;
             
             const datos = [];
-            let totalAportado = 0;
+            let totalAportado = +document.getElementById('montoInicialAdv').value;
             
             for (let edad = e0; edad <= eF; edad++) {
                 let aporteAnual = 0;
-                if (edad === e0) {
-                    totalAportado += +document.getElementById('montoInicialAdv').value;
-                } else {
-                    aporteAnual = edad < e1 ? a1 : edad < e2 ? a2 : a3;
-                    saldo += aporteAnual;
-                    totalAportado += aporteAnual;
-                }
+                
+                aporteAnual = edad < e1 ? a1 : edad < e2 ? a2 : a3;
+                saldo += aporteAnual;
+                totalAportado += aporteAnual;
                 
                 // Apply deductions for the current age
                 if (deducciones[edad]) {
@@ -975,7 +970,6 @@
             document.getElementById(tabName).classList.add('active');
             document.querySelector(`.tab[data-tab="${tabName}"]`).classList.add('active');
             
-            // Recalculate after changing tabs
             autoCalcular();
         }
 
@@ -992,7 +986,6 @@
             const isDark = document.body.classList.contains('night');
             document.getElementById('toggleNightBtn').textContent = isDark ? '☀️ Modo día' : '🌙 Modo noche';
             
-            // Update chart theme
             if (window.myChart) {
                 const gridColor = isDark ? 'rgba(148, 163, 184, 0.2)' : 'rgba(226, 232, 240, 0.8)';
                 const textColor = isDark ? '#f1f5f9' : '#1e293b';
@@ -1024,18 +1017,15 @@
             generarInputs(camposBasico, 'formBasico');
             generarInputs(camposAvanzado, 'formAvanzado');
             
-            // Generate some default deduction inputs for demonstration
             if (document.getElementById('deductionsContainer').children.length === 0) {
                 addDeductionInput(30, 20000);
                 addDeductionInput(45, 50000);
             }
 
-            // Listen for input changes in both forms to recalculate
             document.querySelectorAll('input[type="number"]').forEach(input => {
                 input.addEventListener('input', autoCalcular);
             });
             
-            // Calculate on page load
             autoCalcular();
         }
 
