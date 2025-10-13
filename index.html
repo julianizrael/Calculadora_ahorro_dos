@@ -649,6 +649,98 @@
             ['Inflación anual (%)', 'inflacionAdv', 3, 'Inflación promedio anual esperada (reduce el poder adquisitivo)'],
         ];
 
+        // Clave para guardar el tab activo y el estado del modo noche
+        const storageKeyTab = 'calcAhorroTabActivo';
+        const storageKeyNightMode = 'calcAhorroNightMode';
+        const storageKeyDeductions = 'calcAhorroDeductions';
+        
+        // --- SECCIÓN DE ALMACENAMIENTO LOCAL (localStorage) ---
+
+        function guardarInputs() {
+            // Guarda los inputs básicos
+            camposBasico.forEach(([_, id]) => {
+                const input = document.getElementById(id);
+                if (input) {
+                    localStorage.setItem(id, input.value);
+                }
+            });
+
+            // Guarda los inputs avanzados
+            camposAvanzado.forEach(([_, id]) => {
+                const input = document.getElementById(id);
+                if (input) {
+                    localStorage.setItem(id, input.value);
+                }
+            });
+            guardarDeducciones();
+        }
+
+        function cargarInputs() {
+            // Carga inputs básicos
+            camposBasico.forEach(([_, id, valorDefecto]) => {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.value = localStorage.getItem(id) ?? valorDefecto;
+                }
+            });
+
+            // Carga inputs avanzados
+            camposAvanzado.forEach(([_, id, valorDefecto]) => {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.value = localStorage.getItem(id) ?? valorDefecto;
+                }
+            });
+            cargarDeducciones();
+        }
+        
+        function guardarDeducciones() {
+            const deductions = [];
+            document.querySelectorAll('.deduction-item').forEach(item => {
+                const age = item.querySelector('.deduction-age').value;
+                const amount = item.querySelector('.deduction-amount').value;
+                if (age && amount) {
+                    deductions.push({ age: age, amount: amount });
+                }
+            });
+            localStorage.setItem(storageKeyDeductions, JSON.stringify(deductions));
+        }
+
+        function cargarDeducciones() {
+            const container = document.getElementById('deductionsContainer');
+            container.innerHTML = ''; // Limpia las deducciones existentes
+            
+            const savedDeductions = localStorage.getItem(storageKeyDeductions);
+            if (savedDeductions) {
+                try {
+                    const deductions = JSON.parse(savedDeductions);
+                    deductions.forEach(d => addDeductionInput(d.age, d.amount, false)); // El false evita guardar otra vez
+                } catch (e) {
+                    console.error("Error al parsear las deducciones de localStorage:", e);
+                }
+            }
+        }
+        
+        function setupEventListeners() {
+            // Añade listener a los formularios para guardar y calcular al cambiar un input
+            document.getElementById('formBasico').addEventListener('input', () => {
+                guardarInputs();
+                autoCalcular();
+            });
+
+            document.getElementById('formAvanzado').addEventListener('input', () => {
+                guardarInputs();
+                autoCalcular();
+            });
+
+            // Listener para el botón de añadir deducción
+            document.getElementById('addDeductionBtn').addEventListener('click', () => {
+                addDeductionInput('', '');
+                guardarDeducciones(); // Guarda inmediatamente la nueva deducción vacía
+                autoCalcular();
+            });
+        }
+        
         // --- SECCIÓN DE UTILIDADES ---
         function formatearNumero(numero) {
             return Math.round(numero).toLocaleString();
@@ -657,11 +749,14 @@
         // --- SECCIÓN DE RENDERIZACIÓN DE LA UI ---
         function generarInputs(campos, formId) {
             const form = document.getElementById(formId);
+            // Si el formulario es Avanzado, inyecta después del título de Parámetros Principales
             const targetElement = formId === 'formAvanzado' ? form.querySelector('.form-section') : form;
             
+            // Limpia y añade el título para Avanzado si es necesario, si no, limpia todo el formulario
             targetElement.innerHTML = formId === 'formAvanzado' ? '<div class="form-section-title">Parámetros Principales</div>' : '';
 
             campos.forEach(([labelText, id, valor, tooltip]) => {
+                // Usa el valor de localStorage o el valor por defecto
                 const value = localStorage.getItem(id) ?? valor;
                 const label = document.createElement('label');
                 
@@ -681,7 +776,7 @@
             });
         }
         
-        function addDeductionInput(edad = '', monto = '') {
+        function addDeductionInput(edad = '', monto = '', shouldSave = true) {
             const container = document.getElementById('deductionsContainer');
             const div = document.createElement('div');
             div.className = 'deduction-item';
@@ -700,12 +795,20 @@
             
             div.querySelector('.remove-deduction-btn').addEventListener('click', () => {
                 div.remove();
+                guardarDeducciones(); // Guarda después de eliminar
                 autoCalcular();
             });
             
             div.querySelectorAll('input').forEach(input => {
-                input.addEventListener('input', autoCalcular);
+                input.addEventListener('input', () => {
+                    guardarDeducciones(); // Guarda al cambiar el valor
+                    autoCalcular();
+                });
             });
+
+            if (shouldSave) {
+                 guardarDeducciones();
+            }
         }
 
         function renderChart2D(datos, inflacion, e0) {
@@ -813,7 +916,7 @@
                         <tr>
                             <th>Edad</th>
                             <th>Saldo Nominal</th>
-                            <th>Saldo Real</th>
+                            <th>Saldo Real (Poder Adquisitivo)</th>
                         </tr>
                     </thead>
                     <tbody>${tabla}</tbody>
@@ -824,7 +927,7 @@
 
             const final = datos[datos.length - 1];
             const realFinal = final.saldoReal;
-            const generadoPorInversion = final.saldo - totalAportadoFinal;
+            const generadoPorInversion = Math.max(0, final.saldo - totalAportadoFinal);
             
             let edadAlMillon = 'No alcanzado';
             for (let i = 0; i < datos.length; i++) {
@@ -845,7 +948,7 @@
                     <div class="resume-item">
                         <h3>💪 Poder Adquisitivo</h3>
                         <div class="value">$${formatearNumero(realFinal)}</div>
-                        <div class="subtitle">Equivalente hoy</div>
+                        <div class="subtitle">Equivalente a hoy</div>
                     </div>
                     
                     <div class="resume-item">
@@ -891,22 +994,24 @@
             
             for (let edad = e0; edad <= eF; edad++) {
                 const aporteAnual = aporteMensual * 12;
-
-                // En el primer año y siguientes, se suma el aporte y luego se aplica el rendimiento
+                
+                // En el primer año (edad === e0) solo se aplica el rendimiento al monto inicial.
+                // A partir del siguiente (edad > e0), se suman los aportes y se aplica el rendimiento.
                 if (edad > e0) {
-                    saldo += aporteAnual;
+                    saldo = (saldo + aporteAnual) * (1 + rendimiento);
                     totalAportado += aporteAnual;
                 } else {
-                    saldo += aporteAnual;
-                    totalAportado += aporteAnual;
+                    // Año inicial
+                    saldo = saldo * (1 + rendimiento);
                 }
-                
-                // Aplicar el rendimiento anual al saldo
-                saldo *= (1 + rendimiento);
-                
-                // Aplicar la inflación para el cálculo del saldo real
-                const real = saldo / Math.pow(1 + inflacion, edad - e0);
-                datos.push({ edad, saldo, saldoReal: real, totalAportado });
+
+                const saldoReal = saldo / Math.pow(1 + inflacion, edad - e0);
+
+                datos.push({
+                    edad: edad,
+                    saldo: saldo,
+                    saldoReal: saldoReal
+                });
             }
             
             renderResultados(datos, e0, inflacion, totalAportado);
@@ -914,122 +1019,144 @@
 
         function calcularAvanzado() {
             const e0 = +document.getElementById('edadInicioAdv').value;
-            const e1 = +document.getElementById('edadCambio1Adv').value;
-            const e2 = +document.getElementById('edadCambio2Adv').value;
             const eF = +document.getElementById('edadFinAdv').value;
-            const a1 = +document.getElementById('aporteTramo1').value * 12;
-            const a2 = +document.getElementById('aporteTramo2').value * 12;
-            const a3 = +document.getElementById('aporteTramo3').value * 12;
+            const eC1 = +document.getElementById('edadCambio1Adv').value;
+            const eC2 = +document.getElementById('edadCambio2Adv').value;
+            const aporte1 = +document.getElementById('aporteTramo1').value;
+            const aporte2 = +document.getElementById('aporteTramo2').value;
+            const aporte3 = +document.getElementById('aporteTramo3').value;
             const rendimiento = +document.getElementById('rendimientoAdv').value / 100;
             const inflacion = +document.getElementById('inflacionAdv').value / 100;
             let saldo = +document.getElementById('montoInicialAdv').value;
-
             const deducciones = getDeductions();
-            
+
             if (!e0 || !eF || eF < e0) return;
-            
+
             const datos = [];
             let totalAportado = +document.getElementById('montoInicialAdv').value;
-            
+
             for (let edad = e0; edad <= eF; edad++) {
-                let aporteAnual = 0;
+                let aporteMensual = 0;
                 
-                aporteAnual = edad < e1 ? a1 : edad < e2 ? a2 : a3;
-                saldo += aporteAnual;
-                totalAportado += aporteAnual;
-                
-                // Apply deductions for the current age
-                if (deducciones[edad]) {
-                    saldo -= deducciones[edad];
-                    totalAportado += deducciones[edad]; // Deductions are also a form of spending money
+                if (edad < eC1) {
+                    aporteMensual = aporte1;
+                } else if (edad < eC2) {
+                    aporteMensual = aporte2;
+                } else {
+                    aporteMensual = aporte3;
                 }
                 
-                // Calculate new balance with return
-                saldo *= (1 + rendimiento);
+                const aporteAnual = aporteMensual * 12;
+                let deduccionAnual = deducciones[edad] || 0;
                 
-                const real = saldo / Math.pow(1 + inflacion, edad - e0);
-                datos.push({ edad, saldo, saldoReal: real, totalAportado });
+                if (edad > e0) {
+                    saldo = (saldo + aporteAnual) * (1 + rendimiento);
+                    totalAportado += aporteAnual;
+                } else {
+                    // Año inicial
+                    saldo = saldo * (1 + rendimiento);
+                }
+                
+                // Aplicar deducciones
+                if (deduccionAnual > 0) {
+                    saldo -= deduccionAnual;
+                    totalAportado += deduccionAnual; // La deducción es un "gasto" extra
+                }
+
+                const saldoReal = saldo / Math.pow(1 + inflacion, edad - e0);
+
+                datos.push({
+                    edad: edad,
+                    saldo: saldo,
+                    saldoReal: saldoReal
+                });
             }
-            
+
             renderResultados(datos, e0, inflacion, totalAportado);
         }
 
         function autoCalcular() {
-            const tab = document.querySelector('.tab.active').dataset.tab;
-            if (tab === 'basico') {
+            const activeTabId = document.querySelector('.tab.active').dataset.tab;
+            if (activeTabId === 'basico') {
                 calcularBasico();
-            } else {
+            } else if (activeTabId === 'avanzado') {
                 calcularAvanzado();
             }
         }
         
-        function cambiarPestana(tabName) {
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+        // --- SECCIÓN DE INICIALIZACIÓN Y EVENTOS DE LA UI ---
+        
+        // Función para cambiar de pestaña
+        function switchTab(targetTabId) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
             
-            document.getElementById(tabName).classList.add('active');
-            document.querySelector(`.tab[data-tab="${tabName}"]`).classList.add('active');
+            document.getElementById(targetTabId).classList.add('active');
+            document.querySelector(`.tab[data-tab="${targetTabId}"]`).classList.add('active');
             
+            localStorage.setItem(storageKeyTab, targetTabId); // Guarda la pestaña activa
+            
+            // Recargar inputs y recalcular para la pestaña activa
+            cargarInputs();
             autoCalcular();
         }
 
-        // --- SECCIÓN DE EVENT LISTENERS ---
-        document.getElementById('toggleTableBtn').addEventListener('click', () => {
-            const cont = document.getElementById('tableContainer');
-            const visible = cont.style.display !== 'none';
-            cont.style.display = visible ? 'none' : 'block';
-            document.getElementById('toggleTableBtn').textContent = visible ? '👁️ Mostrar tabla' : '👁️ Ocultar tabla';
-        });
-
-        document.getElementById('toggleNightBtn').addEventListener('click', () => {
+        // Configuración de modo noche
+        function toggleNightMode() {
             document.body.classList.toggle('night');
-            const isDark = document.body.classList.contains('night');
-            document.getElementById('toggleNightBtn').textContent = isDark ? '☀️ Modo día' : '🌙 Modo noche';
+            const isNight = document.body.classList.contains('night');
+            document.getElementById('toggleNightBtn').textContent = isNight ? '☀️ Modo día' : '🌙 Modo noche';
+            localStorage.setItem(storageKeyNightMode, isNight);
             
-            if (window.myChart) {
-                const gridColor = isDark ? 'rgba(148, 163, 184, 0.2)' : 'rgba(226, 232, 240, 0.8)';
-                const textColor = isDark ? '#f1f5f9' : '#1e293b';
-                window.myChart.options.scales.x.grid.color = gridColor;
-                window.myChart.options.scales.y.grid.color = gridColor;
-                window.myChart.options.scales.x.ticks.color = textColor;
-                window.myChart.options.scales.y.ticks.color = textColor;
-                window.myChart.options.scales.x.title.color = textColor;
-                window.myChart.options.scales.y.title.color = textColor;
-                window.myChart.options.plugins.legend.labels.color = textColor;
-                window.myChart.options.plugins.title.color = textColor;
-                window.myChart.update();
-            }
-        });
-        
-        document.getElementById('addDeductionBtn').addEventListener('click', () => {
-            addDeductionInput();
+            // Destruir y recrear el gráfico para actualizar los colores.
             autoCalcular();
-        });
+        }
 
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                cambiarPestana(tab.dataset.tab);
-            });
-        });
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Cargar el estado del modo noche
+            const savedNightMode = localStorage.getItem(storageKeyNightMode);
+            if (savedNightMode === 'true') {
+                document.body.classList.add('night');
+                document.getElementById('toggleNightBtn').textContent = '☀️ Modo día';
+            }
 
-        // --- SECCIÓN DE INICIALIZACIÓN ---
-        function init() {
+            // 2. Generar y cargar los inputs de ambas pestañas
             generarInputs(camposBasico, 'formBasico');
             generarInputs(camposAvanzado, 'formAvanzado');
             
-            if (document.getElementById('deductionsContainer').children.length === 0) {
-                addDeductionInput(30, 20000);
-                addDeductionInput(45, 50000);
-            }
+            // 3. Cargar el estado de la pestaña y los inputs (incluyendo deducciones)
+            const activeTabId = localStorage.getItem(storageKeyTab) || 'basico';
+            switchTab(activeTabId); // Esto cargará los inputs y realizará el primer cálculo
 
-            document.querySelectorAll('input[type="number"]').forEach(input => {
-                input.addEventListener('input', autoCalcular);
+            // 4. Configurar los Event Listeners para el modo noche, tabs y forms
+            document.getElementById('toggleNightBtn').addEventListener('click', toggleNightMode);
+
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    const targetTabId = e.target.dataset.tab;
+                    switchTab(targetTabId);
+                });
             });
             
-            autoCalcular();
-        }
-
-        document.addEventListener('DOMContentLoaded', init);
+            document.getElementById('toggleTableBtn').addEventListener('click', () => {
+                const container = document.getElementById('tableContainer');
+                const btn = document.getElementById('toggleTableBtn');
+                if (container.style.display === 'none') {
+                    container.style.display = 'block';
+                    btn.innerHTML = '👁️ Ocultar tabla';
+                } else {
+                    container.style.display = 'none';
+                    btn.innerHTML = '✨ Mostrar tabla';
+                }
+            });
+            
+            setupEventListeners(); // Configura listeners para guardar/calcular en inputs/deducciones
+        });
     </script>
 </body>
 </html>
