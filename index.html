@@ -18,13 +18,16 @@
             --bg-alt: #f8fafc;
             --border: #e2e8f0;
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 4, 0, 0.1);
 
             /* Dark Mode Variables */
             --dark-bg: #0f172a;
             --dark-bg-alt: #1e293b;
             --dark-text-color: #f1f5f9;
             --dark-border: #334155;
+            
+            /* Colores Adicionales para Gráfico/Resultados */
+            --aportado-color: #f59e0b; /* Amarillo/Ámbar */
         }
 
         /* Dark Mode */
@@ -119,7 +122,7 @@
         body {
             line-height: 1.6;
             background-color: var(--bg-alt);
-            /* AJUSTE: De 3rem a 1.5rem */
+            /* AJUSTE: MÁRGENES */
             padding-bottom: 1.5rem; 
             transition: background-color 0.3s;
         }
@@ -136,7 +139,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            /* AJUSTE: De 2rem 0 1.5rem a 1rem 0 1rem */
+            /* AJUSTE: MÁRGENES */
             margin: 1rem 0 1rem;
             flex-wrap: wrap;
             gap: 1rem;
@@ -203,7 +206,7 @@
         /* Tab Content */
         .tab-content {
             background: var(--bg);
-            /* AJUSTE: De 2rem a 1.25rem */
+            /* AJUSTE: MÁRGENES */
             padding: 1.25rem; 
             border-bottom-left-radius: 18px;
             border-bottom-right-radius: 18px;
@@ -211,7 +214,7 @@
             box-shadow: var(--shadow);
             border: 1px solid var(--border);
             display: none;
-            /* AJUSTE: De 1.5rem a 1rem */
+            /* AJUSTE: MÁRGENES */
             margin-bottom: 1rem; 
         }
 
@@ -239,7 +242,7 @@
             font-size: 1.2rem;
             font-weight: 700;
             color: var(--primary);
-            /* AJUSTE: De 1rem a 0.75rem */
+            /* AJUSTE: MÁRGENES */
             margin-bottom: 0.75rem; 
             border-bottom: 2px solid var(--border);
             padding-bottom: 0.5rem;
@@ -275,6 +278,7 @@
             font-weight: 600;
             color: var(--text-color);
             font-size: 0.95rem;
+            position: relative; /* Para el icono de error */
         }
         
         body.night label {
@@ -296,6 +300,25 @@
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
             outline: none;
         }
+        
+        /* ESTILO PARA VALIDACIÓN DE ERROR (MEJORA 6) */
+        input[data-error="true"] {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
+        }
+
+        .error-message {
+            color: var(--secondary);
+            font-size: 0.85rem;
+            margin-top: 0.2rem;
+            font-weight: 500;
+            display: none;
+        }
+
+        input[data-error="true"] + .error-message {
+            display: block;
+        }
+        /* FIN ESTILO PARA VALIDACIÓN DE ERROR */
 
         /* Buttons */
         .deductions-section button,
@@ -335,7 +358,7 @@
         }
 
         .controls {
-            /* AJUSTE: De 1.5rem a 1rem */
+            /* AJUSTE: MÁRGENES */
             margin-bottom: 1rem; 
             display: flex;
             justify-content: flex-end;
@@ -357,14 +380,20 @@
             border-radius: 18px;
             box-shadow: var(--shadow-lg);
             border: 1px solid var(--border);
-            /* AJUSTE: De 1.5rem a 1rem */
+            /* AJUSTE: MÁRGENES */
             margin-bottom: 1rem; 
         }
 
         .resume-grid {
+            /* Aumentar la cuadrícula para las 5 métricas */
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1.5rem;
+        }
+        
+        /* Estilo para la métrica de Retiro Mensual */
+        .resume-item[data-highlight="true"] .value {
+            color: var(--success);
         }
 
         .resume-item {
@@ -376,13 +405,13 @@
         }
         
         .resume-item h3 {
-            font-size: 1rem;
+            font-size: 0.95rem; /* Ligeramente más pequeño para las 5 métricas */
             color: var(--primary-hover);
             margin-bottom: 0.5rem;
         }
 
         .resume-item .value {
-            font-size: 2.5rem;
+            font-size: 2.2rem; /* Ligeramente más pequeño */
             font-weight: 800;
             color: var(--text-color);
             transition: color 0.3s;
@@ -391,6 +420,11 @@
         body.night .resume-item .value {
              color: var(--dark-text-color);
         }
+        
+        body.night .resume-item[data-highlight="true"] .value {
+            color: var(--success);
+        }
+
 
         .resume-item .subtitle {
             font-size: 0.9rem;
@@ -399,7 +433,7 @@
 
         /* Table Styling */
         #tableContainer {
-            /* AJUSTE: De 1.5rem a 1rem */
+            /* AJUSTE: MÁRGENES */
             margin-bottom: 1rem; 
             overflow-x: auto;
         }
@@ -497,7 +531,7 @@
             width: 100%;
             max-width: 1000px;
             height: 500px;
-            /* AJUSTE: De 1rem auto a 0.75rem auto */
+            /* AJUSTE: MÁRGENES */
             margin: 0.75rem auto; 
             background: var(--bg);
             border-radius: 18px;
@@ -635,12 +669,12 @@
     <script>
         // --- SECCIÓN DE CONFIGURACIÓN ---
         const camposBasico = [
-            ['Edad inicio', 'edadInicioBasico', 25],
-            ['Edad fin', 'edadFinBasico', 65],
+            ['Edad inicio', 'edadInicioBasico', 25, 'Tu edad actual'],
+            ['Edad fin', 'edadFinBasico', 65, 'La edad en la que deseas alcanzar tu objetivo'],
             ['Monto inicial', 'montoInicialBasico', 0],
             ['Aporte mensual', 'aporteMensualBasico', 100],
-            ['Rendimiento anual estimado (%)', 'rendimientoBasico', 5],
-            ['Inflación anual estimada (%)', 'inflacionBasico', 3],
+            ['Rendimiento anual estimado (%)', 'rendimientoBasico', 5, 'Rentabilidad promedio anual esperada de tus inversiones'],
+            ['Inflación anual estimada (%)', 'inflacionBasico', 3, 'Inflación promedio anual esperada (reduce el poder adquisitivo)'],
         ];
 
         const camposAvanzado = [
@@ -658,21 +692,97 @@
 
         // --- SECCIÓN DE UTILIDADES ---
         function formatearNumero(numero) {
-            return Math.round(numero).toLocaleString();
+            return Math.round(numero).toLocaleString('es-ES', { minimumFractionDigits: 0 });
+        }
+        
+        function formatearPorcentaje(numero) {
+            return (Math.round(numero * 100) / 100).toLocaleString('es-ES', { minimumFractionDigits: 2 });
         }
 
         function getStoredValue(id, defaultValue) {
             const storedValue = localStorage.getItem(id);
-            // Usamos operador ternario en lugar de ?? por compatibilidad
             return storedValue !== null ? storedValue : defaultValue;
         }
+        
+        /**
+         * Calcula la Tasa Interna de Retorno (TIR) ajustada por inflación.
+         * Se usa una aproximación.
+         * @param {Array<{edad: number, saldo: number, totalAportado: number}>} datos - Los datos de saldo por edad.
+         * @param {number} inflacion - Tasa de inflación.
+         * @returns {number} TIR real en porcentaje.
+         */
+        function calcularTIRReal(datos, inflacion) {
+            if (datos.length < 2) return 0;
 
+            const AporteInicial = datos[0].totalAportado;
+            const Anios = datos[datos.length - 1].edad - datos[0].edad;
+            const MontoFinal = datos[datos.length - 1].saldo;
+            const AporteAnualPromedio = (datos[datos.length - 1].totalAportado - AporteInicial) / Anios;
+
+            // Simplificación: TRC = (Valor Final / Inversión Total) ^ (1/Años) - 1
+            // Usamos el Monto Final Real (ajustado por inflación) para obtener el retorno real
+            const MontoFinalReal = MontoFinal / Math.pow(1 + inflacion, Anios);
+            
+            // Si el aporte inicial es cero, usamos un cálculo de serie de pagos
+            if (AporteInicial === 0 && AporteAnualPromedio > 0) {
+                // Cálculo aproximado de Tasa de Retorno sobre una anualidad
+                // Esto requiere métodos iterativos más complejos (como Newton-Raphson) que no implementaremos aquí.
+                // En su lugar, usaremos el retorno nominal menos la inflación como aproximación de "Retorno Real"
+                
+                // Retorno Nominal Promedio Simple: (MontoFinal / (AporteInicial + AporteAnualPromedio * Anios)) ^ (1/Anios) - 1
+                const AporteTotal = datos[datos.length - 1].totalAportado;
+                const RetornoNominal = Math.pow(MontoFinal / AporteTotal, 1/Anios) - 1;
+                
+                // Usamos la Tasa de Rendimiento Real (TRC), que es aproximadamente:
+                // ((1 + Rendimiento Nominal) / (1 + Inflación)) - 1
+                // En este caso, el Rendimiento Nominal ya está ajustado a la TIR
+                if(isNaN(RetornoNominal)) return 0;
+                return (((1 + RetornoNominal) / (1 + inflacion)) - 1) * 100;
+                
+            } else if (AporteInicial > 0 && AporteAnualPromedio === 0) {
+                 // Si solo hay un aporte inicial (no hay aportes periódicos), es fácil de calcular:
+                 const RetornoRealSimple = Math.pow(MontoFinalReal / AporteInicial, 1 / Anios) - 1;
+                 return RetornoRealSimple * 100;
+            } else {
+                // Caso general: Usamos una aproximación de la tasa de crecimiento compuesto promedio
+                const RetornoNominal = ((MontoFinal / datos[0].saldo) ** (1/Anios) - 1);
+                return (((1 + RetornoNominal) / (1 + inflacion)) - 1) * 100;
+            }
+        }
+
+        /**
+         * Calcula el retiro mensual constante que puede hacerse durante un número de años (tasa real).
+         * Utiliza la fórmula del valor actual de una anualidad (PV of Annuity).
+         * @param {number} saldoFinalReal - Monto final ajustado a la inflación (poder adquisitivo de hoy).
+         * @param {number} rendimientoRealAnual - Tasa de rendimiento real anual (Rendimiento Nominal - Inflación).
+         * @param {number} aniosRetiro - Número de años que durará el retiro.
+         * @returns {number} Monto mensual constante (en poder adquisitivo de hoy).
+         */
+        function calcularRetiroMensual(saldoFinalReal, rendimientoRealAnual, aniosRetiro) {
+            const r = (1 + rendimientoRealAnual) / (1 + 0) - 1; // Usamos la tasa real, por lo que la inflación es 0
+            const r_mensual = Math.pow(1 + r, 1/12) - 1;
+            const n_meses = aniosRetiro * 12;
+
+            if (r_mensual <= 0) {
+                // Si la tasa real es 0 o negativa, el retiro constante es Saldo / Meses.
+                // Usamos 0.000001 como tasa mínima para evitar división por cero.
+                if (r_mensual <= -0.005) { // Si es muy negativa, el retiro es solo el capital
+                    return saldoFinalReal / n_meses;
+                }
+            }
+
+            // Fórmula de pago (PMT) para el valor presente (PV): PMT = PV * [ r / (1 - (1 + r)^-n) ]
+            // Donde PMT es el pago, PV es el saldo, r es la tasa y n es el número de períodos.
+            const retiroAnual = saldoFinalReal * (r / (1 - Math.pow(1 + r, -aniosRetiro)));
+            
+            return retiroAnual / 12; // Retiro mensual
+        }
+        
         // --- SECCIÓN DE RENDERIZACIÓN DE LA UI ---
         function generarInputs(campos, formId) {
             const form = document.getElementById(formId);
             const targetElement = formId === 'formAvanzado' ? form.querySelector('.form-section:first-child') : form;
             
-            // Limpiar contenido, pero mantener el título en Avanzado
             targetElement.innerHTML = formId === 'formAvanzado' ? '<div class="form-section-title">Parámetros Principales</div>' : '';
 
             campos.forEach(([labelText, id, valor, tooltip]) => {
@@ -696,6 +806,7 @@
                 div.innerHTML = `
                     <label for="${id}">${labelHTML}</label>
                     <input type="number" id="${id}" value="${value}">
+                    <div id="error-${id}" class="error-message"></div>
                 `;
 
                 targetElement.appendChild(div);
@@ -710,46 +821,88 @@
                 <div class="form-input-group">
                     <label>Edad del gasto</label>
                     <input type="number" class="deduction-age" value="${edad}" placeholder="Ej: 40" min="0">
+                    <div class="error-message"></div>
                 </div>
                 <div class="form-input-group">
                     <label>Monto anual</label>
                     <input type="number" class="deduction-amount" value="${monto}" placeholder="Ej: 5000" min="0">
+                    <div class="error-message"></div>
                 </div>
                 <button type="button" class="remove-deduction-btn">➖ Eliminar</button>
             `;
             container.appendChild(div);
             
-            // Adjuntar listener directamente a los elementos creados
             div.querySelector('.remove-deduction-btn').addEventListener('click', () => {
                 div.remove();
                 autoCalcular();
             });
             
             div.querySelectorAll('input').forEach(input => {
-                input.addEventListener('input', autoCalcular);
+                input.addEventListener('input', () => {
+                    validarInputs(); // Revalidar después de un cambio en deducciones
+                    autoCalcular();
+                });
             });
         }
 
-        function renderChart2D(datos) {
+        function renderChart2D(datos, rendimiento) {
             const ctx = document.getElementById('savingChart').getContext('2d');
             const years = datos.map(d => d.edad);
             const nominalData = datos.map(d => d.saldo);
             const realData = datos.map(d => d.saldoReal);
-            
+            const aportadoData = datos.map(d => d.totalAportado);
+            const finalAge = years[years.length - 1];
+
             if (window.myChart) {
                 window.myChart.destroy();
             }
             
             const isDark = document.body.classList.contains('night');
-            // Reutilizar colores para el modo noche/día
             const gridColor = isDark ? 'rgba(148, 163, 184, 0.2)' : 'rgba(226, 232, 240, 0.8)';
             const textColor = isDark ? '#f1f5f9' : '#1e293b';
 
+            // Plugin para la línea de 1 Millón (MEJORA 5)
+            const millionLinePlugin = {
+                id: 'millionLinePlugin',
+                beforeDraw: (chart) => {
+                    const millionValue = 1000000;
+                    const yScale = chart.scales.y;
+                    const millionY = yScale.getPixelForValue(millionValue);
+                    
+                    if (millionY < yScale.bottom && millionY > yScale.top) {
+                        const ctx = chart.ctx;
+                        ctx.save();
+                        ctx.beginPath();
+                        ctx.moveTo(yScale.left, millionY);
+                        ctx.lineTo(yScale.right, millionY);
+                        ctx.lineWidth = 2;
+                        ctx.strokeStyle = '#8b5cf6'; // Violeta
+                        ctx.setLineDash([6, 6]);
+                        ctx.stroke();
+                        ctx.restore();
+                        
+                        // Etiqueta del millón
+                        ctx.fillStyle = '#8b5cf6';
+                        ctx.textAlign = 'right';
+                        ctx.font = '14px Inter';
+                        ctx.fillText('$1,000,000', yScale.right - 5, millionY - 10);
+                    }
+                }
+            };
+            
             window.myChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: years,
                     datasets: [{
+                        label: 'Poder Adquisitivo Real',
+                        data: realData,
+                        borderColor: '#dc2626',
+                        backgroundColor: 'rgba(220, 38, 38, 0.2)',
+                        borderWidth: 3,
+                        fill: false,
+                        tension: 0.4,
+                    }, {
                         label: 'Saldo Nominal',
                         data: nominalData,
                         borderColor: '#2563eb',
@@ -758,11 +911,12 @@
                         fill: false,
                         tension: 0.4,
                     }, {
-                        label: 'Poder Adquisitivo Real',
-                        data: realData,
-                        borderColor: '#dc2626',
-                        backgroundColor: 'rgba(220, 38, 38, 0.2)',
-                        borderWidth: 3,
+                        label: 'Total Aportado', // MEJORA 5: Añadir línea de Aportado
+                        data: aportadoData,
+                        borderColor: 'var(--aportado-color)', 
+                        backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
                         fill: false,
                         tension: 0.4,
                     }]
@@ -776,7 +930,7 @@
                         },
                         title: {
                             display: true,
-                            text: 'Proyección de Ahorros por Año',
+                            text: `Proyección de Ahorros hasta los ${finalAge} años (Rendimiento: ${rendimiento}%)`,
                             color: textColor,
                             font: { family: 'Inter, "Segoe UI", sans-serif', size: 20, weight: 'bold' }
                         },
@@ -803,13 +957,34 @@
                             ticks: { color: textColor, callback: (value) => `$${formatearNumero(value)}` }
                         }
                     }
-                }
+                },
+                plugins: [millionLinePlugin] // Aplicar el plugin del millón
             });
         }
 
-        function renderResultados(datos, totalAportadoFinal) {
+        function renderResultados(datos, totalAportadoFinal, rendimiento, inflacion) {
+            const final = datos[datos.length - 1];
+            const realFinal = final.saldoReal;
+            const generadoPorInversion = final.saldo - totalAportadoFinal;
+            
+            // --- CÁLCULOS MEJORA 4 ---
+            const aniosRetiro = 30; // 30 años de retiro
+            const rendimientoRealAnual = (rendimiento - inflacion) / 100;
+            const retiroMensualReal = calcularRetiroMensual(realFinal, rendimientoRealAnual, aniosRetiro);
+            
+            const tirReal = calcularTIRReal(datos, inflacion / 100);
+
+            let edadAlMillon = 'No alcanzado';
+            for (let i = 0; i < datos.length; i++) {
+                if (datos[i].saldo >= 1000000) {
+                    edadAlMillon = datos[i].edad;
+                    break;
+                }
+            }
+            // --- FIN CÁLCULOS MEJORA 4 ---
+
             const tabla = datos.map(d => {
-                return `<tr><td>${d.edad}</td><td>$${formatearNumero(d.saldo)}</td><td>$${formatearNumero(d.saldoReal)}</td></tr>`;
+                return `<tr><td>${d.edad}</td><td>$${formatearNumero(d.saldo)}</td><td>$${formatearNumero(d.saldoReal)}</td><td>$${formatearNumero(d.totalAportado)}</td></tr>`;
             }).join('');
             
             document.getElementById('tableContainer').innerHTML = `
@@ -818,26 +993,15 @@
                         <tr>
                             <th>Edad</th>
                             <th>Saldo Nominal</th>
-                            <th>Saldo Real (Poder Adquisitivo)</th>
+                            <th>Poder Adquisitivo (Real)</th>
+                            <th>Total Aportado</th>
                         </tr>
                     </thead>
                     <tbody>${tabla}</tbody>
                 </table>
             `;
 
-            renderChart2D(datos);
-
-            const final = datos[datos.length - 1];
-            const realFinal = final.saldoReal;
-            const generadoPorInversion = final.saldo - totalAportadoFinal;
-            
-            let edadAlMillon = 'No alcanzado';
-            for (let i = 0; i < datos.length; i++) {
-                if (datos[i].saldo >= 1000000) {
-                    edadAlMillon = datos[i].edad;
-                    break;
-                }
-            }
+            renderChart2D(datos, rendimiento);
 
             document.getElementById('resumen').innerHTML = `
                 <div class="resume-grid">
@@ -847,6 +1011,12 @@
                         <div class="subtitle">A los ${final.edad} años (nominal)</div>
                     </div>
                     
+                    <div class="resume-item" data-highlight="true">
+                        <h3>💸 Retiro Mensual Sostenible</h3>
+                        <div class="value">$${formatearNumero(retiroMensualReal)}</div>
+                        <div class="subtitle">Mensual por ${aniosRetiro} años (Poder adquisitivo de hoy)</div>
+                    </div>
+                    
                     <div class="resume-item">
                         <h3>💪 Poder Adquisitivo</h3>
                         <div class="value">$${formatearNumero(realFinal)}</div>
@@ -854,15 +1024,15 @@
                     </div>
                     
                     <div class="resume-item">
-                        <h3>🚀 Edad al Millón (Nominal)</h3>
-                        <div class="value">${edadAlMillon === 'No alcanzado' ? '❌' : edadAlMillon}</div>
-                        <div class="subtitle">${edadAlMillon === 'No alcanzado' ? 'No se alcanza' : 'años'}</div>
-                    </div>
-                    
-                    <div class="resume-item">
                         <h3>📈 Generado por Inversión</h3>
                         <div class="value">$${formatearNumero(generadoPorInversion)}</div>
                         <div class="subtitle">vs $${formatearNumero(totalAportadoFinal)} aportados</div>
+                    </div>
+                    
+                    <div class="resume-item">
+                        <h3>📊 TIR Real Anual</h3>
+                        <div class="value">${formatearPorcentaje(tirReal)}%</div>
+                        <div class="subtitle">Ganancia anual real (ajustada a inflación)</div>
                     </div>
                 </div>
             `;
@@ -880,43 +1050,126 @@
             });
             return deductions;
         }
+        
+        // MEJORA 6: Función de validación de entradas
+        function validarInputs() {
+            let isValid = true;
+            const tab = document.querySelector('.tab.active').dataset.tab;
+            const formId = tab === 'basico' ? 'formBasico' : 'formAvanzado';
+            const inputs = document.querySelectorAll(`#${formId} input[type="number"]`);
+
+            // Limpiar errores previos
+            inputs.forEach(input => {
+                input.removeAttribute('data-error');
+                const errorDiv = document.getElementById(`error-${input.id}`) || input.nextElementSibling;
+                if (errorDiv && errorDiv.classList.contains('error-message')) {
+                    errorDiv.textContent = '';
+                }
+            });
+            
+            // 1. Validaciones generales de rangos y números
+            inputs.forEach(input => {
+                const value = parseFloat(input.value);
+                if (isNaN(value) || input.value.trim() === '') {
+                    isValid = false;
+                    input.setAttribute('data-error', 'true');
+                    const errorDiv = document.getElementById(`error-${input.id}`) || input.nextElementSibling;
+                    if (errorDiv && errorDiv.classList.contains('error-message')) {
+                        errorDiv.textContent = 'Este campo es obligatorio y debe ser un número.';
+                    }
+                } else if (input.id.includes('rendimiento') && value < -20) {
+                    isValid = false;
+                    input.setAttribute('data-error', 'true');
+                    const errorDiv = document.getElementById(`error-${input.id}`) || input.nextElementSibling;
+                    if (errorDiv && errorDiv.classList.contains('error-message')) {
+                        errorDiv.textContent = 'El rendimiento no debe ser inferior a -20%.';
+                    }
+                }
+            });
+
+            if (!isValid) return false;
+
+            // 2. Validaciones de Edades (Basico)
+            if (tab === 'basico') {
+                const e0 = +document.getElementById('edadInicioBasico').value;
+                const eF = +document.getElementById('edadFinBasico').value;
+                
+                if (eF <= e0) {
+                    isValid = false;
+                    document.getElementById('edadFinBasico').setAttribute('data-error', 'true');
+                    document.getElementById('error-edadFinBasico').textContent = 'La edad fin debe ser mayor a la edad inicio.';
+                }
+            }
+
+            // 3. Validaciones de Edades (Avanzado)
+            if (tab === 'avanzado') {
+                const e0 = +document.getElementById('edadInicioAdv').value;
+                const e1 = +document.getElementById('edadCambio1Adv').value;
+                const e2 = +document.getElementById('edadCambio2Adv').value;
+                const eF = +document.getElementById('edadFinAdv').value;
+                
+                // e1 > e0
+                if (e1 <= e0) {
+                    isValid = false;
+                    document.getElementById('edadCambio1Adv').setAttribute('data-error', 'true');
+                    document.getElementById('error-edadCambio1Adv').textContent = 'Debe ser mayor que la edad actual.';
+                }
+                
+                // e2 > e1
+                if (e2 <= e1) {
+                    isValid = false;
+                    document.getElementById('edadCambio2Adv').setAttribute('data-error', 'true');
+                    document.getElementById('error-edadCambio2Adv').textContent = 'Debe ser mayor que la edad de inicio de etapa 2.';
+                }
+                
+                // eF > e2
+                if (eF <= e2) {
+                    isValid = false;
+                    document.getElementById('edadFinAdv').setAttribute('data-error', 'true');
+                    document.getElementById('error-edadFinAdv').textContent = 'Debe ser mayor que la edad de etapa 3.';
+                }
+            }
+            
+            return isValid;
+        }
 
         function calcularBasico() {
-            // Asegurarse de parsear a número. El '+' es un atajo.
+            if (!validarInputs()) return;
+            
             const e0 = +document.getElementById('edadInicioBasico').value;
             const eF = +document.getElementById('edadFinBasico').value;
             const aporteMensual = +document.getElementById('aporteMensualBasico').value;
-            const rendimiento = +document.getElementById('rendimientoBasico').value / 100;
-            const inflacion = +document.getElementById('inflacionBasico').value / 100;
+            const rendimiento = +document.getElementById('rendimientoBasico').value;
+            const inflacion = +document.getElementById('inflacionBasico').value;
+            
+            const r_anual = rendimiento / 100;
+            const i_anual = inflacion / 100;
             let saldo = +document.getElementById('montoInicialBasico').value;
             
-            if (isNaN(e0) || isNaN(eF) || eF < e0 || isNaN(aporteMensual) || isNaN(rendimiento) || isNaN(inflacion)) return;
-            
             const datos = [];
-            let totalAportado = +document.getElementById('montoInicialBasico').value; // Incluye el monto inicial
+            let totalAportado = saldo; 
             const aporteAnual = aporteMensual * 12;
 
             
             for (let edad = e0; edad <= eF; edad++) {
-                // Cálculo de Saldo Real: es el saldo ajustado por la inflación acumulada desde la edad inicial (e0)
-                const real = saldo / Math.pow(1 + inflacion, edad - e0);
+                const real = saldo / Math.pow(1 + i_anual, edad - e0);
                 
                 datos.push({ edad, saldo, saldoReal: real, totalAportado });
 
-                if (edad === eF) break; // Terminar después de registrar el saldo a la edad final
+                if (edad === eF) break;
                 
-                // 1. Sumar aporte anual para el año siguiente
                 saldo += aporteAnual;
                 totalAportado += aporteAnual;
                 
-                // 2. Aplicar el rendimiento anual al saldo
-                saldo *= (1 + rendimiento);
+                saldo *= (1 + r_anual);
             }
             
-            renderResultados(datos, totalAportado);
+            renderResultados(datos, totalAportado, rendimiento, inflacion);
         }
 
         function calcularAvanzado() {
+            if (!validarInputs()) return;
+            
             const e0 = +document.getElementById('edadInicioAdv').value;
             const e1 = +document.getElementById('edadCambio1Adv').value;
             const e2 = +document.getElementById('edadCambio2Adv').value;
@@ -924,28 +1177,27 @@
             const a1 = +document.getElementById('aporteTramo1').value * 12;
             const a2 = +document.getElementById('aporteTramo2').value * 12;
             const a3 = +document.getElementById('aporteTramo3').value * 12;
-            const rendimiento = +document.getElementById('rendimientoAdv').value / 100;
-            const inflacion = +document.getElementById('inflacionAdv').value / 100;
+            const rendimiento = +document.getElementById('rendimientoAdv').value;
+            const inflacion = +document.getElementById('inflacionAdv').value;
+            
+            const r_anual = rendimiento / 100;
+            const i_anual = inflacion / 100;
             let saldo = +document.getElementById('montoInicialAdv').value;
 
             const deducciones = getDeductions();
             
-            if (isNaN(e0) || isNaN(eF) || eF < e0 || isNaN(rendimiento) || isNaN(inflacion)) return;
-            
             const datos = [];
-            let totalAportado = +document.getElementById('montoInicialAdv').value;
+            let totalAportado = saldo;
             
             for (let edad = e0; edad <= eF; edad++) {
                 
-                // 4. Aplicar la inflación para el cálculo del saldo real (siempre antes de la próxima iteración)
-                const real = saldo / Math.pow(1 + inflacion, edad - e0);
+                const real = saldo / Math.pow(1 + i_anual, edad - e0);
                 datos.push({ edad, saldo, saldoReal: real, totalAportado });
 
-                if (edad === eF) break; // Terminar después de registrar el saldo a la edad final
+                if (edad === eF) break;
                 
                 let aporteAnual = 0;
                 
-                // Determinar el aporte anual según la edad
                 if (edad < e1) {
                     aporteAnual = a1;
                 } else if (edad < e2) {
@@ -954,24 +1206,24 @@
                     aporteAnual = a3;
                 }
                 
-                // 1. Sumar aporte
                 saldo += aporteAnual;
                 totalAportado += aporteAnual;
                 
-                // 2. Aplicar deducciones
                 if (deducciones[edad]) {
                     saldo -= deducciones[edad];
                 }
                 
-                // 3. Aplicar rendimiento (crecimiento)
-                saldo *= (1 + rendimiento);
+                saldo *= (1 + r_anual);
             }
             
-            renderResultados(datos, totalAportado);
+            renderResultados(datos, totalAportado, rendimiento, inflacion);
         }
 
         function autoCalcular() {
-            // 1. Guardar todos los valores
+            // Guardar solo si estamos en un cambio de input, pero calcular solo si la validación pasa.
+            // La validación se ejecuta dentro de calcularBasico/Avanzado.
+            
+            // 1. Guardar todos los valores (incluyendo errores)
             document.querySelectorAll('input[type="number"]').forEach(input => {
                 localStorage.setItem(input.id, input.value);
             });
@@ -986,7 +1238,7 @@
             });
             localStorage.setItem('deductionsAdv', JSON.stringify(deductionsArray));
 
-            // 2. Calcular
+            // 2. Calcular solo si no hay errores graves (la validación interna maneja el flujo)
             const tab = document.querySelector('.tab.active').dataset.tab;
             if (tab === 'basico') {
                 calcularBasico();
@@ -1021,8 +1273,7 @@
                 const isDark = document.body.classList.toggle('night');
                 localStorage.setItem('nightMode', isDark);
                 document.getElementById('toggleNightBtn').textContent = isDark ? '☀️ Modo día' : '🌙 Modo noche';
-                // Recalcular para actualizar colores del gráfico
-                autoCalcular();
+                autoCalcular(); // Recalcular para actualizar colores del gráfico
             });
             
             // Botón de añadir deducción
@@ -1038,21 +1289,16 @@
                 });
             });
 
-            // Event listener único para todos los inputs numéricos (excepto los de deducciones, que se asignan al crearlos)
+            // Event listener único para inputs principales
             document.getElementById('formBasico').addEventListener('input', autoCalcular);
             document.getElementById('formAvanzado').querySelector('.form-section:first-child').addEventListener('input', autoCalcular);
 
-            // Reasignar listeners a botones de eliminar de deducciones (por si se cargaron desde localStorage)
-            document.querySelectorAll('.deduction-item .remove-deduction-btn').forEach(button => {
-                 button.addEventListener('click', (event) => {
-                    event.target.closest('.deduction-item').remove();
+            // Cargar listeners para inputs de deducciones al inicio
+            document.querySelectorAll('.deduction-item input').forEach(input => {
+                input.addEventListener('input', () => {
+                    validarInputs(); 
                     autoCalcular();
                 });
-            });
-            
-            // Reasignar listeners a inputs de deducciones por si se cargaron desde localStorage
-            document.querySelectorAll('.deduction-item input').forEach(input => {
-                input.addEventListener('input', autoCalcular);
             });
         }
 
@@ -1064,7 +1310,7 @@
             // Cargar y generar deducciones guardadas
             const storedDeductions = localStorage.getItem('deductionsAdv');
             const deductionsContainer = document.getElementById('deductionsContainer');
-            deductionsContainer.innerHTML = ''; // Limpiar
+            deductionsContainer.innerHTML = ''; 
             
             if (storedDeductions && JSON.parse(storedDeductions).length > 0) {
                 JSON.parse(storedDeductions).forEach(d => {
