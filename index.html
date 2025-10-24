@@ -1,508 +1,484 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Calculadora de Ahorro</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Ahorro e Inversión</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* Variables y Reset Básico */
         :root {
             --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --primary-light: #3b82f6;
-            --secondary: #eef2f6; /* Lighter secondary */
-            --accent: #06b6d4;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --text: #1e293b;
-            --text-light: #64748b;
+            --primary-hover: #1d4ed8;
+            --secondary: #dc2626;
             --bg: #ffffff;
+            --text-color: #1e293b;
             --bg-alt: #f8fafc;
             --border: #e2e8f0;
-            --shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.1), 0 3px 6px -3px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 15px 25px -5px rgba(0, 0, 0, 0.1), 0 5px 10px -5px rgba(0, 0, 0, 0.04);
-            
-            /* Dark mode */
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+
+            /* Dark Mode Variables */
             --dark-bg: #0f172a;
             --dark-bg-alt: #1e293b;
-            --dark-text: #f1f5f9;
-            --dark-text-light: #94a3b8;
+            --dark-text-color: #f1f5f9;
             --dark-border: #334155;
-            --dark-input-bg: #334155;
+        }
+
+        /* Dark Mode */
+        body.night {
+            background-color: var(--dark-bg);
+            color: var(--dark-text-color);
+        }
+
+        body.night .header h1,
+        body.night .tab,
+        body.night .tab-content,
+        body.night .resume-card,
+        body.night .controls button,
+        body.night table {
+            color: var(--dark-text-color);
+        }
+
+        body.night input[type="number"] {
+            background: var(--dark-bg);
+            border-color: var(--dark-border);
+            color: var(--dark-text-color);
+        }
+
+        body.night .tab:not(.active) {
+            background-color: var(--dark-bg-alt);
+        }
+
+        body.night .tab-content,
+        body.night .resume-card {
+            background-color: var(--dark-bg-alt);
+            border-color: var(--dark-border);
+            box-shadow: none;
+        }
+
+        body.night .night-toggle {
+            background-color: var(--primary-hover);
+            color: white;
+        }
+
+        body.night .tooltip {
+            background-color: var(--dark-bg);
+            color: var(--dark-text-color);
+            border: 1px solid var(--dark-border);
+            box-shadow: var(--shadow);
+        }
+
+        body.night .tooltip::after {
+            border-top-color: var(--dark-border);
         }
 
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            font-family: 'Inter', 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, var(--bg) 0%, var(--bg-alt) 100%);
-            color: var(--text);
-            transition: all 0.5s ease;
-            min-height: 100vh;
-            line-height: 1.4;
-            padding: 0.5rem 0; /* Reduced padding */
+            line-height: 1.6;
+            background-color: var(--bg-alt);
+            padding-bottom: 3rem;
         }
 
-        body.night {
-            background: linear-gradient(135deg, var(--dark-bg) 0%, var(--dark-bg-alt) 100%);
-            color: var(--dark-text);
-        }
-
+        /* General Container */
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 0 1rem;
+            padding: 0 1.5rem;
         }
 
+        /* Header and Title */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem; /* Reduced margin */
+            margin: 2rem 0 1.5rem;
             flex-wrap: wrap;
-            gap: 0.75rem; /* Reduced gap */
+            gap: 1rem;
         }
 
         h1 {
-            font-size: clamp(2rem, 5vw, 2.8rem);
-            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-weight: 900;
-            margin: 0;
-            line-height: 1.2;
+            font-size: 2.2rem;
+            color: var(--primary);
+            font-weight: 800;
         }
 
         .night-toggle {
-            padding: 0.5rem 1rem; /* Reduced padding */
-            border-radius: 30px;
+            padding: 0.6rem 1.2rem;
             border: none;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            color: white;
+            border-radius: 12px;
             cursor: pointer;
-            font-weight: 700;
-            transition: all 0.3s ease;
-            font-family: inherit;
-            font-size: 0.85rem; /* Slightly reduced font size */
-            display: flex;
-            align-items: center;
-            gap: 0.4rem; /* Reduced gap */
-            box-shadow: var(--shadow);
+            font-size: 1rem;
+            font-weight: 600;
+            background-color: var(--primary);
+            color: white;
+            transition: background-color 0.2s, transform 0.1s;
         }
 
         .night-toggle:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-lg);
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
         }
 
+        /* Tabs */
         .tabs {
             display: flex;
-            justify-content: center;
-            margin-bottom: 1rem; /* Reduced margin */
-            gap: 0.5rem; /* Reduced gap */
-            flex-wrap: wrap;
+            margin-bottom: 0;
+            border-bottom: 3px solid var(--border);
         }
 
         .tab {
-            padding: 0.6rem 1.5rem; /* Reduced padding */
-            background: var(--secondary);
-            color: var(--text);
+            padding: 0.8rem 1.5rem;
             cursor: pointer;
-            border-radius: 12px;
+            font-size: 1.1rem;
             font-weight: 600;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            position: relative;
-            overflow: hidden;
-            font-size: 0.95rem; /* Slightly reduced font size */
-            flex-grow: 1;
-            text-align: center;
+            color: var(--text-color);
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            background-color: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-bottom: none;
+            margin-bottom: -1px;
+            transition: background-color 0.2s, color 0.2s;
             max-width: 250px;
+            text-align: center;
         }
 
-        body.night .tab {
-            background: var(--dark-bg-alt);
-            color: var(--dark-text);
-        }
-
-        .tab:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow);
+        .tab:hover:not(.active) {
+            background-color: #f1f5f9;
         }
 
         .tab.active {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            color: white;
-            border-color: var(--primary-dark);
-            box-shadow: var(--shadow-lg);
-            transform: translateY(-2px);
+            background-color: var(--bg);
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 0.8rem;
         }
 
-        .tab-content {
-            display: none;
-            background: var(--bg);
-            border-radius: 20px;
-            padding: 1.5rem; /* Reduced padding */
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border);
-            margin-bottom: 1rem; /* Reduced margin */
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-
-        body.night .tab-content {
-            background: var(--dark-bg-alt);
+        body.night .tab.active {
+            background-color: var(--dark-bg-alt);
+            color: var(--primary);
             border-color: var(--dark-border);
+            border-bottom: 3px solid var(--primary);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            background: var(--bg);
+            padding: 2rem;
+            border-bottom-left-radius: 18px;
+            border-bottom-right-radius: 18px;
+            border-top-right-radius: 18px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            display: none;
+            margin-bottom: 1.5rem;
         }
 
         .tab-content.active {
             display: block;
-            animation: fadeIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        /* Form Styling */
         form {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Adjusted minmax for compactness */
-            gap: 1rem; /* Reduced gap */
-        }
-        
-        .form-section {
-            display: contents; /* Allows child elements to be placed in the grid */
-        }
-        
-        .form-section-title {
-            grid-column: 1 / -1; /* Spans across all columns */
-            font-size: 1.1rem; /* Slightly reduced font size */
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 0.4rem; /* Reduced margin */
-            border-bottom: 1px solid var(--border); /* Thinner border */
-            padding-bottom: 0.4rem; /* Reduced padding */
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
         }
 
+        .form-section {
+            grid-column: 1 / -1;
+            padding: 1rem;
+            border-radius: 12px;
+        }
+
+        .form-section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+            grid-column: 1 / -1;
+        }
+        
         body.night .form-section-title {
-            color: var(--primary-light);
+            border-bottom-color: var(--dark-border);
+        }
+
+        .deductions-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .deduction-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 1rem;
+            align-items: flex-end;
+            padding: 0.8rem;
+            background: var(--bg-alt);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+        
+        body.night .deduction-item {
+            background: var(--dark-bg);
             border-color: var(--dark-border);
         }
 
         label {
+            display: block;
             font-weight: 600;
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem; /* Reduced gap */
-            color: var(--text);
-            font-size: 0.9rem; /* Slightly reduced font size */
-            position: relative;
-        }
-
-        body.night label {
-            color: var(--dark-text);
-        }
-        
-        .deductions-container {
-            grid-column: 1 / -1;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem; /* Reduced gap */
-        }
-        
-        .deduction-item {
-            display: grid;
-            grid-template-columns: 1fr 1fr auto;
-            gap: 0.75rem; /* Reduced gap */
-            align-items: flex-end;
-        }
-        
-        .deduction-item button {
-            padding: 0.5rem; /* Reduced padding */
-            background: #ef4444; /* Red color for remove button */
-            align-self: flex-end;
-            margin-bottom: 0.1rem;
-            box-shadow: none;
-        }
-        
-        .deduction-item button:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow);
-        }
-
-        /* Tooltip styles */
-        .tooltip-container {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.2rem; /* Reduced gap */
-        }
-
-        .tooltip-icon {
-            width: 16px; /* Slightly reduced size */
-            height: 16px; /* Slightly reduced size */
-            background: var(--primary);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px; /* Slightly reduced font size */
-            font-weight: bold;
-            cursor: help;
-            transition: all 0.3s ease;
-        }
-
-        .tooltip-icon:hover {
-            background: var(--primary-light);
-            transform: scale(1.1);
-        }
-
-        .tooltip {
-            position: absolute;
-            top: -8px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-100%);
-            background: var(--dark-bg);
-            color: var(--dark-text);
-            padding: 0.8rem; /* Reduced padding */
-            border-radius: 10px; /* Slightly reduced border radius */
-            font-size: 0.8rem; /* Slightly reduced font size */
-            font-weight: 400;
-            line-height: 1.5;
-            max-width: 250px; /* Reduced max-width */
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            z-index: 1000;
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border);
-        }
-
-        body.night .tooltip {
-            background: var(--bg);
-            color: var(--text);
-        }
-
-        .tooltip::after {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            border: 7px solid transparent; /* Reduced size */
-            border-top-color: var(--dark-bg);
-        }
-
-        body.night .tooltip::after {
-            border-top-color: var(--bg);
-        }
-
-        .tooltip-icon:hover + .tooltip,
-        .tooltip:hover {
-            opacity: 1;
-            visibility: visible;
-            transform: translateX(-50%) translateY(-100%) translateY(-10px);
+            color: var(--text-color);
+            font-size: 0.95rem;
         }
 
         input[type="number"] {
-            padding: 0.6rem; /* Reduced padding */
-            border-radius: 10px; /* Slightly reduced border radius */
-            border: 2px solid var(--border);
-            background: var(--bg);
-            font-size: 0.95rem; /* Slightly reduced font size */
-            transition: all 0.3s ease;
-            font-family: inherit;
-            font-weight: 500;
-        }
-
-        body.night input[type="number"] {
-            background: var(--dark-input-bg);
-            color: var(--dark-text);
-            border-color: var(--dark-border);
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            margin-top: 0.3rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         input[type="number"]:focus {
-            outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-            transform: translateY(-2px);
-        }
-        
-        input[type="number"]::placeholder {
-            color: var(--text-light);
-            font-weight: 400;
-        }
-        
-        body.night input[type="number"]::placeholder {
-            color: var(--dark-text-light);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+            outline: none;
         }
 
-        .resume-card {
-            max-width: 1000px;
-            margin: 1rem auto; /* Reduced margin */
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            padding: 1.2rem; /* Reduced padding */
-            border-radius: 18px; /* Slightly reduced border radius */
+        /* Buttons */
+        .deductions-section button,
+        .controls button,
+        .deduction-item button {
+            padding: 0.6rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+        }
+        
+        #addDeductionBtn {
+            background-color: #10b981; /* Green */
             color: white;
-            box-shadow: var(--shadow-lg);
-            position: relative;
-            overflow: hidden;
+            padding: 0.8rem 1rem;
         }
 
-        .resume-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.15) 0%, transparent 40%);
-            pointer-events: none;
+        #addDeductionBtn:hover {
+            background-color: #059669;
+        }
+
+        .remove-deduction-btn {
+            background-color: var(--secondary);
+            color: white;
+            padding: 0.6rem 0.8rem;
+        }
+
+        .remove-deduction-btn:hover {
+            background-color: #b91c1c;
+        }
+
+        .controls {
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .controls button {
+            background-color: #64748b;
+            color: white;
+        }
+
+        .controls button:hover {
+            background-color: #475569;
+        }
+
+        /* Resume Card */
+        .resume-card {
+            background: var(--bg);
+            padding: 1.5rem;
+            border-radius: 18px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
         }
 
         .resume-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Adjusted minmax for compactness */
-            gap: 0.8rem; /* Reduced gap */
-            margin-top: 0.4rem; /* Reduced margin */
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
         }
 
         .resume-item {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 0.8rem; /* Reduced padding */
-            border-radius: 10px; /* Slightly reduced border radius */
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
             text-align: center;
-            transition: transform 0.3s ease;
+            border-radius: 12px;
+            padding: 1rem;
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
         }
         
-        .resume-item:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
+        body.night .resume-item {
+            background: var(--dark-bg);
+            border-color: var(--dark-border);
         }
 
         .resume-item h3 {
-            font-size: 0.8rem; /* Slightly reduced font size */
-            opacity: 0.9;
-            margin-bottom: 0.3rem; /* Reduced margin */
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 700;
+            font-size: 1rem;
+            color: var(--primary-hover);
+            margin-bottom: 0.5rem;
         }
 
         .resume-item .value {
-            font-size: 1.4rem; /* Slightly reduced font size */
-            font-weight: 900;
-            margin-bottom: 0.1rem; /* Reduced margin */
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-color);
+        }
+
+        body.night .resume-item .value {
+             color: var(--dark-text-color);
         }
 
         .resume-item .subtitle {
-            font-size: 0.75rem; /* Slightly reduced font size */
-            opacity: 0.8;
-            font-weight: 400;
+            font-size: 0.9rem;
+            color: #64748b;
         }
 
-        button {
-            padding: 0.7rem 1.4rem; /* Reduced padding */
-            border-radius: 10px; /* Slightly reduced border radius */
-            border: none;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            color: white;
-            cursor: pointer;
-            font-weight: 700;
-            transition: all 0.3s ease;
-            font-family: inherit;
-            font-size: 0.95rem; /* Slightly reduced font size */
-            box-shadow: var(--shadow);
-        }
-
-        button:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        button:active {
-            transform: translateY(0);
-            box-shadow: var(--shadow);
-        }
-
-        .controls {
-            display: flex;
-            justify-content: center;
-            gap: 0.8rem; /* Reduced gap */
-            flex-wrap: wrap;
-            margin: 1rem 0; /* Reduced margin */
-        }
-
+        /* Table Styling */
         #tableContainer {
-            max-width: 1000px;
-            margin: 1rem auto; /* Reduced margin */
+            margin-bottom: 1.5rem;
             overflow-x: auto;
-            background: var(--bg);
-            border-radius: 18px; /* Slightly reduced border radius */
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border);
-        }
-
-        body.night #tableContainer {
-            background: var(--dark-bg-alt);
-            border-color: var(--dark-border);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 600px;
+            text-align: left;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            background: var(--bg);
+        }
+        
+        body.night table {
+            background: var(--dark-bg-alt);
         }
 
         th, td {
-            padding: 0.7rem 0.6rem; /* Reduced padding */
-            text-align: center;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.9rem; /* Slightly reduced font size */
+            padding: 12px 15px;
+            border: 1px solid var(--border);
         }
-
-        body.night th,
-        body.night td {
+        
+        body.night th, body.night td {
             border-color: var(--dark-border);
         }
 
         th {
-            background: var(--secondary);
-            font-weight: 800;
+            background-color: var(--primary);
+            color: white;
+            font-weight: 700;
             text-transform: uppercase;
-            font-size: 0.75rem; /* Slightly reduced font size */
-            letter-spacing: 1px;
+            font-size: 0.85rem;
         }
 
-        body.night th {
-            background: var(--dark-input-bg);
+        tr:nth-child(even) {
+            background-color: var(--bg-alt);
         }
         
-        tr:last-child td {
-            border-bottom: none;
+        body.night tr:nth-child(even) {
+            background-color: var(--dark-bg);
+        }
+        
+        /* Tooltip Styling */
+        .tooltip-container {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .tooltip-icon {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: help;
+        }
+
+        .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            z-index: 10;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(0);
+            background-color: var(--bg);
+            color: var(--text-color);
+            padding: 8px 12px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            font-size: 0.9rem;
+            line-height: 1.4;
+            max-width: 250px;
+            text-align: center;
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none; /* Crucial for hover to work correctly */
+        }
+
+        .tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--border) transparent transparent transparent;
+        }
+        
+        body.night .tooltip::after {
+            border-top-color: var(--dark-border);
+        }
+
+        .tooltip-icon:hover + .tooltip,
+        .tooltip:hover {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(-50%) translateY(-5px); /* Lift a little */
         }
 
         /* 2D Chart Container */
         #chartContainer {
             width: 100%;
             max-width: 1000px;
-            height: 500px; /* This remains the same as requested */
-            margin: 1rem auto; /* Reduced margin */
+            height: 500px;
+            margin: 1rem auto;
             background: var(--bg);
-            border-radius: 18px; /* Slightly reduced border radius */
+            border-radius: 18px;
             box-shadow: var(--shadow-lg);
             border: 1px solid var(--border);
-            padding: 1.2rem; /* Reduced padding */
+            padding: 1.2rem;
             position: relative;
         }
 
@@ -516,6 +492,7 @@
             height: 100% !important;
         }
         
+        /* Responsive Design */
         @media (max-width: 768px) {
             .container {
                 padding: 0 0.5rem;
@@ -536,10 +513,17 @@
                 flex-direction: column;
                 align-items: stretch;
                 gap: 0.4rem;
+                border-bottom: none;
             }
             
             .tab {
                 max-width: 100%;
+                border-bottom: 1px solid var(--border);
+                border-radius: 12px;
+            }
+
+            .tab.active {
+                border-bottom: 1px solid var(--primary);
             }
             
             .tab-content {
@@ -602,7 +586,7 @@
             <form id="formAvanzado" onsubmit="return false;">
                 <div class="form-section">
                     <div class="form-section-title">Parámetros Principales</div>
-                    </div>
+                </div>
                 <div class="form-section deductions-section">
                     <div class="form-section-title">Deducciones por gastos</div>
                     <div class="deductions-container" id="deductionsContainer">
@@ -659,12 +643,15 @@
             const form = document.getElementById(formId);
             const targetElement = formId === 'formAvanzado' ? form.querySelector('.form-section') : form;
             
-            // Limpia el contenido si es básico, o añade el título si es avanzado
             targetElement.innerHTML = formId === 'formAvanzado' ? '<div class="form-section-title">Parámetros Principales</div>' : '';
 
             campos.forEach(([labelText, id, valor, tooltip]) => {
-                // *** MODIFICACIÓN: Carga el valor desde localStorage o usa el default ***
-                const value = localStorage.getItem(id) ?? valor;
+                // *** CORRECCIÓN CRÍTICA DE COMPATIBILIDAD JS ***
+                // Reemplazado '??' por el operador ternario para evitar SyntaxError en navegadores más antiguos o estrictos.
+                const storedValue = localStorage.getItem(id);
+                const value = storedValue !== null ? storedValue : valor;
+                // **********************************************
+                
                 const label = document.createElement('label');
                 
                 if (tooltip) {
@@ -702,11 +689,11 @@
             
             div.querySelector('.remove-deduction-btn').addEventListener('click', () => {
                 div.remove();
-                autoCalcular(); // Recalcula y guarda
+                autoCalcular();
             });
             
             div.querySelectorAll('input').forEach(input => {
-                input.addEventListener('input', autoCalcular); // Recalcula y guarda
+                input.addEventListener('input', autoCalcular);
             });
         }
 
@@ -805,13 +792,6 @@
         }
 
         function renderResultados(datos, e0, inflacion, totalAportadoFinal) {
-            if (!datos || datos.length === 0) {
-                document.getElementById('resumen').innerHTML = '';
-                document.getElementById('tableContainer').innerHTML = '';
-                if (window.myChart) window.myChart.destroy();
-                return;
-            }
-
             const tabla = datos.map(d => {
                 return `<tr><td>${d.edad}</td><td>$${formatearNumero(d.saldo)}</td><td>$${formatearNumero(d.saldoReal)}</td></tr>`;
             }).join('');
@@ -879,7 +859,8 @@
                 const age = parseInt(item.querySelector('.deduction-age').value);
                 const amount = parseFloat(item.querySelector('.deduction-amount').value);
                 if (!isNaN(age) && !isNaN(amount) && amount > 0) {
-                    deductions[age] = (deductions[age] || 0) + amount;
+                    // Suma si ya existe un gasto en esa edad
+                    deductions[age] = (deductions[age] || 0) + amount; 
                 }
             });
             return deductions;
@@ -893,208 +874,224 @@
             const inflacion = +document.getElementById('inflacionBasico').value / 100;
             let saldo = +document.getElementById('montoInicialBasico').value;
             
-            if (!e0 || !eF || eF < e0) return { datos: [], totalAportadoFinal: 0 };
+            if (!e0 || !eF || eF < e0) return;
             
             const datos = [];
             let totalAportado = +document.getElementById('montoInicialBasico').value;
             
+            // Loop para cada año
             for (let edad = e0; edad <= eF; edad++) {
-                const aporteAnual = (edad === e0 ? 0 : aporteMensual * 12); // No aporta el primer año, solo inicial
+                // El primer punto es el saldo inicial (a la edad e0)
+                if (edad === e0) {
+                     // El saldo inicial debe guardarse como el primer punto de datos
+                     const realInicial = saldo / Math.pow(1 + inflacion, edad - e0);
+                     datos.push({ edad, saldo, saldoReal: realInicial, totalAportado });
+                     continue; // Pasa al siguiente año para empezar a sumar aportes y rendimiento
+                }
+                
+                // En años posteriores, el cálculo es:
+                
+                // 1. Sumar aporte anual (mensual * 12)
+                const aporteAnual = aporteMensual * 12;
+                saldo += aporteAnual;
                 totalAportado += aporteAnual;
                 
-                const intereses = (saldo + (aporteAnual / 2)) * rendimiento; // Aporte a mitad de año promedio
-                saldo += aporteAnual + intereses;
+                // 2. Aplicar el rendimiento anual al saldo
+                saldo *= (1 + rendimiento);
                 
-                const saldoReal = saldo / Math.pow(1 + inflacion, edad - e0);
-                
-                datos.push({ edad, saldo, saldoReal });
+                // 3. Aplicar la inflación para el cálculo del saldo real (poder adquisitivo)
+                const real = saldo / Math.pow(1 + inflacion, edad - e0);
+                datos.push({ edad, saldo, saldoReal: real, totalAportado });
             }
             
-            return { datos, e0, inflacion, totalAportadoFinal: totalAportado };
+            renderResultados(datos, e0, inflacion, totalAportado);
         }
 
         function calcularAvanzado() {
             const e0 = +document.getElementById('edadInicioAdv').value;
+            const e1 = +document.getElementById('edadCambio1Adv').value;
+            const e2 = +document.getElementById('edadCambio2Adv').value;
             const eF = +document.getElementById('edadFinAdv').value;
-            const eC1 = +document.getElementById('edadCambio1Adv').value;
-            const eC2 = +document.getElementById('edadCambio2Adv').value;
-            const aporte1 = +document.getElementById('aporteTramo1').value;
-            const aporte2 = +document.getElementById('aporteTramo2').value;
-            const aporte3 = +document.getElementById('aporteTramo3').value;
+            const a1 = +document.getElementById('aporteTramo1').value * 12; // Aporte anual
+            const a2 = +document.getElementById('aporteTramo2').value * 12; // Aporte anual
+            const a3 = +document.getElementById('aporteTramo3').value * 12; // Aporte anual
             const rendimiento = +document.getElementById('rendimientoAdv').value / 100;
             const inflacion = +document.getElementById('inflacionAdv').value / 100;
             let saldo = +document.getElementById('montoInicialAdv').value;
 
-            const deductions = getDeductions();
-
-            if (!e0 || !eF || eF < e0) return { datos: [], totalAportadoFinal: 0 };
+            const deducciones = getDeductions();
+            
+            if (!e0 || !eF || eF < e0) return;
             
             const datos = [];
-            let totalAportado = +document.getElementById('montoInicialAdv').value;
-
+            let totalAportado = +document.getElementById('montoInicialAdv').value; // Solo el monto inicial
+            
             for (let edad = e0; edad <= eF; edad++) {
-                let aporteMensual;
-                if (edad < eC1) aporteMensual = aporte1;
-                else if (edad < eC2) aporteMensual = aporte2;
-                else aporteMensual = aporte3;
                 
-                const aporteAnual = (edad === e0 ? 0 : aporteMensual * 12);
+                // El primer punto es el saldo inicial (a la edad e0)
+                if (edad === e0) {
+                     // El saldo inicial debe guardarse como el primer punto de datos
+                     const realInicial = saldo / Math.pow(1 + inflacion, edad - e0);
+                     datos.push({ edad, saldo, saldoReal: realInicial, totalAportado });
+                     continue; // Pasa al siguiente año para empezar a sumar aportes y rendimiento
+                }
+                
+                let aporteAnual = 0;
+                
+                // Determinar el aporte anual según la edad
+                if (edad < e1) {
+                    aporteAnual = a1;
+                } else if (edad < e2) {
+                    aporteAnual = a2;
+                } else {
+                    aporteAnual = a3;
+                }
+                
+                // 1. Sumar aporte
+                saldo += aporteAnual;
                 totalAportado += aporteAnual;
                 
-                const deduccionAnual = deductions[edad] || 0;
-                
-                const intereses = (saldo + (aporteAnual / 2)) * rendimiento;
-                saldo += aporteAnual + intereses - deduccionAnual;
-                
-                if (saldo < 0) saldo = 0; // No puede tener saldo negativo
-                
-                const saldoReal = saldo / Math.pow(1 + inflacion, edad - e0);
-                
-                datos.push({ edad, saldo, saldoReal });
-            }
-            
-            return { datos, e0, inflacion, totalAportadoFinal: totalAportado };
-        }
-
-        function calcular() {
-            const activeTab = document.querySelector('.tab.active').dataset.tab;
-            let resultados;
-            
-            if (activeTab === 'basico') {
-                resultados = calcularBasico();
-            } else {
-                resultados = calcularAvanzado();
-            }
-            
-            renderResultados(resultados.datos, resultados.e0, resultados.inflacion, resultados.totalAportadoFinal);
-        }
-
-        // --- NUEVAS FUNCIONES DE GUARDADO Y CARGA ---
-
-        function saveInputs() {
-            // 1. Guardar inputs estáticos
-            camposBasico.forEach(([, id]) => {
-                const el = document.getElementById(id);
-                if (el) localStorage.setItem(id, el.value);
-            });
-            camposAvanzado.forEach(([, id]) => {
-                const el = document.getElementById(id);
-                if (el) localStorage.setItem(id, el.value);
-            });
-
-            // 2. Guardar deducciones dinámicas
-            const deductions = [];
-            document.querySelectorAll('.deduction-item').forEach(item => {
-                const age = item.querySelector('.deduction-age').value;
-                const amount = item.querySelector('.deduction-amount').value;
-                deductions.push({ age, amount });
-            });
-            localStorage.setItem('deductionsAdv', JSON.stringify(deductions));
-        }
-
-        function loadSavedDeductions() {
-            const savedDeductions = JSON.parse(localStorage.getItem('deductionsAdv') || '[]');
-            const container = document.getElementById('deductionsContainer');
-            container.innerHTML = ''; // Limpiar por si acaso
-            savedDeductions.forEach(d => {
-                if (d.age || d.amount) { // Solo añadir si tiene datos
-                    addDeductionInput(d.age, d.amount);
+                // 2. Aplicar deducciones (gastos grandes puntuales)
+                if (deducciones[edad]) {
+                    saldo -= deducciones[edad];
+                    // Nota: No se suma a totalAportado (que es el dinero INGRESADO). 
+                    // Se resta del saldo final. La métrica 'Generado por Inversión' es más precisa así.
                 }
-            });
+                
+                // 3. Calcular nuevo saldo con rendimiento
+                saldo *= (1 + rendimiento);
+                
+                // 4. Aplicar la inflación para el cálculo del saldo real
+                const real = saldo / Math.pow(1 + inflacion, edad - e0);
+                datos.push({ edad, saldo, saldoReal: real, totalAportado });
+            }
+            
+            renderResultados(datos, e0, inflacion, totalAportado);
         }
 
         function autoCalcular() {
-            calcular();
-            saveInputs(); // Guarda los datos cada vez que se recalcula
+            // Guardar todos los valores de los inputs en localStorage antes de calcular
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                localStorage.setItem(input.id, input.value);
+            });
+            
+            // Guardar las deducciones para que persistan
+            const deductionsArray = [];
+            document.querySelectorAll('.deduction-item').forEach(item => {
+                const age = item.querySelector('.deduction-age').value;
+                const amount = item.querySelector('.deduction-amount').value;
+                if (age && amount) {
+                    deductionsArray.push({ age, amount });
+                }
+            });
+            localStorage.setItem('deductionsAdv', JSON.stringify(deductionsArray));
+
+            // Calcular
+            const tab = document.querySelector('.tab.active').dataset.tab;
+            if (tab === 'basico') {
+                calcularBasico();
+            } else {
+                calcularAvanzado();
+            }
+        }
+        
+        function cambiarPestana(tabName) {
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            document.querySelector(`.tab[data-tab="${tabName}"]`).classList.add('active');
+            
+            autoCalcular();
         }
 
+        // --- SECCIÓN DE EVENT LISTENERS ---
+        document.getElementById('toggleTableBtn').addEventListener('click', () => {
+            const cont = document.getElementById('tableContainer');
+            const visible = cont.style.display !== 'none';
+            cont.style.display = visible ? 'none' : 'block';
+            document.getElementById('toggleTableBtn').textContent = visible ? '👁️ Mostrar tabla' : '👁️ Ocultar tabla';
+        });
+
+        document.getElementById('toggleNightBtn').addEventListener('click', () => {
+            document.body.classList.toggle('night');
+            const isDark = document.body.classList.contains('night');
+            document.getElementById('toggleNightBtn').textContent = isDark ? '☀️ Modo día' : '🌙 Modo noche';
+            
+            // Re-renderizar el gráfico para actualizar los colores
+            if (window.myChart) {
+                const currentTab = document.querySelector('.tab.active').dataset.tab;
+                if (currentTab === 'basico') {
+                    calcularBasico();
+                } else {
+                    calcularAvanzado();
+                }
+            }
+        });
+        
+        document.getElementById('addDeductionBtn').addEventListener('click', () => {
+            addDeductionInput();
+            autoCalcular();
+        });
+
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                cambiarPestana(tab.dataset.tab);
+            });
+        });
 
         // --- SECCIÓN DE INICIALIZACIÓN ---
-        document.addEventListener('DOMContentLoaded', () => {
-            
-            // --- Carga y lógica del Modo Noche (ya presente) ---
-            const toggleBtn = document.getElementById('toggleNightBtn');
-            const body = document.body;
-            
-            function setNightMode(isNight) {
-                if (isNight) {
-                    body.classList.add('night');
-                    toggleBtn.innerHTML = '☀️ Modo día';
-                    localStorage.setItem('theme', 'night');
-                } else {
-                    body.classList.remove('night');
-                    toggleBtn.innerHTML = '🌙 Modo noche';
-                    localStorage.setItem('theme', 'day');
-                }
-                autoCalcular(); // Recalcula el gráfico con los nuevos colores
-            }
-
-            toggleBtn.addEventListener('click', () => {
-                setNightMode(!body.classList.contains('night'));
-            });
-
-            const savedTheme = localStorage.getItem('theme');
-            setNightMode(savedTheme === 'night');
-
-            // --- Generar Inputs (ya carga desde localStorage) ---
+        function init() {
             generarInputs(camposBasico, 'formBasico');
             generarInputs(camposAvanzado, 'formAvanzado');
+            
+            // Cargar deducciones guardadas
+            const storedDeductions = localStorage.getItem('deductionsAdv');
+            const deductionsContainer = document.getElementById('deductionsContainer');
+            deductionsContainer.innerHTML = ''; // Limpiar las por defecto
 
-            // --- Lógica de Pestañas ---
-            const tabs = document.querySelectorAll('.tab');
-            const tabContents = document.querySelectorAll('.tab-content');
-
-            function switchTab(tabId) {
-                tabs.forEach(t => t.classList.remove('active'));
-                tabContents.forEach(c => c.classList.remove('active'));
-                
-                const activeTabElement = document.querySelector(`.tab[data-tab="${tabId}"]`);
-                const activeContentElement = document.getElementById(tabId);
-                
-                if (activeTabElement) activeTabElement.classList.add('active');
-                if (activeContentElement) activeContentElement.classList.add('active');
-                
-                localStorage.setItem('activeTab', tabId); // Guarda la pestaña activa
-                autoCalcular();
+            if (storedDeductions) {
+                JSON.parse(storedDeductions).forEach(d => {
+                    addDeductionInput(d.age, d.amount);
+                });
+            } else {
+                // Valores por defecto
+                addDeductionInput(30, 20000);
+                addDeductionInput(45, 50000);
             }
 
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    switchTab(tab.dataset.tab);
-                });
-            });
-
-            // Cargar pestaña guardada
-            const savedTab = localStorage.getItem('activeTab') || 'basico';
-            
-
-            // --- Lógica de Deducciones (Cargar) ---
-            loadSavedDeductions();
-            document.getElementById('addDeductionBtn').addEventListener('click', () => {
-                addDeductionInput();
-                // autoCalcular() es llamado por el listener de input, pero podemos llamarlo aquí
-                // para guardar incluso si está vacío.
-                autoCalcular(); 
-            });
-
-            // --- Lógica de Botón de Tabla ---
-            const toggleTableBtn = document.getElementById('toggleTableBtn');
-            const tableContainer = document.getElementById('tableContainer');
-            toggleTableBtn.addEventListener('click', () => {
-                const isHidden = tableContainer.style.display === 'none';
-                tableContainer.style.display = isHidden ? 'block' : 'none';
-                toggleTableBtn.innerHTML = isHidden ? '👁️ Ocultar tabla' : '👁️ Mostrar tabla';
-            });
-
-            // --- Listeners de Inputs ---
+            // Asignar el listener de autoCalcular a todos los inputs
             document.querySelectorAll('input[type="number"]').forEach(input => {
                 input.addEventListener('input', autoCalcular);
             });
+            
+            // Asignar listeners a inputs de deducciones por si se cargaron desde localStorage
+            document.querySelectorAll('.deduction-item input').forEach(input => {
+                input.addEventListener('input', autoCalcular);
+            });
 
-            // --- Carga Inicial ---
-            switchTab(savedTab); // Activa la pestaña guardada y lanza el primer cálculo
-        });
+            // Reasignar listeners a botones de eliminar de deducciones (por si se cargaron desde localStorage)
+            document.querySelectorAll('.remove-deduction-btn').forEach(button => {
+                 button.addEventListener('click', (event) => {
+                    event.target.closest('.deduction-item').remove();
+                    autoCalcular();
+                });
+            });
+            
+            // Inicializar el modo noche si estaba activo
+            if (localStorage.getItem('nightMode') === 'true') {
+                 document.body.classList.add('night');
+                 document.getElementById('toggleNightBtn').textContent = '☀️ Modo día';
+            }
+            document.getElementById('toggleNightBtn').addEventListener('click', () => {
+                const isDark = document.body.classList.toggle('night');
+                localStorage.setItem('nightMode', isDark);
+            });
 
+            autoCalcular();
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
