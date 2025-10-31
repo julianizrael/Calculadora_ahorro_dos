@@ -615,6 +615,16 @@
             font-size: 1.8rem;
             font-weight: 700;
             margin-top: 0.2rem;
+            color: var(--text-color);
+        }
+
+        body.night .scenario-stat .value {
+            color: var(--dark-text-color);
+        }
+
+        body.night .scenario-card {
+            background: var(--dark-bg-alt);
+            border-color: var(--dark-border);
         }
 
         .collapsible-section {
@@ -1382,25 +1392,31 @@
             const aporteMensual = +document.getElementById('aporteMensualBasico').value;
             const rendimiento = +document.getElementById('rendimientoBasico').value / 100;
             const inflacion = +document.getElementById('inflacionBasico').value / 100;
-            let saldo = +document.getElementById('montoInicialBasico').value;
+            const montoInicial = +document.getElementById('montoInicialBasico').value;
             
             if (isNaN(e0) || isNaN(eF) || eF < e0 || isNaN(aporteMensual) || isNaN(rendimiento) || isNaN(inflacion)) return;
             
             const datos = [];
-            let totalAportado = +document.getElementById('montoInicialBasico').value;
             const aporteAnual = aporteMensual * 12;
+            let totalAportado = montoInicial;
+            
+            // Calcular saldo inicial (año 0): monto inicial + aportes del primer año + rendimiento
+            let saldo = montoInicial + aporteAnual;
+            totalAportado += aporteAnual;
+            saldo *= (1 + rendimiento);
 
-            for (let edad = e0; edad <= eF; edad++) {
-                // Registrar el saldo al inicio del año (edad actual)
-                const real = saldo / Math.pow(1 + inflacion, edad - e0);
+            // Registrar primer año (e0) con el resultado del primer año completo
+            let real = saldo / Math.pow(1 + inflacion, 0);
+            datos.push({ edad: e0, saldo, saldoReal: real, totalAportado });
+
+            // Años subsiguientes
+            for (let edad = e0 + 1; edad <= eF; edad++) {
+                saldo += aporteAnual;
+                totalAportado += aporteAnual;
+                saldo *= (1 + rendimiento);
+                
+                real = saldo / Math.pow(1 + inflacion, edad - e0);
                 datos.push({ edad, saldo, saldoReal: real, totalAportado });
-
-                // Si no es el último año, aplicar aportes y rendimiento para el próximo año
-                if (edad < eF) {
-                    saldo += aporteAnual;
-                    totalAportado += aporteAnual;
-                    saldo *= (1 + rendimiento);
-                }
             }
             
             renderResultados(datos, totalAportado);
@@ -1416,7 +1432,7 @@
             const a3 = +document.getElementById('aporteTramo3').value * 12;
             const rendimiento = +document.getElementById('rendimientoAdv').value / 100;
             const inflacion = +document.getElementById('inflacionAdv').value / 100;
-            let saldo = +document.getElementById('montoInicialAdv').value;
+            const montoInicial = +document.getElementById('montoInicialAdv').value;
 
             const deducciones = getDeductions();
             const withdrawals = getWithdrawals();
@@ -1424,40 +1440,54 @@
             if (isNaN(e0) || isNaN(eF) || eF < e0 || isNaN(rendimiento) || isNaN(inflacion)) return;
             
             const datos = [];
-            let totalAportado = +document.getElementById('montoInicialAdv').value;
+            let totalAportado = montoInicial;
             
-            for (let edad = e0; edad <= eF; edad++) {
-                // Registrar el saldo al inicio del año (edad actual)
-                const real = saldo / Math.pow(1 + inflacion, edad - e0);
-                datos.push({ edad, saldo, saldoReal: real, totalAportado });
-
-                // Si no es el último año, aplicar aportes, deducciones, retiros y rendimiento
-                if (edad < eF) {
-                    let aporteAnual = 0;
-                    
-                    if (edad < e1) {
-                        aporteAnual = a1;
-                    } else if (edad < e2) {
-                        aporteAnual = a2;
-                    } else {
-                        aporteAnual = a3;
-                    }
-                    
-                    saldo += aporteAnual;
-                    totalAportado += aporteAnual;
-                    
-                    if (deducciones[edad]) {
-                        saldo -= deducciones[edad];
-                    }
-                    
-                    withdrawals.forEach(w => {
-                        if (edad >= w.age) {
-                            saldo -= w.amount;
-                        }
-                    });
-                    
-                    saldo *= (1 + rendimiento);
+            // Primer año: determinar aporte según edad inicial
+            let aporteAnual = e0 < e1 ? a1 : (e0 < e2 ? a2 : a3);
+            
+            // Calcular saldo del primer año
+            let saldo = montoInicial + aporteAnual;
+            totalAportado += aporteAnual;
+            
+            // Aplicar deducciones y retiros del primer año
+            if (deducciones[e0]) {
+                saldo -= deducciones[e0];
+            }
+            
+            withdrawals.forEach(w => {
+                if (e0 >= w.age) {
+                    saldo -= w.amount;
                 }
+            });
+            
+            saldo *= (1 + rendimiento);
+            
+            // Registrar primer año
+            let real = saldo / Math.pow(1 + inflacion, 0);
+            datos.push({ edad: e0, saldo, saldoReal: real, totalAportado });
+            
+            // Años subsiguientes
+            for (let edad = e0 + 1; edad <= eF; edad++) {
+                // Determinar aporte según edad
+                aporteAnual = edad < e1 ? a1 : (edad < e2 ? a2 : a3);
+                
+                saldo += aporteAnual;
+                totalAportado += aporteAnual;
+                
+                if (deducciones[edad]) {
+                    saldo -= deducciones[edad];
+                }
+                
+                withdrawals.forEach(w => {
+                    if (edad >= w.age) {
+                        saldo -= w.amount;
+                    }
+                });
+                
+                saldo *= (1 + rendimiento);
+                
+                real = saldo / Math.pow(1 + inflacion, edad - e0);
+                datos.push({ edad, saldo, saldoReal: real, totalAportado });
             }
             
             renderResultados(datos, totalAportado);
@@ -1467,17 +1497,21 @@
             const e0 = +document.getElementById('edadInicioBasico').value || 25;
             const eF = +document.getElementById('edadFinBasico').value || 65;
             const aporteMensual = +document.getElementById('aporteMensualBasico').value || 100;
-            let saldo = +document.getElementById('montoInicialBasico').value || 0;
+            const montoInicial = +document.getElementById('montoInicialBasico').value || 0;
             
             const aporteAnual = aporteMensual * 12;
-            let totalAportado = saldo;
+            let totalAportado = montoInicial;
+            
+            // Primer año con aportes y rendimiento
+            let saldo = montoInicial + aporteAnual;
+            totalAportado += aporteAnual;
+            saldo *= (1 + rendimiento);
 
-            for (let edad = e0; edad <= eF; edad++) {
-                if (edad < eF) {
-                    saldo += aporteAnual;
-                    totalAportado += aporteAnual;
-                    saldo *= (1 + rendimiento);
-                }
+            // Años subsiguientes
+            for (let edad = e0 + 1; edad <= eF; edad++) {
+                saldo += aporteAnual;
+                totalAportado += aporteAnual;
+                saldo *= (1 + rendimiento);
             }
             
             const real = saldo / Math.pow(1 + inflacion, eF - e0);
