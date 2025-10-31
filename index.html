@@ -617,7 +617,68 @@
             margin-top: 0.2rem;
         }
 
-        .modal {
+        .collapsible-section {
+            margin-bottom: 1rem;
+        }
+
+        .collapsible-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .collapsible-header:hover {
+            background: #e2e8f0;
+        }
+
+        body.night .collapsible-header {
+            background: var(--dark-bg);
+            border-color: var(--dark-border);
+        }
+
+        body.night .collapsible-header:hover {
+            background: var(--dark-bg-alt);
+        }
+
+        .collapsible-header h3 {
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        body.night .collapsible-header h3 {
+            color: var(--primary);
+        }
+
+        .collapsible-icon {
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+        }
+
+        .collapsible-icon.expanded {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .collapsible-content.expanded {
+            max-height: 2000px;
+            transition: max-height 0.5s ease-in;
+        }
+
+        .collapsible-inner {
+            padding: 1rem 0;
+        }
             display: none;
             position: fixed;
             z-index: 1000;
@@ -844,20 +905,53 @@
                 <div class="form-section">
                     <div class="form-section-title">Parámetros Principales</div>
                 </div>
-                <div class="form-section deductions-section">
-                    <div class="form-section-title">Deducciones por gastos</div>
-                    <div class="deductions-container" id="deductionsContainer"></div>
-                    <button type="button" id="addDeductionBtn">➕ Añadir gasto</button>
+
+                <!-- Deducciones Colapsable -->
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="toggleCollapsible('deductions')">
+                        <h3>💸 Deducciones por gastos</h3>
+                        <span class="collapsible-icon" id="deductions-icon">▼</span>
+                    </div>
+                    <div class="collapsible-content" id="deductions-content">
+                        <div class="collapsible-inner">
+                            <div class="form-section deductions-section">
+                                <div class="deductions-container" id="deductionsContainer"></div>
+                                <button type="button" id="addDeductionBtn">➕ Añadir gasto</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-section withdrawals-section">
-                    <div class="form-section-title">Retiros programados (jubilación)</div>
-                    <div class="withdrawals-container" id="withdrawalsContainer"></div>
-                    <button type="button" id="addWithdrawalBtn">➕ Añadir retiro</button>
+
+                <!-- Retiros Colapsable -->
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="toggleCollapsible('withdrawals')">
+                        <h3>💰 Retiros programados (jubilación)</h3>
+                        <span class="collapsible-icon" id="withdrawals-icon">▼</span>
+                    </div>
+                    <div class="collapsible-content" id="withdrawals-content">
+                        <div class="collapsible-inner">
+                            <div class="form-section withdrawals-section">
+                                <div class="withdrawals-container" id="withdrawalsContainer"></div>
+                                <button type="button" id="addWithdrawalBtn">➕ Añadir retiro</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-section milestones-section">
-                    <div class="form-section-title">Hitos y Objetivos</div>
-                    <div class="milestones-container" id="milestonesContainer"></div>
-                    <button type="button" id="addMilestoneBtn">➕ Añadir hito</button>
+
+                <!-- Hitos Colapsable -->
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="toggleCollapsible('milestones')">
+                        <h3>🎯 Hitos y Objetivos</h3>
+                        <span class="collapsible-icon" id="milestones-icon">▼</span>
+                    </div>
+                    <div class="collapsible-content" id="milestones-content">
+                        <div class="collapsible-inner">
+                            <div class="form-section milestones-section">
+                                <div class="milestones-container" id="milestonesContainer"></div>
+                                <button type="button" id="addMilestoneBtn">➕ Añadir hito</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
@@ -945,6 +1039,14 @@
         ];
 
         let milestones = [];
+
+        function toggleCollapsible(section) {
+            const content = document.getElementById(`${section}-content`);
+            const icon = document.getElementById(`${section}-icon`);
+            
+            content.classList.toggle('expanded');
+            icon.classList.toggle('expanded');
+        }
 
         function formatearNumero(numero) {
             return Math.round(numero).toLocaleString();
@@ -1289,14 +1391,16 @@
             const aporteAnual = aporteMensual * 12;
 
             for (let edad = e0; edad <= eF; edad++) {
-                if (edad > e0) {
+                // Registrar el saldo al inicio del año (edad actual)
+                const real = saldo / Math.pow(1 + inflacion, edad - e0);
+                datos.push({ edad, saldo, saldoReal: real, totalAportado });
+
+                // Si no es el último año, aplicar aportes y rendimiento para el próximo año
+                if (edad < eF) {
                     saldo += aporteAnual;
                     totalAportado += aporteAnual;
                     saldo *= (1 + rendimiento);
                 }
-                
-                const real = saldo / Math.pow(1 + inflacion, edad - e0);
-                datos.push({ edad, saldo, saldoReal: real, totalAportado });
             }
             
             renderResultados(datos, totalAportado);
@@ -1323,13 +1427,17 @@
             let totalAportado = +document.getElementById('montoInicialAdv').value;
             
             for (let edad = e0; edad <= eF; edad++) {
-                if (edad > e0) {
+                // Registrar el saldo al inicio del año (edad actual)
+                const real = saldo / Math.pow(1 + inflacion, edad - e0);
+                datos.push({ edad, saldo, saldoReal: real, totalAportado });
+
+                // Si no es el último año, aplicar aportes, deducciones, retiros y rendimiento
+                if (edad < eF) {
                     let aporteAnual = 0;
-                    const edadAnterior = edad - 1;
                     
-                    if (edadAnterior < e1) {
+                    if (edad < e1) {
                         aporteAnual = a1;
-                    } else if (edadAnterior < e2) {
+                    } else if (edad < e2) {
                         aporteAnual = a2;
                     } else {
                         aporteAnual = a3;
@@ -1338,21 +1446,18 @@
                     saldo += aporteAnual;
                     totalAportado += aporteAnual;
                     
-                    if (deducciones[edadAnterior]) {
-                        saldo -= deducciones[edadAnterior];
+                    if (deducciones[edad]) {
+                        saldo -= deducciones[edad];
                     }
                     
                     withdrawals.forEach(w => {
-                        if (edadAnterior >= w.age) {
+                        if (edad >= w.age) {
                             saldo -= w.amount;
                         }
                     });
                     
                     saldo *= (1 + rendimiento);
                 }
-                
-                const real = saldo / Math.pow(1 + inflacion, edad - e0);
-                datos.push({ edad, saldo, saldoReal: real, totalAportado });
             }
             
             renderResultados(datos, totalAportado);
@@ -1368,7 +1473,7 @@
             let totalAportado = saldo;
 
             for (let edad = e0; edad <= eF; edad++) {
-                if (edad > e0) {
+                if (edad < eF) {
                     saldo += aporteAnual;
                     totalAportado += aporteAnual;
                     saldo *= (1 + rendimiento);
@@ -1757,9 +1862,6 @@
                 JSON.parse(storedDeductions).forEach(d => {
                     addDeductionInput(d.age, d.amount);
                 });
-            } else {
-                addDeductionInput(30, 20000);
-                addDeductionInput(45, 50000);
             }
 
             const storedWithdrawals = localStorage.getItem('withdrawalsAdv');
@@ -1770,8 +1872,6 @@
                 JSON.parse(storedWithdrawals).forEach(w => {
                     addWithdrawalInput(w.age, w.amount);
                 });
-            } else {
-                addWithdrawalInput(65, 2000);
             }
 
             const storedMilestones = localStorage.getItem('milestonesAdv');
@@ -1782,9 +1882,6 @@
                 JSON.parse(storedMilestones).forEach(m => {
                     addMilestoneInput(m.age, m.amount, m.desc);
                 });
-            } else {
-                addMilestoneInput(30, 50000, 'Auto');
-                addMilestoneInput(40, 200000, 'Casa');
             }
 
             if (localStorage.getItem('nightMode') === 'true') {
