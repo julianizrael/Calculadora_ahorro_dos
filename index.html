@@ -112,19 +112,19 @@
         .export-btn:hover { background-color: #d97706; }
         .night-toggle:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
 
-        /* --- Tabs (Corregido) --- */
+        /* --- Tabs --- */
         .tabs {
             display: flex;
             flex-wrap: nowrap;
             margin-bottom: 0;
             border-bottom: 3px solid var(--border-color);
             overflow-x: auto;
-            overflow-y: hidden; /* CLAVE: Evita scroll vertical */
+            overflow-y: hidden;
             -webkit-overflow-scrolling: touch;
-            padding-bottom: 1px; /* Evita corte de borde */
+            padding-bottom: 1px;
         }
         
-        .tabs::-webkit-scrollbar { height: 0px; } /* Oculta barra scroll visualmente */
+        .tabs::-webkit-scrollbar { height: 0px; }
 
         .tab {
             padding: 0.8rem 1.5rem;
@@ -142,7 +142,7 @@
             min-width: 140px;
             text-align: center;
             white-space: nowrap;
-            flex-shrink: 0; /* Evita que se aplasten */
+            flex-shrink: 0;
         }
 
         .tab:hover:not(.active) { filter: brightness(0.95); }
@@ -303,7 +303,21 @@
         }
         #savingChart { width: 100% !important; height: 100% !important; }
 
-        /* --- Escenarios --- */
+        /* --- ESCENARIOS (NUEVO ESTILO) --- */
+        /* Esto fuerza la fila de 4 columnas */
+        .scenarios-top-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 columnas iguales */
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1.5rem;
+        }
+        
+        .scenarios-top-bar .form-section-title {
+            grid-column: 1 / -1;
+        }
+
         .scenarios-container {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-bottom: 1rem;
         }
@@ -358,6 +372,10 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
+        @media (max-width: 900px) {
+            .scenarios-top-bar { grid-template-columns: 1fr 1fr; } /* 2 cols en tablet */
+        }
+
         @media (max-width: 768px) {
             .container { padding: 0 0.5rem; }
             .header { flex-direction: column; gap: 0.75rem; text-align: center; }
@@ -368,6 +386,7 @@
             .milestone-item .form-input-group:nth-child(3), .remove-milestone-btn { grid-column: 1 / -1; }
             .controls { flex-direction: column; }
             #chartContainer { height: 400px; padding: 0.5rem; }
+            .scenarios-top-bar { grid-template-columns: 1fr; } /* 1 col en móvil */
         }
     </style>
 </head>
@@ -447,7 +466,7 @@
         </div>
 
         <div id="escenarios" class="tab-content">
-            <form class="form-section" style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem;">
+            <form class="scenarios-top-bar">
                 <div class="form-section-title">Configuración de Escenarios</div>
                 <div class="form-input-group">
                     <label>Monto inicial hoy</label>
