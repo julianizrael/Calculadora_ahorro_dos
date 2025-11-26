@@ -214,12 +214,6 @@
             transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        /* Estilo especial para inputs de dinero */
-        input.money-input {
-            text-align: right;
-            font-variant-numeric: tabular-nums; /* Alinea mejor los números */
-        }
-
         input:focus, select:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
@@ -309,17 +303,20 @@
         }
         #savingChart { width: 100% !important; height: 100% !important; }
 
-        /* --- ESCENARIOS --- */
+        /* --- ESCENARIOS (NUEVO ESTILO) --- */
+        /* Esto fuerza la fila de 4 columnas */
         .scenarios-top-bar {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(4, 1fr); /* 4 columnas iguales */
             gap: 1rem;
             margin-bottom: 2rem;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 1.5rem;
         }
         
-        .scenarios-top-bar .form-section-title { grid-column: 1 / -1; }
+        .scenarios-top-bar .form-section-title {
+            grid-column: 1 / -1;
+        }
 
         .scenarios-container {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-bottom: 1rem;
@@ -376,7 +373,7 @@
         @keyframes slideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         @media (max-width: 900px) {
-            .scenarios-top-bar { grid-template-columns: 1fr 1fr; }
+            .scenarios-top-bar { grid-template-columns: 1fr 1fr; } /* 2 cols en tablet */
         }
 
         @media (max-width: 768px) {
@@ -389,7 +386,7 @@
             .milestone-item .form-input-group:nth-child(3), .remove-milestone-btn { grid-column: 1 / -1; }
             .controls { flex-direction: column; }
             #chartContainer { height: 400px; padding: 0.5rem; }
-            .scenarios-top-bar { grid-template-columns: 1fr; }
+            .scenarios-top-bar { grid-template-columns: 1fr; } /* 1 col en móvil */
         }
     </style>
 </head>
@@ -470,21 +467,22 @@
 
         <div id="escenarios" class="tab-content">
             <form class="scenarios-top-bar">
+                <div class="form-section-title">Configuración de Escenarios</div>
                 <div class="form-input-group">
                     <label>Monto inicial hoy</label>
-                    <input type="text" class="money-input" id="montoInicialEsc" value="0" inputmode="numeric">
+                    <input type="number" id="montoInicialEsc" value="0" placeholder="0">
                 </div>
                 <div class="form-input-group">
                     <label>Aporte mensual</label>
-                    <input type="text" class="money-input" id="aporteMensualEsc" value="100" inputmode="numeric">
+                    <input type="number" id="aporteMensualEsc" value="100" placeholder="100">
                 </div>
                 <div class="form-input-group">
                     <label>Edad Actual</label>
-                    <input type="number" id="edadActualEsc" value="25">
+                    <input type="number" id="edadActualEsc" value="25" placeholder="25">
                 </div>
                 <div class="form-input-group">
                     <label>Edad Objetivo</label>
-                    <input type="number" id="edadObjetivoEsc" value="65">
+                    <input type="number" id="edadObjetivoEsc" value="65" placeholder="65">
                 </div>
             </form>
             <div class="scenarios-container" id="scenariosContainer"></div>
@@ -496,7 +494,7 @@
                     <div class="form-section-title">Calcula cuánto necesitas ahorrar</div>
                     <div class="form-input-group">
                         <label>Monto objetivo</label>
-                        <input type="text" class="money-input" id="objetivoInversa" value="1.000.000" inputmode="numeric">
+                        <input type="number" id="objetivoInversa" value="1000000">
                     </div>
                     <div class="form-input-group">
                         <label>Edad actual</label>
@@ -512,7 +510,7 @@
                     </div>
                     <div class="form-input-group">
                         <label>Monto inicial disponible</label>
-                        <input type="text" class="money-input" id="montoInicialInversa" value="0" inputmode="numeric">
+                        <input type="number" id="montoInicialInversa" value="0">
                     </div>
                 </div>
             </form>
@@ -545,9 +543,7 @@
     </div>
 
     <script>
-        // --- 1. Configuración de Campos ---
-        // Formato: [Label, ID, ValorDefault, Tooltip]
-        // Para dinero, ID debe contener: 'monto', 'aporte', 'objetivo'
+        // --- 1. Configuración de Campos Iniciales ---
         const camposBasico = [
             ['Edad inicio', 'edadInicioBasico', 25, 'Edad actual'],
             ['Edad fin', 'edadFinBasico', 65, 'Edad de retiro'],
@@ -573,63 +569,16 @@
         let milestones = [];
         let myChart = null;
 
-        // --- 2. Utilidades de Formato Numérico ---
-        
-        // Formatea un número visualmente (1000 -> 1.000)
-        function formatMoneyDisplay(value) {
-            if (value === '' || value === undefined) return '';
-            // Asegurar que es string, quitar no dígitos
-            const raw = value.toString().replace(/\D/g, '');
-            // Formatear con puntos de miles
-            return raw.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        // --- 2. Utilidades ---
+        function toggleCollapsible(section) {
+            const content = document.getElementById(`${section}-content`);
+            const icon = document.getElementById(`${section}-icon`);
+            if(content) content.classList.toggle('expanded');
+            if(icon) icon.classList.toggle('expanded');
         }
 
-        // Limpia el formato para cálculos (1.000 -> 1000)
-        function cleanNumber(value) {
-            if (!value) return 0;
-            // Convertir a string, quitar puntos, reemplazar coma por punto decimal si hubiere
-            let clean = value.toString().replace(/\./g, '').replace(/,/g, '.');
-            return parseFloat(clean) || 0;
-        }
-
-        // Obtiene valor numérico limpio de un input por ID
-        function getMoneyValue(id) {
-            const el = document.getElementById(id);
-            if (!el) return 0;
-            return cleanNumber(el.value);
-        }
-
-        // --- 3. Generadores UI ---
-        function generarInputs(campos, formId) {
-            const form = document.getElementById(formId);
-            if(!form) return;
-            const targetElement = formId === 'formAvanzado' ? form.querySelector('.form-section:first-child') : form;
-            
-            if(formId === 'formAvanzado') targetElement.innerHTML = '<div class="form-section-title">Parámetros Principales</div>';
-
-            campos.forEach(([labelText, id, valor, tooltip]) => {
-                const isMoney = id.includes('monto') || id.includes('aporte') || id.includes('objetivo');
-                const type = isMoney ? 'text' : 'number';
-                const className = isMoney ? 'money-input' : '';
-                const inputMode = isMoney ? 'inputmode="numeric"' : '';
-                
-                // Recuperar valor y formatear si es dinero
-                let savedValue = getStoredValue(id, valor);
-                if(isMoney) savedValue = formatMoneyDisplay(savedValue);
-
-                const div = document.createElement('div');
-                div.className = 'form-input-group';
-                div.innerHTML = `
-                    <label for="${id}">
-                        <div class="tooltip-container">${labelText}
-                            <div class="tooltip-icon">?</div>
-                            <div class="tooltip">${tooltip}</div>
-                        </div>
-                    </label>
-                    <input type="${type}" id="${id}" value="${savedValue}" class="${className}" ${inputMode}>
-                `;
-                targetElement.appendChild(div);
-            });
+        function formatearNumero(numero) {
+            return Math.round(numero).toLocaleString();
         }
 
         function getStoredValue(id, defaultValue) {
@@ -639,29 +588,6 @@
             return storedValue !== null ? storedValue : defaultValue;
         }
 
-        // --- 4. Manejador de Eventos de Input Dinámico ---
-        function setupInputFormatting() {
-            // Delegación de eventos para inputs de dinero existentes y futuros
-            document.body.addEventListener('input', function(e) {
-                if (e.target.classList.contains('money-input')) {
-                    // Guardar posición del cursor
-                    const start = e.target.selectionStart;
-                    const oldLen = e.target.value.length;
-                    
-                    // Formatear
-                    const formatted = formatMoneyDisplay(e.target.value);
-                    e.target.value = formatted;
-                    
-                    // Restaurar cursor (ajustado por cambios de longitud)
-                    const newLen = formatted.length;
-                    e.target.setSelectionRange(start + (newLen - oldLen), start + (newLen - oldLen));
-                }
-                // Recalcular en cualquier input
-                if (e.target.tagName === 'INPUT') autoCalcular();
-            });
-        }
-
-        // --- 5. Funciones de Items Dinámicos ---
         function createDynamicItem(containerId, className, htmlContent, removeCallback) {
             const container = document.getElementById(containerId);
             if(!container) return;
@@ -672,33 +598,47 @@
 
             const removeBtn = div.querySelector(`button[class^="remove-"]`);
             if(removeBtn) removeBtn.addEventListener('click', () => { div.remove(); if(removeCallback) removeCallback(); });
+
+            div.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', () => { if(removeCallback) removeCallback(); });
+            });
+        }
+
+        // --- 3. Generadores de UI ---
+        function generarInputs(campos, formId) {
+            const form = document.getElementById(formId);
+            if(!form) return;
+            const targetElement = formId === 'formAvanzado' ? form.querySelector('.form-section:first-child') : form;
+            
+            if(formId === 'formAvanzado') targetElement.innerHTML = '<div class="form-section-title">Parámetros Principales</div>';
+
+            campos.forEach(([labelText, id, valor, tooltip]) => {
+                const value = getStoredValue(id, valor);
+                const div = document.createElement('div');
+                div.className = 'form-input-group';
+                div.innerHTML = `<label for="${id}"><div class="tooltip-container">${labelText}<div class="tooltip-icon">?</div><div class="tooltip">${tooltip}</div></div></label><input type="number" id="${id}" value="${value}">`;
+                targetElement.appendChild(div);
+            });
         }
 
         function addDeductionInput(edad = '', monto = '') {
             createDynamicItem('deductionsContainer', 'deduction-item', 
-                `<div class="form-input-group"><label>Edad</label><input type="number" class="deduction-age" value="${edad}"></div>
-                 <div class="form-input-group"><label>Monto</label><input type="text" class="deduction-amount money-input" inputmode="numeric" value="${formatMoneyDisplay(monto)}"></div>
-                 <button class="remove-deduction-btn">➖</button>`, autoCalcular);
+                `<div class="form-input-group"><label>Edad</label><input type="number" class="deduction-age" value="${edad}"></div><div class="form-input-group"><label>Monto</label><input type="number" class="deduction-amount" value="${monto}"></div><button class="remove-deduction-btn">➖</button>`, autoCalcular);
         }
         function addWithdrawalInput(edad = '', monto = '') {
             createDynamicItem('withdrawalsContainer', 'withdrawal-item',
-                `<div class="form-input-group"><label>Inicio</label><input type="number" class="withdrawal-age" value="${edad}"></div>
-                 <div class="form-input-group"><label>Mensual</label><input type="text" class="withdrawal-amount money-input" inputmode="numeric" value="${formatMoneyDisplay(monto)}"></div>
-                 <button class="remove-withdrawal-btn">➖</button>`, autoCalcular);
+                `<div class="form-input-group"><label>Inicio</label><input type="number" class="withdrawal-age" value="${edad}"></div><div class="form-input-group"><label>Mensual</label><input type="number" class="withdrawal-amount" value="${monto}"></div><button class="remove-withdrawal-btn">➖</button>`, autoCalcular);
         }
         function addMilestoneInput(edad = '', monto = '', descripcion = '') {
             createDynamicItem('milestonesContainer', 'milestone-item',
-                `<div class="form-input-group"><label>Edad</label><input type="number" class="milestone-age" value="${edad}"></div>
-                 <div class="form-input-group"><label>Monto</label><input type="text" class="milestone-amount money-input" inputmode="numeric" value="${formatMoneyDisplay(monto)}"></div>
-                 <div class="form-input-group"><label>Fin</label><input type="text" class="milestone-desc" value="${descripcion}"></div>
-                 <button class="remove-milestone-btn">➖</button>`, updateMilestones);
+                `<div class="form-input-group"><label>Edad</label><input type="number" class="milestone-age" value="${edad}"></div><div class="form-input-group"><label>Monto</label><input type="number" class="milestone-amount" value="${monto}"></div><div class="form-input-group"><label>Fin</label><input type="text" class="milestone-desc" value="${descripcion}"></div><button class="remove-milestone-btn">➖</button>`, updateMilestones);
         }
 
         function updateMilestones() {
             milestones = [];
             document.querySelectorAll('.milestone-item').forEach(item => {
                 const age = parseInt(item.querySelector('.milestone-age').value);
-                const amount = cleanNumber(item.querySelector('.milestone-amount').value);
+                const amount = parseFloat(item.querySelector('.milestone-amount').value);
                 const desc = item.querySelector('.milestone-desc').value;
                 if (!isNaN(age) && !isNaN(amount)) milestones.push({ age, amount, desc });
             });
@@ -709,7 +649,7 @@
             const d = {};
             document.querySelectorAll('.deduction-item').forEach(i => {
                 const age = parseInt(i.querySelector('.deduction-age').value);
-                const amt = cleanNumber(i.querySelector('.deduction-amount').value);
+                const amt = parseFloat(i.querySelector('.deduction-amount').value);
                 if(!isNaN(age) && !isNaN(amt)) d[age] = (d[age]||0) + amt;
             });
             return d;
@@ -718,25 +658,26 @@
             const w = [];
             document.querySelectorAll('.withdrawal-item').forEach(i => {
                 const age = parseInt(i.querySelector('.withdrawal-age').value);
-                const amt = cleanNumber(i.querySelector('.withdrawal-amount').value) * 12;
+                const amt = parseFloat(i.querySelector('.withdrawal-amount').value) * 12;
                 if(!isNaN(age) && !isNaN(amt)) w.push({ age, amount: amt });
             });
             return w;
         }
 
-        // --- 6. Lógica de Cálculo ---
+        // --- 4. Lógica de Cálculo ---
         function calcularBasico() {
             const e0 = +document.getElementById('edadInicioBasico').value || 25;
             const eF = +document.getElementById('edadFinBasico').value || 65;
-            const aporte = getMoneyValue('aporteMensualBasico') * 12;
+            const aporte = (+document.getElementById('aporteMensualBasico').value || 0) * 12;
             const rate = (+document.getElementById('rendimientoBasico').value || 0) / 100;
             const infl = (+document.getElementById('inflacionBasico').value || 0) / 100;
-            let saldo = getMoneyValue('montoInicialBasico');
+            let saldo = +document.getElementById('montoInicialBasico').value || 0;
             
             if(eF <= e0) return;
             const datos = [];
             let totalAportado = saldo;
             
+            // Año 0
             saldo += aporte; totalAportado += aporte; saldo *= (1 + rate);
             datos.push({ edad: e0, saldo, saldoReal: saldo, totalAportado });
 
@@ -754,12 +695,12 @@
 
             const e1 = +document.getElementById('edadCambio1Adv').value || 35;
             const e2 = +document.getElementById('edadCambio2Adv').value || 50;
-            const a1 = getMoneyValue('aporteTramo1') * 12;
-            const a2 = getMoneyValue('aporteTramo2') * 12;
-            const a3 = getMoneyValue('aporteTramo3') * 12;
+            const a1 = (+document.getElementById('aporteTramo1').value || 0) * 12;
+            const a2 = (+document.getElementById('aporteTramo2').value || 0) * 12;
+            const a3 = (+document.getElementById('aporteTramo3').value || 0) * 12;
             const rate = (+document.getElementById('rendimientoAdv').value || 0) / 100;
             const infl = (+document.getElementById('inflacionAdv').value || 0) / 100;
-            let saldo = getMoneyValue('montoInicialAdv');
+            let saldo = +document.getElementById('montoInicialAdv').value || 0;
 
             const ded = getDeductions();
             const wit = getWithdrawals();
@@ -782,35 +723,34 @@
         }
 
         function calcularEscenarioIndependiente(rendimiento, inflacion) {
+            // Toma los valores de los inputs NUEVOS de la pestaña Escenarios
             const e0 = +document.getElementById('edadActualEsc').value || 25;
             const eF = +document.getElementById('edadObjetivoEsc').value || 65;
-            const aporte = getMoneyValue('aporteMensualEsc') * 12;
-            let saldo = getMoneyValue('montoInicialEsc');
-            let edadMillon = null;
+            const aporte = (+document.getElementById('aporteMensualEsc').value || 0) * 12;
+            let saldo = +document.getElementById('montoInicialEsc').value || 0;
+            let totalAportado = saldo;
 
-            if (eF <= e0) return { nominal: 0, real: 0, edadMillon: '-' };
+            if (eF <= e0) return { nominal: 0, real: 0 };
 
+            // Simulación rápida
             for (let i = e0; i <= eF; i++) {
                 saldo += aporte;
+                totalAportado += aporte;
                 saldo *= (1 + rendimiento);
-                if (saldo >= 1000000 && edadMillon === null) {
-                    edadMillon = i;
-                }
             }
             
             return { 
                 nominal: saldo, 
-                real: saldo / Math.pow(1 + inflacion, eF - e0),
-                edadMillon: edadMillon !== null ? edadMillon : '-'
+                real: saldo / Math.pow(1 + inflacion, eF - e0)
             };
         }
 
         function calcularInversa() {
-            const obj = getMoneyValue('objetivoInversa');
+            const obj = +document.getElementById('objetivoInversa').value || 0;
             const e0 = +document.getElementById('edadActualInversa').value || 25;
             const eF = +document.getElementById('edadObjetivoInversa').value || 65;
             const rate = (+document.getElementById('rendimientoInversa').value || 0) / 100;
-            const init = getMoneyValue('montoInicialInversa');
+            const init = +document.getElementById('montoInicialInversa').value || 0;
 
             if(eF <= e0) return;
             const n = eF - e0;
@@ -818,6 +758,8 @@
             const gap = obj - fvInit;
             let pmt = 0;
             if(gap > 0) {
+                // FV of annuity formula: PMT * ((1+r)^n - 1) / r
+                // PMT = gap * r / ((1+r)^n - 1)
                 pmt = (gap * rate) / (Math.pow(1+rate, n) - 1) / 12;
             }
             const totalPropio = (pmt * 12 * n) + init;
@@ -832,14 +774,7 @@
             `;
         }
 
-        // --- 7. Renderizado ---
-        function toggleCollapsible(section) {
-            const content = document.getElementById(`${section}-content`);
-            const icon = document.getElementById(`${section}-icon`);
-            if(content) content.classList.toggle('expanded');
-            if(icon) icon.classList.toggle('expanded');
-        }
-
+        // --- 5. Renderizado ---
         function renderChart2D(datos) {
             if(typeof Chart === 'undefined') return;
             const ctx = document.getElementById('savingChart').getContext('2d');
@@ -890,6 +825,7 @@
         }
 
         function renderEscenarios() {
+            // Usamos la nueva función con datos independientes
             const opt = calcularEscenarioIndependiente(0.10, 0.02);
             const real = calcularEscenarioIndependiente(0.05, 0.03);
             const pes = calcularEscenarioIndependiente(0.02, 0.05);
@@ -900,7 +836,6 @@
                     <div class="scenario-stat"><label>Rendimiento ${r*100}% | Inflación ${i*100}%</label></div>
                     <div class="scenario-stat"><label>Final Nominal</label><div class="value">${formatearNumero(data.nominal)}</div></div>
                     <div class="scenario-stat"><label>Final Real</label><div class="value">${formatearNumero(data.real)}</div></div>
-                    <div class="scenario-stat"><label>Edad al Millón</label><div class="value">${data.edadMillon}</div></div>
                 </div>`;
 
             document.getElementById('scenariosContainer').innerHTML = 
@@ -909,20 +844,15 @@
                 card('⚠️ Pesimista', 'pesimista', 0.02, 0.05, pes);
         }
 
-        // --- 8. Core & Eventos ---
+        // --- 6. Core & Eventos ---
         function autoCalcular() {
-            // Guardar inputs con ID (valor puro en inputs dinero se maneja al leer)
+            // Guardar inputs con ID en localStorage
             document.querySelectorAll('input').forEach(i => {
                 if(i.id) localStorage.setItem(i.id, i.value);
             });
             // Guardar listas dinámicas
-            // Importante: aquí ya están formateados, pero al leer getDeductions los limpiamos
-            // Pero para persistencia, podríamos querer guardar "limpios" o sucios.
-            // En este enfoque simple, se guarda lo que hay en el DOM.
-            
-            // NOTA: Listas dinámicas son más complejas de persistir con formato
-            // Simplificamos: no persistimos listas dinámicas en esta versión para evitar bugs de formato
-            // O las reconstruimos con cuidado. Dejaremos la persistencia básica.
+            localStorage.setItem('deductionsAdv', JSON.stringify(getDeductions()));
+            localStorage.setItem('withdrawalsAdv', JSON.stringify(getWithdrawals()));
 
             const tab = document.querySelector('.tab.active');
             if(!tab) return;
@@ -942,7 +872,7 @@
             
             const wasNight = document.body.classList.contains('night');
             if(wasNight) { document.body.classList.remove('night'); autoCalcular(); }
-            await new Promise(r => setTimeout(r, 200));
+            await new Promise(r => setTimeout(r, 200)); // Espera renderizado
 
             try {
                 const resC = await html2canvas(document.getElementById('resumen'), {scale:2, backgroundColor:'#fff'});
@@ -966,28 +896,41 @@
         }
 
         function init() {
-            setupInputFormatting();
             generarInputs(camposBasico, 'formBasico');
             generarInputs(camposAvanzado, 'formAvanzado');
             
-            // Cargar Escenarios
+            // Cargar valores de Escenarios Independientes desde Storage (si existen)
             ['montoInicialEsc', 'aporteMensualEsc', 'edadActualEsc', 'edadObjetivoEsc'].forEach(id => {
                 const val = localStorage.getItem(id);
                 if(val) document.getElementById(id).value = val;
             });
 
+            // Cargar tema
             if (localStorage.getItem('nightMode') === 'true') {
                 document.body.classList.add('night');
                 document.getElementById('toggleNightBtn').textContent = '☀️ Modo día';
             }
 
-            // Tabs
+            // Eventos Tabs
             document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
                 document.querySelectorAll('.tab, .tab-content').forEach(x => x.classList.remove('active'));
                 t.classList.add('active');
                 document.getElementById(t.dataset.tab).classList.add('active');
                 autoCalcular();
             }));
+
+            // Eventos Inputs Generales
+            document.getElementById('formBasico').addEventListener('input', autoCalcular);
+            document.getElementById('formAvanzado').addEventListener('input', autoCalcular);
+            document.getElementById('formInversa').addEventListener('input', calcularInversa);
+            
+            // Eventos Inputs Escenarios (Nuevos)
+            ['montoInicialEsc', 'aporteMensualEsc', 'edadActualEsc', 'edadObjetivoEsc'].forEach(id => {
+                document.getElementById(id).addEventListener('input', () => {
+                    renderEscenarios();
+                    localStorage.setItem(id, document.getElementById(id).value); // Guardado manual inmediato
+                });
+            });
 
             // Botones
             document.getElementById('addDeductionBtn').addEventListener('click', () => addDeductionInput());
@@ -998,7 +941,7 @@
                 const isDark = document.body.classList.toggle('night');
                 e.target.textContent = isDark ? '☀️ Modo día' : '🌙 Modo noche';
                 localStorage.setItem('nightMode', isDark);
-                autoCalcular();
+                autoCalcular(); // Redibujar gráfico con nuevos colores
             });
 
             document.getElementById('toggleTableBtn').addEventListener('click', (e) => {
@@ -1021,6 +964,13 @@
                 document.getElementById('shareUrl').select();
                 document.execCommand('copy');
             });
+
+            // Carga inicial de listas dinámicas desde Storage
+            const savedDed = JSON.parse(localStorage.getItem('deductionsAdv') || '{}');
+            Object.entries(savedDed).forEach(([k,v]) => addDeductionInput(k, v));
+            
+            const savedWit = JSON.parse(localStorage.getItem('withdrawalsAdv') || '[]');
+            savedWit.forEach(w => addWithdrawalInput(w.age, w.amount/12));
 
             autoCalcular();
         }
