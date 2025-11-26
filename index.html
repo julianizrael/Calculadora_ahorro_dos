@@ -304,7 +304,6 @@
         #savingChart { width: 100% !important; height: 100% !important; }
 
         /* --- ESCENARIOS (NUEVO ESTILO) --- */
-        /* Esto fuerza la fila de 4 columnas */
         .scenarios-top-bar {
             display: grid;
             grid-template-columns: repeat(4, 1fr); /* 4 columnas iguales */
@@ -373,7 +372,7 @@
         @keyframes slideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         @media (max-width: 900px) {
-            .scenarios-top-bar { grid-template-columns: 1fr 1fr; } /* 2 cols en tablet */
+            .scenarios-top-bar { grid-template-columns: 1fr 1fr; }
         }
 
         @media (max-width: 768px) {
@@ -386,7 +385,7 @@
             .milestone-item .form-input-group:nth-child(3), .remove-milestone-btn { grid-column: 1 / -1; }
             .controls { flex-direction: column; }
             #chartContainer { height: 400px; padding: 0.5rem; }
-            .scenarios-top-bar { grid-template-columns: 1fr; } /* 1 col en móvil */
+            .scenarios-top-bar { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -467,7 +466,6 @@
 
         <div id="escenarios" class="tab-content">
             <form class="scenarios-top-bar">
-                <div class="form-section-title">Configuración de Escenarios</div>
                 <div class="form-input-group">
                     <label>Monto inicial hoy</label>
                     <input type="number" id="montoInicialEsc" value="0" placeholder="0">
@@ -543,7 +541,7 @@
     </div>
 
     <script>
-        // --- 1. Configuración de Campos Iniciales ---
+        // --- 1. Configuración ---
         const camposBasico = [
             ['Edad inicio', 'edadInicioBasico', 25, 'Edad actual'],
             ['Edad fin', 'edadFinBasico', 65, 'Edad de retiro'],
@@ -604,7 +602,7 @@
             });
         }
 
-        // --- 3. Generadores de UI ---
+        // --- 3. Generadores UI ---
         function generarInputs(campos, formId) {
             const form = document.getElementById(formId);
             if(!form) return;
@@ -677,7 +675,6 @@
             const datos = [];
             let totalAportado = saldo;
             
-            // Año 0
             saldo += aporte; totalAportado += aporte; saldo *= (1 + rate);
             datos.push({ edad: e0, saldo, saldoReal: saldo, totalAportado });
 
@@ -723,25 +720,26 @@
         }
 
         function calcularEscenarioIndependiente(rendimiento, inflacion) {
-            // Toma los valores de los inputs NUEVOS de la pestaña Escenarios
             const e0 = +document.getElementById('edadActualEsc').value || 25;
             const eF = +document.getElementById('edadObjetivoEsc').value || 65;
             const aporte = (+document.getElementById('aporteMensualEsc').value || 0) * 12;
             let saldo = +document.getElementById('montoInicialEsc').value || 0;
-            let totalAportado = saldo;
+            let edadMillon = null;
 
-            if (eF <= e0) return { nominal: 0, real: 0 };
+            if (eF <= e0) return { nominal: 0, real: 0, edadMillon: '-' };
 
-            // Simulación rápida
             for (let i = e0; i <= eF; i++) {
                 saldo += aporte;
-                totalAportado += aporte;
                 saldo *= (1 + rendimiento);
+                if (saldo >= 1000000 && edadMillon === null) {
+                    edadMillon = i;
+                }
             }
             
             return { 
                 nominal: saldo, 
-                real: saldo / Math.pow(1 + inflacion, eF - e0)
+                real: saldo / Math.pow(1 + inflacion, eF - e0),
+                edadMillon: edadMillon !== null ? edadMillon : '-'
             };
         }
 
@@ -758,8 +756,6 @@
             const gap = obj - fvInit;
             let pmt = 0;
             if(gap > 0) {
-                // FV of annuity formula: PMT * ((1+r)^n - 1) / r
-                // PMT = gap * r / ((1+r)^n - 1)
                 pmt = (gap * rate) / (Math.pow(1+rate, n) - 1) / 12;
             }
             const totalPropio = (pmt * 12 * n) + init;
@@ -825,7 +821,6 @@
         }
 
         function renderEscenarios() {
-            // Usamos la nueva función con datos independientes
             const opt = calcularEscenarioIndependiente(0.10, 0.02);
             const real = calcularEscenarioIndependiente(0.05, 0.03);
             const pes = calcularEscenarioIndependiente(0.02, 0.05);
@@ -836,6 +831,7 @@
                     <div class="scenario-stat"><label>Rendimiento ${r*100}% | Inflación ${i*100}%</label></div>
                     <div class="scenario-stat"><label>Final Nominal</label><div class="value">${formatearNumero(data.nominal)}</div></div>
                     <div class="scenario-stat"><label>Final Real</label><div class="value">${formatearNumero(data.real)}</div></div>
+                    <div class="scenario-stat"><label>Edad al Millón</label><div class="value">${data.edadMillon}</div></div>
                 </div>`;
 
             document.getElementById('scenariosContainer').innerHTML = 
@@ -846,11 +842,9 @@
 
         // --- 6. Core & Eventos ---
         function autoCalcular() {
-            // Guardar inputs con ID en localStorage
             document.querySelectorAll('input').forEach(i => {
                 if(i.id) localStorage.setItem(i.id, i.value);
             });
-            // Guardar listas dinámicas
             localStorage.setItem('deductionsAdv', JSON.stringify(getDeductions()));
             localStorage.setItem('withdrawalsAdv', JSON.stringify(getWithdrawals()));
 
@@ -872,7 +866,7 @@
             
             const wasNight = document.body.classList.contains('night');
             if(wasNight) { document.body.classList.remove('night'); autoCalcular(); }
-            await new Promise(r => setTimeout(r, 200)); // Espera renderizado
+            await new Promise(r => setTimeout(r, 200));
 
             try {
                 const resC = await html2canvas(document.getElementById('resumen'), {scale:2, backgroundColor:'#fff'});
@@ -899,19 +893,16 @@
             generarInputs(camposBasico, 'formBasico');
             generarInputs(camposAvanzado, 'formAvanzado');
             
-            // Cargar valores de Escenarios Independientes desde Storage (si existen)
             ['montoInicialEsc', 'aporteMensualEsc', 'edadActualEsc', 'edadObjetivoEsc'].forEach(id => {
                 const val = localStorage.getItem(id);
                 if(val) document.getElementById(id).value = val;
             });
 
-            // Cargar tema
             if (localStorage.getItem('nightMode') === 'true') {
                 document.body.classList.add('night');
                 document.getElementById('toggleNightBtn').textContent = '☀️ Modo día';
             }
 
-            // Eventos Tabs
             document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
                 document.querySelectorAll('.tab, .tab-content').forEach(x => x.classList.remove('active'));
                 t.classList.add('active');
@@ -919,20 +910,17 @@
                 autoCalcular();
             }));
 
-            // Eventos Inputs Generales
             document.getElementById('formBasico').addEventListener('input', autoCalcular);
             document.getElementById('formAvanzado').addEventListener('input', autoCalcular);
             document.getElementById('formInversa').addEventListener('input', calcularInversa);
             
-            // Eventos Inputs Escenarios (Nuevos)
             ['montoInicialEsc', 'aporteMensualEsc', 'edadActualEsc', 'edadObjetivoEsc'].forEach(id => {
                 document.getElementById(id).addEventListener('input', () => {
                     renderEscenarios();
-                    localStorage.setItem(id, document.getElementById(id).value); // Guardado manual inmediato
+                    localStorage.setItem(id, document.getElementById(id).value);
                 });
             });
 
-            // Botones
             document.getElementById('addDeductionBtn').addEventListener('click', () => addDeductionInput());
             document.getElementById('addWithdrawalBtn').addEventListener('click', () => addWithdrawalInput());
             document.getElementById('addMilestoneBtn').addEventListener('click', () => addMilestoneInput());
@@ -941,7 +929,7 @@
                 const isDark = document.body.classList.toggle('night');
                 e.target.textContent = isDark ? '☀️ Modo día' : '🌙 Modo noche';
                 localStorage.setItem('nightMode', isDark);
-                autoCalcular(); // Redibujar gráfico con nuevos colores
+                autoCalcular();
             });
 
             document.getElementById('toggleTableBtn').addEventListener('click', (e) => {
@@ -953,7 +941,6 @@
 
             document.getElementById('exportBtn').addEventListener('click', exportToPDF);
             
-            // Modal
             const modal = document.getElementById('shareModal');
             document.getElementById('shareBtn').addEventListener('click', () => {
                 modal.classList.add('active');
@@ -965,10 +952,8 @@
                 document.execCommand('copy');
             });
 
-            // Carga inicial de listas dinámicas desde Storage
             const savedDed = JSON.parse(localStorage.getItem('deductionsAdv') || '{}');
             Object.entries(savedDed).forEach(([k,v]) => addDeductionInput(k, v));
-            
             const savedWit = JSON.parse(localStorage.getItem('withdrawalsAdv') || '[]');
             savedWit.forEach(w => addWithdrawalInput(w.age, w.amount/12));
 
