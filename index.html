@@ -10,135 +10,48 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
+        /* 1. VARIABLES GLOBALES (MODO DÍA POR DEFECTO) */
         :root {
+            /* Colores de Marca */
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
             --secondary: #dc2626;
             --success: #10b981;
             --success-hover: #059669;
             --warning: #f59e0b;
-            --bg: #ffffff;
-            --text-color: #1e293b;
-            --bg-alt: #f8fafc;
-            --border: #e2e8f0;
+            
+            /* Variables de Tema (DÍA) */
+            --bg-body: #f8fafc;       /* Fondo general */
+            --bg-card: #ffffff;       /* Fondo de tarjetas */
+            --bg-input: #ffffff;      /* Fondo de inputs */
+            --bg-stat: #f1f5f9;       /* Fondo de cajitas de estadística */
+            
+            --text-main: #1e293b;     /* Texto principal */
+            --text-muted: #64748b;    /* Texto secundario */
+            
+            --border-color: #e2e8f0;  /* Bordes */
+            
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-            --dark-bg: #0f172a;
-            --dark-bg-alt: #1e293b;
-            --dark-text-color: #f1f5f9;
-            --dark-border: #334155;
         }
 
-        /* --- ESTILOS MODO NOCHE GENERALES --- */
+        /* 2. VARIABLES MODO NOCHE (Sobrescriben las de arriba) */
         body.night {
-            background-color: var(--dark-bg);
-            color: var(--dark-text-color);
+            --bg-body: #0f172a;       /* Azul muy oscuro */
+            --bg-card: #1e293b;       /* Azul oscuro pizarra */
+            --bg-input: #0f172a;      /* Input oscuro */
+            --bg-stat: #0f172a;       /* Cajitas oscuras */
+            
+            --text-main: #f1f5f9;     /* Texto blanco */
+            --text-muted: #94a3b8;    /* Texto gris claro */
+            
+            --border-color: #334155;  /* Borde oscuro */
+            
+            --shadow: none;
+            --shadow-lg: none;
         }
 
-        body.night .header h1,
-        body.night .tab,
-        body.night .tab-content,
-        body.night .resume-card,
-        body.night .controls button,
-        body.night table {
-            color: var(--dark-text-color);
-        }
-
-        body.night input[type="number"],
-        body.night input[type="text"],
-        body.night select {
-            background: var(--dark-bg);
-            border-color: var(--dark-border);
-            color: var(--dark-text-color);
-        }
-
-        body.night .tab:not(.active) {
-            background-color: var(--dark-bg-alt);
-        }
-
-        body.night .tab-content,
-        body.night .resume-card,
-        body.night #chartContainer,
-        body.night .scenario-card {
-            background-color: var(--dark-bg-alt);
-            border-color: var(--dark-border);
-            box-shadow: none;
-        }
-        
-        /* CORRECCIÓN ESPECÍFICA PARA ESCENARIOS EN MODO NOCHE */
-        body.night .scenario-stat {
-            background-color: var(--dark-bg); /* Fondo oscuro en lugar de blanco */
-            border: 1px solid var(--dark-border);
-        }
-
-        body.night .scenario-stat label {
-            color: #94a3b8; /* Texto de etiqueta legible */
-        }
-        
-        body.night .scenario-stat .value {
-            color: var(--dark-text-color); /* Valor en blanco */
-        }
-
-        body.night .night-toggle {
-            background-color: var(--primary-hover);
-            color: white;
-        }
-
-        body.night .tooltip {
-            background-color: var(--dark-bg);
-            color: var(--dark-text-color);
-            border: 1px solid var(--dark-border);
-            box-shadow: var(--shadow);
-        }
-
-        body.night .tooltip::after {
-            border-top-color: var(--dark-border);
-        }
-        
-        body.night .form-section-title {
-            border-bottom-color: var(--dark-border);
-        }
-
-        body.night .deduction-item,
-        body.night .withdrawal-item {
-            background: var(--dark-bg);
-            border-color: var(--dark-border);
-        }
-        
-        body.night .resume-item {
-            background: var(--dark-bg);
-            border-color: var(--dark-border);
-        }
-
-        body.night table {
-            background: var(--dark-bg-alt);
-        }
-        
-        body.night th, body.night td {
-            border-color: var(--dark-border);
-        }
-
-        body.night tr:nth-child(even) {
-            background-color: var(--dark-bg);
-        }
-        
-        body.night .tab.active {
-            background-color: var(--dark-bg-alt);
-            color: var(--primary);
-            border-color: var(--dark-border);
-            border-bottom: 3px solid var(--primary);
-        }
-
-        body.night .milestone-item {
-            background: var(--dark-bg);
-            border-color: var(--dark-border);
-        }
-
-        body.night label {
-            color: var(--dark-text-color);
-        }
-
-        /* --- ESTILOS BASE --- */
+        /* 3. ESTILOS BASE */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -148,9 +61,10 @@
 
         body {
             line-height: 1.6;
-            background-color: var(--bg-alt);
+            background-color: var(--bg-body);
+            color: var(--text-main);
             padding-bottom: 1.5rem;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, color 0.3s;
             touch-action: pan-y;
         }
 
@@ -160,6 +74,7 @@
             padding: 0 1.5rem;
         }
 
+        /* --- Header & Botones --- */
         .header {
             display: flex;
             justify-content: space-between;
@@ -193,31 +108,22 @@
             transition: background-color 0.2s, transform 0.1s;
         }
 
-        .share-btn {
-            background-color: var(--success);
-        }
-
-        .share-btn:hover {
-            background-color: var(--success-hover);
-        }
-
-        .export-btn {
-            background-color: var(--warning);
-        }
-
-        .export-btn:hover {
-            background-color: #d97706;
-        }
+        .share-btn { background-color: var(--success); }
+        .share-btn:hover { background-color: var(--success-hover); }
+        
+        .export-btn { background-color: var(--warning); }
+        .export-btn:hover { background-color: #d97706; }
 
         .night-toggle:hover {
             background-color: var(--primary-hover);
             transform: translateY(-1px);
         }
 
+        /* --- Tabs --- */
         .tabs {
             display: flex;
             margin-bottom: 0;
-            border-bottom: 3px solid var(--border);
+            border-bottom: 3px solid var(--border-color);
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
         }
@@ -227,11 +133,11 @@
             cursor: pointer;
             font-size: 1.1rem;
             font-weight: 600;
-            color: var(--text-color);
+            color: var(--text-main);
             border-top-left-radius: 12px;
             border-top-right-radius: 12px;
-            background-color: var(--bg-alt);
-            border: 1px solid var(--border);
+            background-color: var(--bg-body);
+            border: 1px solid var(--border-color);
             border-bottom: none;
             margin-bottom: -1px;
             transition: background-color 0.2s, color 0.2s;
@@ -241,24 +147,24 @@
         }
 
         .tab:hover:not(.active) {
-            background-color: #f1f5f9;
+            filter: brightness(0.95); /* Efecto hover genérico */
         }
 
         .tab.active {
-            background-color: var(--bg);
+            background-color: var(--bg-card);
             color: var(--primary);
             border-bottom: 3px solid var(--primary);
             padding-bottom: 0.8rem;
         }
 
         .tab-content {
-            background: var(--bg);
+            background: var(--bg-card);
             padding: 1.25rem;
             border-bottom-left-radius: 18px;
             border-bottom-right-radius: 18px;
             border-top-right-radius: 18px;
             box-shadow: var(--shadow);
-            border: 1px solid var(--border);
+            border: 1px solid var(--border-color);
             display: none;
             margin-bottom: 1rem;
         }
@@ -267,6 +173,7 @@
             display: block;
         }
 
+        /* --- Formularios --- */
         form {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -276,7 +183,6 @@
         .form-section {
             grid-column: 1 / -1;
             padding: 0;
-            border-radius: 12px;
             display: grid;
             grid-template-columns: subgrid;
             gap: 1.5rem;
@@ -287,7 +193,7 @@
             font-weight: 700;
             color: var(--primary);
             margin-bottom: 0.75rem;
-            border-bottom: 2px solid var(--border);
+            border-bottom: 2px solid var(--border-color);
             padding-bottom: 0.5rem;
             grid-column: 1 / -1;
         }
@@ -300,15 +206,16 @@
             grid-column: 1 / -1;
         }
 
+        /* Items Dinámicos */
         .deduction-item, .withdrawal-item, .milestone-item {
             display: grid;
             grid-template-columns: 1fr 1fr auto;
             gap: 1rem;
             align-items: flex-end;
             padding: 0.8rem;
-            background: var(--bg-alt);
+            background: var(--bg-body); /* Usamos bg-body para contraste dentro de card */
             border-radius: 10px;
-            border: 1px solid var(--border);
+            border: 1px solid var(--border-color);
         }
 
         .milestone-item {
@@ -323,7 +230,7 @@
         label {
             display: block;
             font-weight: 600;
-            color: var(--text-color);
+            color: var(--text-main);
             font-size: 0.95rem;
         }
 
@@ -331,25 +238,21 @@
             width: 100%;
             padding: 0.6rem 0.8rem;
             margin-top: 0.3rem;
-            border: 1px solid var(--border);
+            background-color: var(--bg-input);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             font-size: 1rem;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        input[type="number"]:focus, input[type="text"]:focus, select:focus {
+        input:focus, select:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
             outline: none;
         }
 
-        .deductions-section button,
-        .withdrawals-section button,
-        .milestones-section button,
-        .controls button,
-        .deduction-item button,
-        .withdrawal-item button,
-        .milestone-item button {
+        button {
             padding: 0.6rem 1rem;
             border: none;
             border-radius: 8px;
@@ -368,21 +271,13 @@
             width: fit-content;
         }
 
-        #addDeductionBtn:hover, #addWithdrawalBtn:hover, #addMilestoneBtn:hover {
-            background-color: var(--success-hover);
-        }
-
         .remove-deduction-btn, .remove-withdrawal-btn, .remove-milestone-btn {
             background-color: var(--secondary);
             color: white;
-            padding: 0.6rem 0.8rem;
             align-self: center;
         }
 
-        .remove-deduction-btn:hover, .remove-withdrawal-btn:hover, .remove-milestone-btn:hover {
-            background-color: #b91c1c;
-        }
-
+        /* --- Controles de Tabla --- */
         .controls {
             margin-bottom: 1rem;
             display: flex;
@@ -396,16 +291,13 @@
             color: white;
         }
 
-        .controls button:hover {
-            background-color: #475569;
-        }
-
+        /* --- Resumen y Estadísticas --- */
         .resume-card {
-            background: var(--bg);
+            background: var(--bg-card);
             padding: 1.5rem;
             border-radius: 18px;
             box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border);
+            border: 1px solid var(--border-color);
             margin-bottom: 1rem;
         }
 
@@ -419,8 +311,8 @@
             text-align: center;
             border-radius: 12px;
             padding: 1rem;
-            background: var(--bg-alt);
-            border: 1px solid var(--border);
+            background: var(--bg-stat);
+            border: 1px solid var(--border-color);
         }
         
         .resume-item h3 {
@@ -432,19 +324,15 @@
         .resume-item .value {
             font-size: 2.5rem;
             font-weight: 800;
-            color: var(--text-color);
-            transition: color 0.3s;
-        }
-
-        body.night .resume-item .value {
-             color: var(--dark-text-color);
+            color: var(--text-main);
         }
 
         .resume-item .subtitle {
             font-size: 0.9rem;
-            color: #64748b;
+            color: var(--text-muted);
         }
 
+        /* --- Tabla --- */
         #tableContainer {
             margin-bottom: 1rem;
             overflow-x: auto;
@@ -457,12 +345,13 @@
             border-radius: 12px;
             overflow: hidden;
             box-shadow: var(--shadow);
-            background: var(--bg);
+            background: var(--bg-card);
         }
 
         th, td {
             padding: 12px 15px;
-            border: 1px solid var(--border);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
         }
 
         th {
@@ -474,9 +363,10 @@
         }
 
         tr:nth-child(even) {
-            background-color: var(--bg-alt);
+            background-color: var(--bg-body);
         }
-        
+
+        /* --- Tooltips --- */
         .tooltip-container {
             position: relative;
             display: inline-flex;
@@ -506,12 +396,12 @@
             bottom: 100%;
             left: 50%;
             transform: translateX(-50%) translateY(0);
-            background-color: var(--bg);
-            color: var(--text-color);
+            background-color: var(--bg-card);
+            color: var(--text-main);
             padding: 12px 16px;
             border-radius: 8px;
             box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border);
+            border: 1px solid var(--border-color);
             font-size: 0.9rem;
             line-height: 1.5;
             max-width: 300px;
@@ -521,17 +411,6 @@
             white-space: normal;
         }
 
-        .tooltip::after {
-            content: "";
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: var(--border) transparent transparent transparent;
-        }
-        
         .tooltip-container:hover .tooltip {
             visibility: visible;
             opacity: 1;
@@ -542,21 +421,22 @@
             display: block;
             margin-top: 8px;
             padding-top: 8px;
-            border-top: 1px solid var(--border);
+            border-top: 1px solid var(--border-color);
             font-style: italic;
             color: var(--success);
             font-size: 0.85rem;
         }
 
+        /* --- Gráfico --- */
         #chartContainer {
             width: 100%;
             max-width: 1000px;
             height: 500px;
             margin: 0.75rem auto;
-            background: var(--bg);
+            background: var(--bg-card);
             border-radius: 18px;
             box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border);
+            border: 1px solid var(--border-color);
             padding: 1.2rem;
             position: relative;
         }
@@ -566,6 +446,7 @@
             height: 100% !important;
         }
 
+        /* --- ESCENARIOS (La parte corregida) --- */
         .scenarios-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -574,10 +455,10 @@
         }
 
         .scenario-card {
-            background: var(--bg);
+            background: var(--bg-card);
             padding: 1.5rem;
             border-radius: 12px;
-            border: 2px solid var(--border);
+            border: 2px solid var(--border-color);
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
@@ -586,17 +467,9 @@
             box-shadow: var(--shadow-lg);
         }
 
-        .scenario-card.optimista {
-            border-color: var(--success);
-        }
-
-        .scenario-card.realista {
-            border-color: var(--primary);
-        }
-
-        .scenario-card.pesimista {
-            border-color: var(--secondary);
-        }
+        .scenario-card.optimista { border-color: var(--success); }
+        .scenario-card.realista { border-color: var(--primary); }
+        .scenario-card.pesimista { border-color: var(--secondary); }
 
         .scenario-card h3 {
             font-size: 1.3rem;
@@ -606,64 +479,48 @@
             gap: 0.5rem;
         }
 
-        .scenario-card.optimista h3 {
-            color: var(--success);
-        }
+        .scenario-card.optimista h3 { color: var(--success); }
+        .scenario-card.realista h3 { color: var(--primary); }
+        .scenario-card.pesimista h3 { color: var(--secondary); }
 
-        .scenario-card.realista h3 {
-            color: var(--primary);
-        }
-
-        .scenario-card.pesimista h3 {
-            color: var(--secondary);
-        }
-
+        /* ESTA CLASE ESTABA DANDO PROBLEMAS, AHORA USA VARIABLES */
         .scenario-stat {
             margin: 0.8rem 0;
             padding: 0.5rem;
-            background: var(--bg-alt);
+            background: var(--bg-stat); /* Variable mágica */
+            border: 1px solid var(--border-color); /* Para que se vea en modo noche */
             border-radius: 8px;
         }
 
         .scenario-stat label {
             font-size: 0.85rem;
-            color: #64748b;
+            color: var(--text-muted);
         }
 
         .scenario-stat .value {
             font-size: 1.8rem;
             font-weight: 700;
             margin-top: 0.2rem;
-            color: var(--text-color);
+            color: var(--text-main);
         }
 
-        .collapsible-section {
-            margin-bottom: 1rem;
-        }
+        /* --- Collapsibles --- */
+        .collapsible-section { margin-bottom: 1rem; }
 
         .collapsible-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 1rem;
-            background: var(--bg-alt);
-            border: 1px solid var(--border);
+            background: var(--bg-stat);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
             cursor: pointer;
             transition: background-color 0.2s;
         }
 
         .collapsible-header:hover {
-            background: #e2e8f0;
-        }
-
-        body.night .collapsible-header {
-            background: var(--dark-bg);
-            border-color: var(--dark-border);
-        }
-
-        body.night .collapsible-header:hover {
-            background: var(--dark-bg-alt);
+            filter: brightness(0.95);
         }
 
         .collapsible-header h3 {
@@ -672,13 +529,10 @@
             margin: 0;
         }
 
-        body.night .collapsible-header h3 {
-            color: var(--primary);
-        }
-
         .collapsible-icon {
             font-size: 1.5rem;
             transition: transform 0.3s;
+            color: var(--text-main);
         }
 
         .collapsible-icon.expanded {
@@ -700,7 +554,7 @@
             padding: 1rem 0;
         }
 
-        /* --- ARREGLO DEL MODAL --- */
+        /* --- Modal --- */
         .modal {
             display: none;
             position: fixed;
@@ -720,7 +574,7 @@
         }
 
         .modal-content {
-            background: var(--bg);
+            background: var(--bg-card);
             padding: 2rem;
             border-radius: 18px;
             max-width: 500px;
@@ -729,23 +583,9 @@
             animation: slideIn 0.3s;
         }
 
-        body.night .modal-content {
-            background: var(--dark-bg-alt);
-            color: var(--dark-text-color);
-        }
-
         .modal-content h2 {
             color: var(--primary);
             margin-bottom: 1rem;
-        }
-
-        .modal-content input {
-            width: 100%;
-            padding: 0.8rem;
-            margin: 1rem 0;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 1rem;
         }
 
         .modal-buttons {
@@ -755,149 +595,33 @@
             margin-top: 1.5rem;
         }
 
-        .modal-buttons button {
-            padding: 0.8rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
         .modal-buttons .btn-primary {
             background-color: var(--primary);
             color: white;
         }
-
-        .modal-buttons .btn-primary:hover {
-            background-color: var(--primary-hover);
-        }
-
+        
         .modal-buttons .btn-secondary {
             background-color: #94a3b8;
             color: white;
         }
 
-        .modal-buttons .btn-secondary:hover {
-            background-color: #64748b;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideIn {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
+        /* --- Animaciones y Responsive --- */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         @media (max-width: 768px) {
-            .container {
-                padding: 0 0.5rem;
-            }
-            
-            .header {
-                flex-direction: column;
-                gap: 0.75rem;
-                align-items: center;
-                margin-bottom: 0.8rem;
-            }
-
-            .header-buttons {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            h1 {
-                text-align: center;
-                font-size: 1.8rem;
-            }
-            
-            .tabs {
-                flex-direction: row;
-                gap: 0.4rem;
-                border-bottom: none;
-                justify-content: flex-start;
-            }
-            
-            .tab {
-                min-width: 120px;
-                border-bottom: 1px solid var(--border);
-                border-radius: 12px;
-                font-size: 0.95rem;
-                padding: 0.6rem 1rem;
-            }
-
-            .tab.active {
-                border-bottom: 1px solid var(--primary);
-            }
-            
-            .tab-content {
-                padding: 1rem;
-            }
-            
-            form {
-                grid-template-columns: 1fr;
-                gap: 0.8rem;
-            }
-            
-            .form-section {
-                gap: 0.8rem;
-            }
-            
-            .resume-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .scenarios-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .deduction-item, .withdrawal-item {
-                grid-template-columns: 1fr 1fr;
-                gap: 0.6rem;
-            }
-
-            .milestone-item {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .milestone-item .form-input-group:nth-child(3) {
-                grid-column: 1 / -1;
-            }
-            
-            .remove-deduction-btn, .remove-withdrawal-btn, .remove-milestone-btn {
-                grid-column: 1 / -1;
-            }
-
-            .tooltip {
-                max-width: 250px;
-                left: 0;
-                transform: translateX(0) translateY(-100%);
-            }
-
-            .tooltip::after {
-                left: 20px;
-                transform: translateX(0);
-            }
-
-            .tooltip-container:hover .tooltip {
-                transform: translateX(0) translateY(-100%) translateY(-8px);
-            }
-
-            .controls {
-                flex-direction: column;
-            }
-
-            .controls button {
-                width: 100%;
-            }
-
-            #chartContainer {
-                height: 400px;
-                padding: 0.8rem;
-            }
+            .container { padding: 0 0.5rem; }
+            .header { flex-direction: column; gap: 0.75rem; text-align: center; }
+            .header-buttons { justify-content: center; width: 100%; }
+            .tabs { flex-direction: row; gap: 0.4rem; justify-content: flex-start; }
+            .tab { min-width: 120px; font-size: 0.95rem; padding: 0.6rem 1rem; border-radius: 12px; }
+            .deduction-item, .withdrawal-item { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+            .milestone-item { grid-template-columns: 1fr 1fr; }
+            .milestone-item .form-input-group:nth-child(3), .remove-btn-group { grid-column: 1 / -1; }
+            .tooltip { transform: translateX(0) translateY(-100%); left: 0; }
+            .tooltip::after { left: 20px; }
+            .controls { flex-direction: column; }
+            #chartContainer { height: 400px; padding: 0.8rem; }
         }
     </style>
 </head>
@@ -946,7 +670,7 @@
 
                 <div class="collapsible-section">
                     <div class="collapsible-header" onclick="toggleCollapsible('withdrawals')">
-                        <h3>💰 Retiros programados (jubilación)</h3>
+                        <h3>💰 Retiros programados</h3>
                         <span class="collapsible-icon" id="withdrawals-icon">▼</span>
                     </div>
                     <div class="collapsible-content" id="withdrawals-content">
@@ -1099,7 +823,7 @@
             });
         }
 
-        // --- Gestión de Items Dinámicos (Deducciones, Retiros, Hitos) ---
+        // --- Gestión de Items Dinámicos ---
         function createDynamicItem(containerId, className, htmlContent, removeCallback) {
             const container = document.getElementById(containerId);
             const div = document.createElement('div');
@@ -1107,13 +831,11 @@
             div.innerHTML = htmlContent;
             container.appendChild(div);
 
-            // Listener para eliminar
             div.querySelector(`button[class^="remove-"]`).addEventListener('click', () => {
                 div.remove();
                 if(removeCallback) removeCallback();
             });
 
-            // Listener para inputs
             div.querySelectorAll('input').forEach(input => {
                 input.addEventListener('input', () => {
                     if(removeCallback) removeCallback();
@@ -1233,32 +955,22 @@
             let totalAportado = montoInicial;
             let saldo = montoInicial;
 
-            // Loop principal (corrección para calcular desde el año 0 correctamente)
             for (let edad = e0; edad <= eF; edad++) {
-                // 1. Determinar aporte anual según tramo
                 let aporteAnual = edad < e1 ? a1 : (edad < e2 ? a2 : a3);
                 
-                // 2. Sumar aporte
                 saldo += aporteAnual;
                 totalAportado += aporteAnual;
-
-                // 3. Restar deducciones (gastos únicos)
                 if (deducciones[edad]) saldo -= deducciones[edad];
 
-                // 4. Restar hitos (milestones)
                 const hito = milestones.find(m => m.age === edad);
                 if (hito) saldo -= hito.amount;
 
-                // 5. Restar retiros (jubilación)
                 withdrawals.forEach(w => { if (edad >= w.age) saldo -= w.amount; });
-
-                // 6. Aplicar interés compuesto
                 saldo *= (1 + rendimiento);
 
-                // 7. Guardar dato
                 datos.push({ 
                     edad, 
-                    saldo: saldo > 0 ? saldo : 0, // Evitar negativos en gráfica
+                    saldo: saldo > 0 ? saldo : 0, 
                     saldoReal: (saldo > 0 ? saldo : 0) / Math.pow(1 + inflacion, edad - e0), 
                     totalAportado 
                 });
@@ -1267,7 +979,6 @@
         }
 
         function calcularEscenario(rendimiento, inflacion) {
-            // Usa datos básicos por defecto
             const e0 = +document.getElementById('edadInicioBasico').value || 25;
             const eF = +document.getElementById('edadFinBasico').value || 65;
             const aporteAnual = (+document.getElementById('aporteMensualBasico').value || 100) * 12;
@@ -1328,12 +1039,14 @@
             if (typeof Chart === 'undefined') return;
             const ctx = document.getElementById('savingChart').getContext('2d');
             const isDark = document.body.classList.contains('night');
-            const textColor = isDark ? '#f1f5f9' : '#1e293b';
+            
+            // Usamos las variables de CSS computadas para el gráfico
+            const style = getComputedStyle(document.body);
+            const textColor = style.getPropertyValue('--text-main').trim();
             const gridColor = isDark ? 'rgba(148, 163, 184, 0.2)' : 'rgba(226, 232, 240, 0.8)';
 
             if (myChart) myChart.destroy();
 
-            // Anotaciones para hitos
             const annotations = {};
             milestones.forEach((m, i) => {
                 annotations[`m${i}`] = {
@@ -1372,14 +1085,10 @@
         }
 
         function renderResultados(datos, totalAportado) {
-            // Render Tabla
             const rows = datos.map(d => `<tr><td>${d.edad}</td><td>${formatearNumero(d.saldo)}</td><td>${formatearNumero(d.saldoReal)}</td></tr>`).join('');
             document.getElementById('tableContainer').innerHTML = `<table><thead><tr><th>Edad</th><th>Saldo Nominal</th><th>Real (Inflación)</th></tr></thead><tbody>${rows}</tbody></table>`;
-
-            // Render Chart
             renderChart2D(datos);
 
-            // Render Resumen
             const final = datos[datos.length - 1];
             const millon = datos.find(d => d.saldo >= 1000000);
 
@@ -1412,91 +1121,43 @@
                 card('⚠️ Pesimista', 'pesimista', 0.02, 0.05, pes);
         }
 
-        // --- Controladores Principales ---
-        function autoCalcular() {
-            // Persistencia básica
-            document.querySelectorAll('input').forEach(i => localStorage.setItem(i.id, i.value));
-            localStorage.setItem('deductionsAdv', JSON.stringify(getDeductions())); 
-            localStorage.setItem('withdrawalsAdv', JSON.stringify(getWithdrawals())); 
-            
-            // Ejecutar cálculo según tab
-            const tab = document.querySelector('.tab.active').dataset.tab;
-            if (tab === 'basico') calcularBasico();
-            else if (tab === 'avanzado') calcularAvanzado();
-            else if (tab === 'escenarios') renderEscenarios();
-            else if (tab === 'inversa') calcularInversa();
-        }
-
-        // --- FUNCIÓN DE EXPORTACIÓN PDF OPTIMIZADA ---
+        // --- PDF ---
         async function exportToPDF() {
             const btn = document.getElementById('exportBtn');
             const originalText = btn.textContent;
             btn.textContent = "⏳ Generando...";
-            
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
             const body = document.body;
             
-            // Forzar Modo Día temporalmente
             const wasNight = body.classList.contains('night');
-            if (wasNight) {
-                body.classList.remove('night');
-                autoCalcular(); 
-            }
-
+            if (wasNight) { body.classList.remove('night'); autoCalcular(); }
             await new Promise(r => setTimeout(r, 100));
 
             try {
-                // Capturar Resumen
                 const resumenEl = document.getElementById('resumen');
                 const resumenCanvas = await html2canvas(resumenEl, { scale: 2, backgroundColor: '#ffffff' });
-                const resumenImg = resumenCanvas.toDataURL('image/png');
-
-                // Capturar Gráfico
                 const chartEl = document.getElementById('chartContainer');
                 const chartCanvas = await html2canvas(chartEl, { scale: 2, backgroundColor: '#ffffff' });
-                const chartImg = chartCanvas.toDataURL('image/png');
+                
+                pdf.setFontSize(22); pdf.setTextColor(37, 99, 235); pdf.text('Reporte Financiero', 15, 20);
+                pdf.setFontSize(10); pdf.setTextColor(100); pdf.text(`Fecha: ${new Date().toLocaleDateString()}`, 15, 27);
 
-                // Construir PDF
-                pdf.setFontSize(22);
-                pdf.setTextColor(37, 99, 235);
-                pdf.text('Reporte de Proyección Financiera', 15, 20);
-                
-                pdf.setFontSize(10);
-                pdf.setTextColor(100);
-                pdf.text(`Generado el: ${new Date().toLocaleDateString()}`, 15, 27);
+                const width = 180;
+                const rH = (resumenCanvas.height * width) / resumenCanvas.width;
+                pdf.addImage(resumenCanvas.toDataURL('image/png'), 'PNG', 15, 35, width, rH);
 
-                const pdfWidth = 180;
-                const resumenProps = pdf.getImageProperties(resumenImg);
-                const resumenHeight = (resumenProps.height * pdfWidth) / resumenProps.width;
+                const cH = (chartCanvas.height * width) / chartCanvas.width;
+                let y = 35 + rH + 10;
+                if (y + cH > 280) { pdf.addPage(); y = 20; }
+                pdf.addImage(chartCanvas.toDataURL('image/png'), 'PNG', 15, y, width, cH);
                 
-                pdf.addImage(resumenImg, 'PNG', 15, 35, pdfWidth, resumenHeight);
-
-                const chartProps = pdf.getImageProperties(chartImg);
-                const chartHeight = (chartProps.height * pdfWidth) / chartProps.width;
-                
-                let yPos = 35 + resumenHeight + 10;
-                if (yPos + chartHeight > 280) {
-                    pdf.addPage();
-                    yPos = 20;
-                }
-                
-                pdf.addImage(chartImg, 'PNG', 15, yPos, pdfWidth, chartHeight);
                 pdf.save('plan-financiero.pdf');
-
-            } catch (error) {
-                console.error(error);
-                alert('Error al generar PDF.');
-            } finally {
-                if (wasNight) {
-                    body.classList.add('night');
-                    autoCalcular();
-                }
-                btn.textContent = originalText;
-            }
+            } catch (e) { alert('Error PDF'); console.error(e); } 
+            finally { if (wasNight) { body.classList.add('night'); autoCalcular(); } btn.textContent = originalText; }
         }
 
-        // --- Inicialización y Eventos ---
+        // --- Init ---
         function init() {
             generarInputs(camposBasico, 'formBasico');
             generarInputs(camposAvanzado, 'formAvanzado');
@@ -1506,7 +1167,6 @@
                 document.getElementById('toggleNightBtn').textContent = '☀️ Modo día';
             }
 
-            // Listeners
             document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
                 document.querySelectorAll('.tab, .tab-content').forEach(e => e.classList.remove('active'));
                 t.classList.add('active');
