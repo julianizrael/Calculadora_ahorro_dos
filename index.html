@@ -10,9 +10,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
-        /* 1. VARIABLES GLOBALES (MODO DÍA POR DEFECTO) */
+        /* 1. VARIABLES GLOBALES */
         :root {
-            /* Colores de Marca */
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
             --secondary: #dc2626;
@@ -20,32 +19,31 @@
             --success-hover: #059669;
             --warning: #f59e0b;
             
-            /* Variables de Tema (DÍA) */
-            --bg-body: #f8fafc;       /* Fondo general */
-            --bg-card: #ffffff;       /* Fondo de tarjetas */
-            --bg-input: #ffffff;      /* Fondo de inputs */
-            --bg-stat: #f1f5f9;       /* Fondo de cajitas de estadística */
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-input: #ffffff;
+            --bg-stat: #f1f5f9;
             
-            --text-main: #1e293b;     /* Texto principal */
-            --text-muted: #64748b;    /* Texto secundario */
+            --text-main: #1e293b;
+            --text-muted: #64748b;
             
-            --border-color: #e2e8f0;  /* Bordes */
+            --border-color: #e2e8f0;
             
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
         }
 
-        /* 2. VARIABLES MODO NOCHE (Sobrescriben las de arriba) */
+        /* 2. VARIABLES MODO NOCHE */
         body.night {
-            --bg-body: #0f172a;       /* Azul muy oscuro */
-            --bg-card: #1e293b;       /* Azul oscuro pizarra */
-            --bg-input: #0f172a;      /* Input oscuro */
-            --bg-stat: #0f172a;       /* Cajitas oscuras */
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #0f172a;
+            --bg-stat: #0f172a;
             
-            --text-main: #f1f5f9;     /* Texto blanco */
-            --text-muted: #94a3b8;    /* Texto gris claro */
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
             
-            --border-color: #334155;  /* Borde oscuro */
+            --border-color: #334155;
             
             --shadow: none;
             --shadow-lg: none;
@@ -110,7 +108,6 @@
 
         .share-btn { background-color: var(--success); }
         .share-btn:hover { background-color: var(--success-hover); }
-        
         .export-btn { background-color: var(--warning); }
         .export-btn:hover { background-color: #d97706; }
 
@@ -119,13 +116,25 @@
             transform: translateY(-1px);
         }
 
-        /* --- Tabs --- */
+        /* --- Tabs (Corregido Scroll) --- */
         .tabs {
             display: flex;
+            flex-wrap: nowrap; /* Evita saltos de línea */
             margin-bottom: 0;
             border-bottom: 3px solid var(--border-color);
-            overflow-x: auto;
+            overflow-x: auto; /* Scroll horizontal si es necesario (móvil) */
+            overflow-y: hidden; /* Oculta scroll vertical */
             -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin; /* Firefox: barra fina */
+        }
+        
+        /* Ocultar barra de scroll visualmente pero permitir funcionalidad */
+        .tabs::-webkit-scrollbar {
+            height: 4px;
+        }
+        .tabs::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
         }
 
         .tab {
@@ -147,7 +156,7 @@
         }
 
         .tab:hover:not(.active) {
-            filter: brightness(0.95); /* Efecto hover genérico */
+            filter: brightness(0.95);
         }
 
         .tab.active {
@@ -198,30 +207,7 @@
             grid-column: 1 / -1;
         }
         
-        .deductions-container, .withdrawals-container, .milestones-container {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            grid-column: 1 / -1;
-        }
-
-        /* Items Dinámicos */
-        .deduction-item, .withdrawal-item, .milestone-item {
-            display: grid;
-            grid-template-columns: 1fr 1fr auto;
-            gap: 1rem;
-            align-items: flex-end;
-            padding: 0.8rem;
-            background: var(--bg-body); /* Usamos bg-body para contraste dentro de card */
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-        }
-
-        .milestone-item {
-            grid-template-columns: 1fr 1fr 1fr auto;
-        }
-        
+        /* --- Inputs y Controles --- */
         .form-input-group {
             display: flex;
             flex-direction: column;
@@ -263,6 +249,28 @@
             white-space: nowrap;
         }
         
+        /* Items dinámicos */
+        .deductions-container, .withdrawals-container, .milestones-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            grid-column: 1 / -1;
+        }
+
+        .deduction-item, .withdrawal-item, .milestone-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 1rem;
+            align-items: flex-end;
+            padding: 0.8rem;
+            background: var(--bg-body);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .milestone-item { grid-template-columns: 1fr 1fr 1fr auto; }
+        
         #addDeductionBtn, #addWithdrawalBtn, #addMilestoneBtn {
             background-color: var(--success);
             color: white;
@@ -277,7 +285,6 @@
             align-self: center;
         }
 
-        /* --- Controles de Tabla --- */
         .controls {
             margin-bottom: 1rem;
             display: flex;
@@ -362,9 +369,7 @@
             font-size: 0.85rem;
         }
 
-        tr:nth-child(even) {
-            background-color: var(--bg-body);
-        }
+        tr:nth-child(even) { background-color: var(--bg-body); }
 
         /* --- Tooltips --- */
         .tooltip-container {
@@ -417,16 +422,6 @@
             transform: translateX(-50%) translateY(-8px);
         }
 
-        .tooltip-example {
-            display: block;
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px solid var(--border-color);
-            font-style: italic;
-            color: var(--success);
-            font-size: 0.85rem;
-        }
-
         /* --- Gráfico --- */
         #chartContainer {
             width: 100%;
@@ -441,12 +436,9 @@
             position: relative;
         }
         
-        #savingChart {
-            width: 100% !important;
-            height: 100% !important;
-        }
+        #savingChart { width: 100% !important; height: 100% !important; }
 
-        /* --- ESCENARIOS (La parte corregida) --- */
+        /* --- ESCENARIOS --- */
         .scenarios-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -483,12 +475,11 @@
         .scenario-card.realista h3 { color: var(--primary); }
         .scenario-card.pesimista h3 { color: var(--secondary); }
 
-        /* ESTA CLASE ESTABA DANDO PROBLEMAS, AHORA USA VARIABLES */
         .scenario-stat {
             margin: 0.8rem 0;
             padding: 0.5rem;
-            background: var(--bg-stat); /* Variable mágica */
-            border: 1px solid var(--border-color); /* Para que se vea en modo noche */
+            background: var(--bg-stat);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
         }
 
@@ -519,40 +510,14 @@
             transition: background-color 0.2s;
         }
 
-        .collapsible-header:hover {
-            filter: brightness(0.95);
-        }
-
-        .collapsible-header h3 {
-            font-size: 1.1rem;
-            color: var(--primary);
-            margin: 0;
-        }
-
-        .collapsible-icon {
-            font-size: 1.5rem;
-            transition: transform 0.3s;
-            color: var(--text-main);
-        }
-
-        .collapsible-icon.expanded {
-            transform: rotate(180deg);
-        }
-
-        .collapsible-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-        }
-
-        .collapsible-content.expanded {
-            max-height: 2000px;
-            transition: max-height 0.5s ease-in;
-        }
-
-        .collapsible-inner {
-            padding: 1rem 0;
-        }
+        .collapsible-header:hover { filter: brightness(0.95); }
+        .collapsible-header h3 { font-size: 1.1rem; color: var(--primary); margin: 0; }
+        .collapsible-icon { font-size: 1.5rem; transition: transform 0.3s; color: var(--text-main); }
+        .collapsible-icon.expanded { transform: rotate(180deg); }
+        
+        .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .collapsible-content.expanded { max-height: 2000px; transition: max-height 0.5s ease-in; }
+        .collapsible-inner { padding: 1rem 0; }
 
         /* --- Modal --- */
         .modal {
@@ -567,12 +532,8 @@
             animation: fadeIn 0.3s;
         }
 
-        .modal.active {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
+        .modal.active { display: flex; justify-content: center; align-items: center; }
+        
         .modal-content {
             background: var(--bg-card);
             padding: 2rem;
@@ -583,29 +544,18 @@
             animation: slideIn 0.3s;
         }
 
-        .modal-content h2 {
-            color: var(--primary);
-            margin-bottom: 1rem;
-        }
-
+        .modal-content h2 { color: var(--primary); margin-bottom: 1rem; }
+        
         .modal-buttons {
             display: flex;
             gap: 0.5rem;
             justify-content: flex-end;
             margin-top: 1.5rem;
         }
-
-        .modal-buttons .btn-primary {
-            background-color: var(--primary);
-            color: white;
-        }
         
-        .modal-buttons .btn-secondary {
-            background-color: #94a3b8;
-            color: white;
-        }
+        .modal-buttons .btn-primary { background-color: var(--primary); color: white; }
+        .modal-buttons .btn-secondary { background-color: #94a3b8; color: white; }
 
-        /* --- Animaciones y Responsive --- */
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
@@ -613,7 +563,7 @@
             .container { padding: 0 0.5rem; }
             .header { flex-direction: column; gap: 0.75rem; text-align: center; }
             .header-buttons { justify-content: center; width: 100%; }
-            .tabs { flex-direction: row; gap: 0.4rem; justify-content: flex-start; }
+            .tabs { justify-content: flex-start; }
             .tab { min-width: 120px; font-size: 0.95rem; padding: 0.6rem 1rem; border-radius: 12px; }
             .deduction-item, .withdrawal-item { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
             .milestone-item { grid-template-columns: 1fr 1fr; }
@@ -701,6 +651,25 @@
         </div>
 
         <div id="escenarios" class="tab-content">
+            <form class="form-section" style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem;">
+                <div class="form-section-title">Configuración de Escenarios</div>
+                <div class="form-input-group">
+                    <label>Monto inicial hoy</label>
+                    <input type="number" id="montoInicialEsc" value="0">
+                </div>
+                <div class="form-input-group">
+                    <label>Aporte mensual</label>
+                    <input type="number" id="aporteMensualEsc" value="100">
+                </div>
+                <div class="form-input-group">
+                    <label>Edad Actual</label>
+                    <input type="number" id="edadActualEsc" value="25">
+                </div>
+                <div class="form-input-group">
+                    <label>Edad Objetivo</label>
+                    <input type="number" id="edadObjetivoEsc" value="65">
+                </div>
+            </form>
             <div class="scenarios-container" id="scenariosContainer"></div>
         </div>
 
@@ -979,10 +948,11 @@
         }
 
         function calcularEscenario(rendimiento, inflacion) {
-            const e0 = +document.getElementById('edadInicioBasico').value || 25;
-            const eF = +document.getElementById('edadFinBasico').value || 65;
-            const aporteAnual = (+document.getElementById('aporteMensualBasico').value || 100) * 12;
-            let saldo = +document.getElementById('montoInicialBasico').value || 0;
+            // AHORA USA LOS INPUTS INDEPENDIENTES DE LA PESTAÑA ESCENARIOS
+            const e0 = +document.getElementById('edadActualEsc').value || 25;
+            const eF = +document.getElementById('edadObjetivoEsc').value || 65;
+            const aporteAnual = (+document.getElementById('aporteMensualEsc').value || 100) * 12;
+            let saldo = +document.getElementById('montoInicialEsc').value || 0;
             let totalAportado = saldo;
 
             saldo += aporteAnual;
@@ -1040,7 +1010,6 @@
             const ctx = document.getElementById('savingChart').getContext('2d');
             const isDark = document.body.classList.contains('night');
             
-            // Usamos las variables de CSS computadas para el gráfico
             const style = getComputedStyle(document.body);
             const textColor = style.getPropertyValue('--text-main').trim();
             const gridColor = isDark ? 'rgba(148, 163, 184, 0.2)' : 'rgba(226, 232, 240, 0.8)';
@@ -1174,9 +1143,16 @@
                 autoCalcular();
             }));
 
+            // LISTENERS GENERALES
             document.getElementById('formBasico').addEventListener('input', autoCalcular);
             document.getElementById('formAvanzado').addEventListener('input', autoCalcular);
             document.getElementById('formInversa').addEventListener('input', calcularInversa);
+            
+            // LISTENER ESPECÍFICO PARA LOS NUEVOS INPUTS DE ESCENARIOS
+            document.getElementById('montoInicialEsc').addEventListener('input', renderEscenarios);
+            document.getElementById('aporteMensualEsc').addEventListener('input', renderEscenarios);
+            document.getElementById('edadActualEsc').addEventListener('input', renderEscenarios);
+            document.getElementById('edadObjetivoEsc').addEventListener('input', renderEscenarios);
             
             document.getElementById('addDeductionBtn').addEventListener('click', () => { addDeductionInput(); autoCalcular(); });
             document.getElementById('addWithdrawalBtn').addEventListener('click', () => { addWithdrawalInput(); autoCalcular(); });
