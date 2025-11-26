@@ -72,7 +72,7 @@
             padding: 0 1.5rem;
         }
 
-        /* --- Header & Botones --- */
+        /* --- Header --- */
         .header {
             display: flex;
             justify-content: space-between;
@@ -110,32 +110,21 @@
         .share-btn:hover { background-color: var(--success-hover); }
         .export-btn { background-color: var(--warning); }
         .export-btn:hover { background-color: #d97706; }
+        .night-toggle:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
 
-        .night-toggle:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-1px);
-        }
-
-        /* --- Tabs (Corregido Scroll) --- */
+        /* --- Tabs (Corregido) --- */
         .tabs {
             display: flex;
-            flex-wrap: nowrap; /* Evita saltos de línea */
+            flex-wrap: nowrap;
             margin-bottom: 0;
             border-bottom: 3px solid var(--border-color);
-            overflow-x: auto; /* Scroll horizontal si es necesario (móvil) */
-            overflow-y: hidden; /* Oculta scroll vertical */
+            overflow-x: auto;
+            overflow-y: hidden; /* CLAVE: Evita scroll vertical */
             -webkit-overflow-scrolling: touch;
-            scrollbar-width: thin; /* Firefox: barra fina */
+            padding-bottom: 1px; /* Evita corte de borde */
         }
         
-        /* Ocultar barra de scroll visualmente pero permitir funcionalidad */
-        .tabs::-webkit-scrollbar {
-            height: 4px;
-        }
-        .tabs::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 4px;
-        }
+        .tabs::-webkit-scrollbar { height: 0px; } /* Oculta barra scroll visualmente */
 
         .tab {
             padding: 0.8rem 1.5rem;
@@ -150,14 +139,13 @@
             border-bottom: none;
             margin-bottom: -1px;
             transition: background-color 0.2s, color 0.2s;
-            min-width: 150px;
+            min-width: 140px;
             text-align: center;
             white-space: nowrap;
+            flex-shrink: 0; /* Evita que se aplasten */
         }
 
-        .tab:hover:not(.active) {
-            filter: brightness(0.95);
-        }
+        .tab:hover:not(.active) { filter: brightness(0.95); }
 
         .tab.active {
             background-color: var(--bg-card);
@@ -168,7 +156,7 @@
 
         .tab-content {
             background: var(--bg-card);
-            padding: 1.25rem;
+            padding: 1.5rem;
             border-bottom-left-radius: 18px;
             border-bottom-right-radius: 18px;
             border-top-right-radius: 18px;
@@ -178,11 +166,9 @@
             margin-bottom: 1rem;
         }
 
-        .tab-content.active {
-            display: block;
-        }
+        .tab-content.active { display: block; }
 
-        /* --- Formularios --- */
+        /* --- Forms --- */
         form {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -201,29 +187,25 @@
             font-size: 1.2rem;
             font-weight: 700;
             color: var(--primary);
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
             border-bottom: 2px solid var(--border-color);
             padding-bottom: 0.5rem;
             grid-column: 1 / -1;
         }
         
-        /* --- Inputs y Controles --- */
-        .form-input-group {
-            display: flex;
-            flex-direction: column;
-        }
+        .form-input-group { display: flex; flex-direction: column; }
 
         label {
             display: block;
             font-weight: 600;
             color: var(--text-main);
             font-size: 0.95rem;
+            margin-bottom: 0.3rem;
         }
 
         input[type="number"], input[type="text"], select {
             width: 100%;
-            padding: 0.6rem 0.8rem;
-            margin-top: 0.3rem;
+            padding: 0.7rem 0.9rem;
             background-color: var(--bg-input);
             color: var(--text-main);
             border: 1px solid var(--border-color);
@@ -239,7 +221,7 @@
         }
 
         button {
-            padding: 0.6rem 1rem;
+            padding: 0.7rem 1rem;
             border: none;
             border-radius: 8px;
             cursor: pointer;
@@ -249,13 +231,9 @@
             white-space: nowrap;
         }
         
-        /* Items dinámicos */
+        /* Dynamic Lists */
         .deductions-container, .withdrawals-container, .milestones-container {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            grid-column: 1 / -1;
+            display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1rem; grid-column: 1 / -1;
         }
 
         .deduction-item, .withdrawal-item, .milestone-item {
@@ -263,7 +241,7 @@
             grid-template-columns: 1fr 1fr auto;
             gap: 1rem;
             align-items: flex-end;
-            padding: 0.8rem;
+            padding: 1rem;
             background: var(--bg-body);
             border-radius: 10px;
             border: 1px solid var(--border-color);
@@ -272,33 +250,17 @@
         .milestone-item { grid-template-columns: 1fr 1fr 1fr auto; }
         
         #addDeductionBtn, #addWithdrawalBtn, #addMilestoneBtn {
-            background-color: var(--success);
-            color: white;
-            padding: 0.8rem 1rem;
-            grid-column: 1 / -1;
-            width: fit-content;
+            background-color: var(--success); color: white; width: fit-content;
         }
 
         .remove-deduction-btn, .remove-withdrawal-btn, .remove-milestone-btn {
-            background-color: var(--secondary);
-            color: white;
-            align-self: center;
+            background-color: var(--secondary); color: white; height: fit-content; padding: 0.7rem;
         }
 
-        .controls {
-            margin-bottom: 1rem;
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
+        .controls { margin-bottom: 1rem; display: flex; justify-content: flex-end; gap: 0.5rem; flex-wrap: wrap; }
+        .controls button { background-color: #64748b; color: white; }
 
-        .controls button {
-            background-color: #64748b;
-            color: white;
-        }
-
-        /* --- Resumen y Estadísticas --- */
+        /* --- Resumen --- */
         .resume-card {
             background: var(--bg-card);
             padding: 1.5rem;
@@ -322,239 +284,76 @@
             border: 1px solid var(--border-color);
         }
         
-        .resume-item h3 {
-            font-size: 1rem;
-            color: var(--primary-hover);
-            margin-bottom: 0.5rem;
-        }
+        .resume-item h3 { font-size: 1rem; color: var(--primary-hover); margin-bottom: 0.5rem; }
+        .resume-item .value { font-size: 2.2rem; font-weight: 800; color: var(--text-main); }
+        .resume-item .subtitle { font-size: 0.9rem; color: var(--text-muted); }
 
-        .resume-item .value {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--text-main);
-        }
-
-        .resume-item .subtitle {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-
-        /* --- Tabla --- */
-        #tableContainer {
-            margin-bottom: 1rem;
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            background: var(--bg-card);
-        }
-
-        th, td {
-            padding: 12px 15px;
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-        }
-
-        th {
-            background-color: var(--primary);
-            color: white;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-        }
-
+        /* --- Table --- */
+        #tableContainer { margin-bottom: 1rem; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); background: var(--bg-card); }
+        th, td { padding: 12px 15px; border: 1px solid var(--border-color); color: var(--text-main); }
+        th { background-color: var(--primary); color: white; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; }
         tr:nth-child(even) { background-color: var(--bg-body); }
 
-        /* --- Tooltips --- */
-        .tooltip-container {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            cursor: help;
-        }
-
-        .tooltip-icon {
-            width: 18px;
-            height: 18px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 50%;
-            background-color: var(--primary);
-            color: white;
-            font-size: 0.75rem;
-            font-weight: bold;
-        }
-
-        .tooltip {
-            visibility: hidden;
-            opacity: 0;
-            position: absolute;
-            z-index: 10;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%) translateY(0);
-            background-color: var(--bg-card);
-            color: var(--text-main);
-            padding: 12px 16px;
-            border-radius: 8px;
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border-color);
-            font-size: 0.9rem;
-            line-height: 1.5;
-            max-width: 300px;
-            text-align: left;
-            transition: opacity 0.3s, transform 0.3s;
-            pointer-events: none;
-            white-space: normal;
-        }
-
-        .tooltip-container:hover .tooltip {
-            visibility: visible;
-            opacity: 1;
-            transform: translateX(-50%) translateY(-8px);
-        }
-
-        /* --- Gráfico --- */
+        /* --- Chart --- */
         #chartContainer {
-            width: 100%;
-            max-width: 1000px;
-            height: 500px;
-            margin: 0.75rem auto;
-            background: var(--bg-card);
-            border-radius: 18px;
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border-color);
-            padding: 1.2rem;
-            position: relative;
+            width: 100%; max-width: 1000px; height: 500px; margin: 0.75rem auto;
+            background: var(--bg-card); border-radius: 18px; box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color); padding: 1.2rem; position: relative;
         }
-        
         #savingChart { width: 100% !important; height: 100% !important; }
 
-        /* --- ESCENARIOS --- */
+        /* --- Escenarios --- */
         .scenarios-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1rem;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-bottom: 1rem;
         }
 
         .scenario-card {
-            background: var(--bg-card);
-            padding: 1.5rem;
-            border-radius: 12px;
-            border: 2px solid var(--border-color);
-            transition: transform 0.2s, box-shadow 0.2s;
+            background: var(--bg-card); padding: 1.5rem; border-radius: 12px;
+            border: 2px solid var(--border-color); transition: transform 0.2s, box-shadow 0.2s;
         }
-
-        .scenario-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
+        .scenario-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
         .scenario-card.optimista { border-color: var(--success); }
         .scenario-card.realista { border-color: var(--primary); }
         .scenario-card.pesimista { border-color: var(--secondary); }
 
-        .scenario-card h3 {
-            font-size: 1.3rem;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
+        .scenario-card h3 { font-size: 1.3rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
         .scenario-card.optimista h3 { color: var(--success); }
         .scenario-card.realista h3 { color: var(--primary); }
         .scenario-card.pesimista h3 { color: var(--secondary); }
 
         .scenario-stat {
-            margin: 0.8rem 0;
-            padding: 0.5rem;
-            background: var(--bg-stat);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+            margin: 0.8rem 0; padding: 0.8rem; background: var(--bg-stat);
+            border: 1px solid var(--border-color); border-radius: 8px;
         }
+        .scenario-stat label { font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 0.2rem;}
+        .scenario-stat .value { font-size: 1.5rem; font-weight: 700; color: var(--text-main); }
 
-        .scenario-stat label {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        .scenario-stat .value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-top: 0.2rem;
-            color: var(--text-main);
-        }
-
-        /* --- Collapsibles --- */
+        /* --- Collapsibles & Modal & Tooltip --- */
         .collapsible-section { margin-bottom: 1rem; }
-
         .collapsible-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            background: var(--bg-stat);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: background-color 0.2s;
+            display: flex; justify-content: space-between; align-items: center; padding: 1rem;
+            background: var(--bg-stat); border: 1px solid var(--border-color); border-radius: 12px; cursor: pointer;
         }
-
-        .collapsible-header:hover { filter: brightness(0.95); }
         .collapsible-header h3 { font-size: 1.1rem; color: var(--primary); margin: 0; }
         .collapsible-icon { font-size: 1.5rem; transition: transform 0.3s; color: var(--text-main); }
         .collapsible-icon.expanded { transform: rotate(180deg); }
-        
         .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
         .collapsible-content.expanded { max-height: 2000px; transition: max-height 0.5s ease-in; }
         .collapsible-inner { padding: 1rem 0; }
 
-        /* --- Modal --- */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            animation: fadeIn 0.3s;
-        }
+        .tooltip-container { position: relative; display: inline-flex; align-items: center; gap: 0.4rem; cursor: help; }
+        .tooltip-icon { width: 18px; height: 18px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background-color: var(--primary); color: white; font-size: 0.75rem; font-weight: bold; }
+        .tooltip { visibility: hidden; opacity: 0; position: absolute; z-index: 10; bottom: 100%; left: 50%; transform: translateX(-50%); background: var(--bg-card); color: var(--text-main); padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; width: 250px; text-align: left; box-shadow: var(--shadow-lg); pointer-events: none; }
+        .tooltip-container:hover .tooltip { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(-10px); }
 
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); animation: fadeIn 0.3s; }
         .modal.active { display: flex; justify-content: center; align-items: center; }
-        
-        .modal-content {
-            background: var(--bg-card);
-            padding: 2rem;
-            border-radius: 18px;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: var(--shadow-lg);
-            animation: slideIn 0.3s;
-        }
-
+        .modal-content { background: var(--bg-card); padding: 2rem; border-radius: 18px; max-width: 500px; width: 90%; box-shadow: var(--shadow-lg); animation: slideIn 0.3s; }
         .modal-content h2 { color: var(--primary); margin-bottom: 1rem; }
-        
-        .modal-buttons {
-            display: flex;
-            gap: 0.5rem;
-            justify-content: flex-end;
-            margin-top: 1.5rem;
-        }
-        
-        .modal-buttons .btn-primary { background-color: var(--primary); color: white; }
-        .modal-buttons .btn-secondary { background-color: #94a3b8; color: white; }
+        .modal-buttons { display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1.5rem; }
+        .modal-buttons .btn-primary { background: var(--primary); color: white; }
+        .modal-buttons .btn-secondary { background: #94a3b8; color: white; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -564,14 +363,11 @@
             .header { flex-direction: column; gap: 0.75rem; text-align: center; }
             .header-buttons { justify-content: center; width: 100%; }
             .tabs { justify-content: flex-start; }
-            .tab { min-width: 120px; font-size: 0.95rem; padding: 0.6rem 1rem; border-radius: 12px; }
             .deduction-item, .withdrawal-item { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
             .milestone-item { grid-template-columns: 1fr 1fr; }
-            .milestone-item .form-input-group:nth-child(3), .remove-btn-group { grid-column: 1 / -1; }
-            .tooltip { transform: translateX(0) translateY(-100%); left: 0; }
-            .tooltip::after { left: 20px; }
+            .milestone-item .form-input-group:nth-child(3), .remove-milestone-btn { grid-column: 1 / -1; }
             .controls { flex-direction: column; }
-            #chartContainer { height: 400px; padding: 0.8rem; }
+            #chartContainer { height: 400px; padding: 0.5rem; }
         }
     </style>
 </head>
@@ -655,19 +451,19 @@
                 <div class="form-section-title">Configuración de Escenarios</div>
                 <div class="form-input-group">
                     <label>Monto inicial hoy</label>
-                    <input type="number" id="montoInicialEsc" value="0">
+                    <input type="number" id="montoInicialEsc" value="0" placeholder="0">
                 </div>
                 <div class="form-input-group">
                     <label>Aporte mensual</label>
-                    <input type="number" id="aporteMensualEsc" value="100">
+                    <input type="number" id="aporteMensualEsc" value="100" placeholder="100">
                 </div>
                 <div class="form-input-group">
                     <label>Edad Actual</label>
-                    <input type="number" id="edadActualEsc" value="25">
+                    <input type="number" id="edadActualEsc" value="25" placeholder="25">
                 </div>
                 <div class="form-input-group">
                     <label>Edad Objetivo</label>
-                    <input type="number" id="edadObjetivoEsc" value="65">
+                    <input type="number" id="edadObjetivoEsc" value="65" placeholder="65">
                 </div>
             </form>
             <div class="scenarios-container" id="scenariosContainer"></div>
@@ -728,38 +524,38 @@
     </div>
 
     <script>
-        // --- Configuración de Campos ---
+        // --- 1. Configuración de Campos Iniciales ---
         const camposBasico = [
-            ['Edad inicio', 'edadInicioBasico', 25, 'Tu edad actual para comenzar a ahorrar<span class="tooltip-example">Ejemplo: Si tienes 28 años, pon 28</span>'],
-            ['Edad fin', 'edadFinBasico', 65, 'Edad objetivo para tu retiro o cuando necesites el dinero<span class="tooltip-example">Ejemplo: Si quieres jubilarte a los 60, pon 60</span>'],
-            ['Monto inicial', 'montoInicialBasico', 0, 'Dinero que ya tienes ahorrado para empezar<span class="tooltip-example">Ejemplo: Si tienes $50,000 en el banco, pon 50000</span>'],
-            ['Aporte mensual', 'aporteMensualBasico', 100, 'Cuánto planeas ahorrar cada mes<span class="tooltip-example">Ejemplo: Si ahorras $1,500 mensuales, pon 1500</span>'],
-            ['Rendimiento anual estimado (%)', 'rendimientoBasico', 5, 'Rentabilidad promedio anual esperada de tus inversiones<span class="tooltip-example">Ejemplo: Plazo fijo ~4%, Fondos balanceados ~8%, Acciones ~10%</span>'],
-            ['Inflación anual estimada (%)', 'inflacionBasico', 3, 'Inflación promedio anual esperada que reduce el poder adquisitivo<span class="tooltip-example">Ejemplo: Inflación baja ~3%, Argentina histórica ~40-50%</span>'],
+            ['Edad inicio', 'edadInicioBasico', 25, 'Edad actual'],
+            ['Edad fin', 'edadFinBasico', 65, 'Edad de retiro'],
+            ['Monto inicial', 'montoInicialBasico', 0, 'Ahorros actuales'],
+            ['Aporte mensual', 'aporteMensualBasico', 100, 'Ahorro por mes'],
+            ['Rendimiento anual (%)', 'rendimientoBasico', 5, 'Interés anual estimado'],
+            ['Inflación anual (%)', 'inflacionBasico', 3, 'Inflación promedio'],
         ];
 
         const camposAvanzado = [
-            ['Monto inicial', 'montoInicialAdv', 0, 'Dinero que ya tienes ahorrado para empezar<span class="tooltip-example">Ejemplo: $50,000 en plazo fijo</span>'],
-            ['Edad actual (Etapa 1)', 'edadInicioAdv', 25, 'Tu edad actual para comenzar la primera etapa de ahorro<span class="tooltip-example">Ejemplo: 25 años recién graduado</span>'],
-            ['Aporte mensual etapa 1', 'aporteTramo1', 1200, 'Cuánto planeas ahorrar mensualmente en tus primeros años<span class="tooltip-example">Ejemplo: $1,200/mes entre 25-35 años (10% sueldo junior)</span>'],
-            ['Edad inicio etapa 2', 'edadCambio1Adv', 35, 'Edad en que cambiarás tu estrategia de ahorro<span class="tooltip-example">Ejemplo: 35 años con mejor sueldo</span>'],
-            ['Aporte mensual etapa 2', 'aporteTramo2', 1500, 'Nuevo monto mensual en la segunda etapa<span class="tooltip-example">Ejemplo: $1,500/mes entre 35-50 años (sueldo senior)</span>'],
-            ['Edad etapa 3', 'edadCambio2Adv', 50, 'Edad para la tercera etapa<span class="tooltip-example">Ejemplo: 50 años en tu mejor momento económico</span>'],
-            ['Aporte mensual etapa 3', 'aporteTramo3', 1800, 'Monto mensual en la etapa final antes del retiro<span class="tooltip-example">Ejemplo: $1,800/mes entre 50-65 años (máximo ahorro)</span>'],
-            ['Edad objetivo', 'edadFinAdv', 65, 'Edad en la que planeas jubilarte o necesitar el dinero<span class="tooltip-example">Ejemplo: 65 años para retiro</span>'],
-            ['Rendimiento anual (%)', 'rendimientoAdv', 5, 'Rentabilidad promedio anual esperada de tus inversiones<span class="tooltip-example">Ejemplo: Cartera mixta conservadora ~5-7%</span>'],
-            ['Inflación anual (%)', 'inflacionAdv', 3, 'Inflación promedio anual esperada<span class="tooltip-example">Ejemplo: USA ~3%, Argentina ~40-50%</span>'],
+            ['Monto inicial', 'montoInicialAdv', 0, 'Ahorros actuales'],
+            ['Edad actual (Etapa 1)', 'edadInicioAdv', 25, 'Edad de inicio'],
+            ['Aporte mensual etapa 1', 'aporteTramo1', 1200, 'Ahorro inicial'],
+            ['Edad inicio etapa 2', 'edadCambio1Adv', 35, 'Cambio de estrategia'],
+            ['Aporte mensual etapa 2', 'aporteTramo2', 1500, 'Ahorro medio'],
+            ['Edad etapa 3', 'edadCambio2Adv', 50, 'Recta final'],
+            ['Aporte mensual etapa 3', 'aporteTramo3', 1800, 'Ahorro máximo'],
+            ['Edad objetivo', 'edadFinAdv', 65, 'Edad retiro'],
+            ['Rendimiento anual (%)', 'rendimientoAdv', 5, 'Interés'],
+            ['Inflación anual (%)', 'inflacionAdv', 3, 'Inflación'],
         ];
 
         let milestones = [];
         let myChart = null;
 
-        // --- Funciones de Utilidad ---
+        // --- 2. Utilidades ---
         function toggleCollapsible(section) {
             const content = document.getElementById(`${section}-content`);
             const icon = document.getElementById(`${section}-icon`);
-            content.classList.toggle('expanded');
-            icon.classList.toggle('expanded');
+            if(content) content.classList.toggle('expanded');
+            if(icon) icon.classList.toggle('expanded');
         }
 
         function formatearNumero(numero) {
@@ -773,71 +569,50 @@
             return storedValue !== null ? storedValue : defaultValue;
         }
 
-        // --- Generación de Interfaz ---
-        function generarInputs(campos, formId) {
-            const form = document.getElementById(formId);
-            const targetElement = formId === 'formAvanzado' ? form.querySelector('.form-section:first-child') : form;
-            targetElement.innerHTML = formId === 'formAvanzado' ? '<div class="form-section-title">Parámetros Principales</div>' : '';
-
-            campos.forEach(([labelText, id, valor, tooltip]) => {
-                const value = getStoredValue(id, valor);
-                const div = document.createElement('div');
-                div.className = 'form-input-group';
-                let labelHTML = labelText;
-                if (tooltip) {
-                    labelHTML = `<div class="tooltip-container">${labelText}<div class="tooltip-icon">?</div><div class="tooltip">${tooltip}</div></div>`;
-                }
-                div.innerHTML = `<label for="${id}">${labelHTML}</label><input type="number" id="${id}" value="${value}">`;
-                targetElement.appendChild(div);
-            });
-        }
-
-        // --- Gestión de Items Dinámicos ---
         function createDynamicItem(containerId, className, htmlContent, removeCallback) {
             const container = document.getElementById(containerId);
+            if(!container) return;
             const div = document.createElement('div');
             div.className = className;
             div.innerHTML = htmlContent;
             container.appendChild(div);
 
-            div.querySelector(`button[class^="remove-"]`).addEventListener('click', () => {
-                div.remove();
-                if(removeCallback) removeCallback();
-            });
+            const removeBtn = div.querySelector(`button[class^="remove-"]`);
+            if(removeBtn) removeBtn.addEventListener('click', () => { div.remove(); if(removeCallback) removeCallback(); });
 
             div.querySelectorAll('input').forEach(input => {
-                input.addEventListener('input', () => {
-                    if(removeCallback) removeCallback();
-                });
+                input.addEventListener('input', () => { if(removeCallback) removeCallback(); });
+            });
+        }
+
+        // --- 3. Generadores de UI ---
+        function generarInputs(campos, formId) {
+            const form = document.getElementById(formId);
+            if(!form) return;
+            const targetElement = formId === 'formAvanzado' ? form.querySelector('.form-section:first-child') : form;
+            
+            if(formId === 'formAvanzado') targetElement.innerHTML = '<div class="form-section-title">Parámetros Principales</div>';
+
+            campos.forEach(([labelText, id, valor, tooltip]) => {
+                const value = getStoredValue(id, valor);
+                const div = document.createElement('div');
+                div.className = 'form-input-group';
+                div.innerHTML = `<label for="${id}"><div class="tooltip-container">${labelText}<div class="tooltip-icon">?</div><div class="tooltip">${tooltip}</div></div></label><input type="number" id="${id}" value="${value}">`;
+                targetElement.appendChild(div);
             });
         }
 
         function addDeductionInput(edad = '', monto = '') {
             createDynamicItem('deductionsContainer', 'deduction-item', 
-                `<div class="form-input-group"><label>Edad del gasto</label><input type="number" class="deduction-age" value="${edad}" placeholder="Ej: 40" min="0"></div>
-                 <div class="form-input-group"><label>Monto anual</label><input type="number" class="deduction-amount" value="${monto}" placeholder="Ej: 5000" min="0"></div>
-                 <button type="button" class="remove-deduction-btn">➖ Eliminar</button>`,
-                autoCalcular
-            );
+                `<div class="form-input-group"><label>Edad</label><input type="number" class="deduction-age" value="${edad}"></div><div class="form-input-group"><label>Monto</label><input type="number" class="deduction-amount" value="${monto}"></div><button class="remove-deduction-btn">➖</button>`, autoCalcular);
         }
-
         function addWithdrawalInput(edad = '', monto = '') {
             createDynamicItem('withdrawalsContainer', 'withdrawal-item',
-                `<div class="form-input-group"><label>Edad inicio retiros</label><input type="number" class="withdrawal-age" value="${edad}" placeholder="Ej: 65" min="0"></div>
-                 <div class="form-input-group"><label>Monto mensual</label><input type="number" class="withdrawal-amount" value="${monto}" placeholder="Ej: 2000" min="0"></div>
-                 <button type="button" class="remove-withdrawal-btn">➖ Eliminar</button>`,
-                autoCalcular
-            );
+                `<div class="form-input-group"><label>Inicio</label><input type="number" class="withdrawal-age" value="${edad}"></div><div class="form-input-group"><label>Mensual</label><input type="number" class="withdrawal-amount" value="${monto}"></div><button class="remove-withdrawal-btn">➖</button>`, autoCalcular);
         }
-
         function addMilestoneInput(edad = '', monto = '', descripcion = '') {
             createDynamicItem('milestonesContainer', 'milestone-item',
-                `<div class="form-input-group"><label>Edad</label><input type="number" class="milestone-age" value="${edad}" placeholder="Ej: 30" min="0"></div>
-                 <div class="form-input-group"><label>Monto objetivo</label><input type="number" class="milestone-amount" value="${monto}" placeholder="Ej: 50000" min="0"></div>
-                 <div class="form-input-group"><label>Descripción</label><input type="text" class="milestone-desc" value="${descripcion}" placeholder="Ej: Auto nuevo"></div>
-                 <button type="button" class="remove-milestone-btn">➖ Eliminar</button>`,
-                updateMilestones
-            );
+                `<div class="form-input-group"><label>Edad</label><input type="number" class="milestone-age" value="${edad}"></div><div class="form-input-group"><label>Monto</label><input type="number" class="milestone-amount" value="${monto}"></div><div class="form-input-group"><label>Fin</label><input type="text" class="milestone-desc" value="${descripcion}"></div><button class="remove-milestone-btn">➖</button>`, updateMilestones);
         }
 
         function updateMilestones() {
@@ -846,187 +621,153 @@
                 const age = parseInt(item.querySelector('.milestone-age').value);
                 const amount = parseFloat(item.querySelector('.milestone-amount').value);
                 const desc = item.querySelector('.milestone-desc').value;
-                if (!isNaN(age) && !isNaN(amount) && amount > 0) {
-                    milestones.push({ age, amount, desc });
-                }
+                if (!isNaN(age) && !isNaN(amount)) milestones.push({ age, amount, desc });
             });
             autoCalcular();
         }
 
-        // --- Recolección de Datos ---
         function getDeductions() {
-            const deductions = {};
-            document.querySelectorAll('.deduction-item').forEach(item => {
-                const age = parseInt(item.querySelector('.deduction-age').value);
-                const amount = parseFloat(item.querySelector('.deduction-amount').value);
-                if (!isNaN(age) && !isNaN(amount) && amount > 0) deductions[age] = (deductions[age] || 0) + amount;
+            const d = {};
+            document.querySelectorAll('.deduction-item').forEach(i => {
+                const age = parseInt(i.querySelector('.deduction-age').value);
+                const amt = parseFloat(i.querySelector('.deduction-amount').value);
+                if(!isNaN(age) && !isNaN(amt)) d[age] = (d[age]||0) + amt;
             });
-            return deductions;
+            return d;
         }
-
         function getWithdrawals() {
-            const withdrawals = [];
-            document.querySelectorAll('.withdrawal-item').forEach(item => {
-                const age = parseInt(item.querySelector('.withdrawal-age').value);
-                const amount = parseFloat(item.querySelector('.withdrawal-amount').value) * 12;
-                if (!isNaN(age) && !isNaN(amount) && amount > 0) withdrawals.push({ age, amount });
+            const w = [];
+            document.querySelectorAll('.withdrawal-item').forEach(i => {
+                const age = parseInt(i.querySelector('.withdrawal-age').value);
+                const amt = parseFloat(i.querySelector('.withdrawal-amount').value) * 12;
+                if(!isNaN(age) && !isNaN(amt)) w.push({ age, amount: amt });
             });
-            return withdrawals;
+            return w;
         }
 
-        // --- Lógica de Cálculo ---
+        // --- 4. Lógica de Cálculo ---
         function calcularBasico() {
-            const e0 = +document.getElementById('edadInicioBasico').value;
-            const eF = +document.getElementById('edadFinBasico').value;
-            const aporteMensual = +document.getElementById('aporteMensualBasico').value;
-            const rendimiento = +document.getElementById('rendimientoBasico').value / 100;
-            const inflacion = +document.getElementById('inflacionBasico').value / 100;
-            const montoInicial = +document.getElementById('montoInicialBasico').value;
+            const e0 = +document.getElementById('edadInicioBasico').value || 25;
+            const eF = +document.getElementById('edadFinBasico').value || 65;
+            const aporte = (+document.getElementById('aporteMensualBasico').value || 0) * 12;
+            const rate = (+document.getElementById('rendimientoBasico').value || 0) / 100;
+            const infl = (+document.getElementById('inflacionBasico').value || 0) / 100;
+            let saldo = +document.getElementById('montoInicialBasico').value || 0;
             
-            if (isNaN(e0) || isNaN(eF) || eF < e0) return;
-            
+            if(eF <= e0) return;
             const datos = [];
-            const aporteAnual = aporteMensual * 12;
-            let totalAportado = montoInicial;
-            let saldo = montoInicial + aporteAnual;
-            totalAportado += aporteAnual;
-            saldo *= (1 + rendimiento);
+            let totalAportado = saldo;
+            
+            // Año 0
+            saldo += aporte; totalAportado += aporte; saldo *= (1 + rate);
+            datos.push({ edad: e0, saldo, saldoReal: saldo, totalAportado });
 
-            datos.push({ edad: e0, saldo, saldoReal: saldo / Math.pow(1 + inflacion, 0), totalAportado });
-
-            for (let edad = e0 + 1; edad <= eF; edad++) {
-                saldo += aporteAnual;
-                totalAportado += aporteAnual;
-                saldo *= (1 + rendimiento);
-                datos.push({ edad, saldo, saldoReal: saldo / Math.pow(1 + inflacion, edad - e0), totalAportado });
+            for(let i = e0 + 1; i <= eF; i++) {
+                saldo += aporte; totalAportado += aporte; saldo *= (1 + rate);
+                datos.push({ edad: i, saldo, saldoReal: saldo / Math.pow(1 + infl, i - e0), totalAportado });
             }
             renderResultados(datos, totalAportado);
         }
 
         function calcularAvanzado() {
-            const e0 = +document.getElementById('edadInicioAdv').value;
-            const eF = +document.getElementById('edadFinAdv').value;
-            if (isNaN(e0) || isNaN(eF) || eF < e0) return;
+            const e0 = +document.getElementById('edadInicioAdv').value || 25;
+            const eF = +document.getElementById('edadFinAdv').value || 65;
+            if(eF <= e0) return;
 
-            // Variables
-            const e1 = +document.getElementById('edadCambio1Adv').value;
-            const e2 = +document.getElementById('edadCambio2Adv').value;
-            const a1 = +document.getElementById('aporteTramo1').value * 12;
-            const a2 = +document.getElementById('aporteTramo2').value * 12;
-            const a3 = +document.getElementById('aporteTramo3').value * 12;
-            const rendimiento = +document.getElementById('rendimientoAdv').value / 100;
-            const inflacion = +document.getElementById('inflacionAdv').value / 100;
-            const montoInicial = +document.getElementById('montoInicialAdv').value;
-            
-            const deducciones = getDeductions();
-            const withdrawals = getWithdrawals();
+            const e1 = +document.getElementById('edadCambio1Adv').value || 35;
+            const e2 = +document.getElementById('edadCambio2Adv').value || 50;
+            const a1 = (+document.getElementById('aporteTramo1').value || 0) * 12;
+            const a2 = (+document.getElementById('aporteTramo2').value || 0) * 12;
+            const a3 = (+document.getElementById('aporteTramo3').value || 0) * 12;
+            const rate = (+document.getElementById('rendimientoAdv').value || 0) / 100;
+            const infl = (+document.getElementById('inflacionAdv').value || 0) / 100;
+            let saldo = +document.getElementById('montoInicialAdv').value || 0;
+
+            const ded = getDeductions();
+            const wit = getWithdrawals();
             const datos = [];
-            let totalAportado = montoInicial;
-            let saldo = montoInicial;
+            let totalAportado = saldo;
 
-            for (let edad = e0; edad <= eF; edad++) {
-                let aporteAnual = edad < e1 ? a1 : (edad < e2 ? a2 : a3);
+            for(let i = e0; i <= eF; i++) {
+                let aporte = i < e1 ? a1 : (i < e2 ? a2 : a3);
+                saldo += aporte; totalAportado += aporte;
                 
-                saldo += aporteAnual;
-                totalAportado += aporteAnual;
-                if (deducciones[edad]) saldo -= deducciones[edad];
+                if(ded[i]) saldo -= ded[i];
+                wit.forEach(w => { if(i >= w.age) saldo -= w.amount; });
+                const hito = milestones.find(m => m.age === i);
+                if(hito) saldo -= hito.amount;
 
-                const hito = milestones.find(m => m.age === edad);
-                if (hito) saldo -= hito.amount;
-
-                withdrawals.forEach(w => { if (edad >= w.age) saldo -= w.amount; });
-                saldo *= (1 + rendimiento);
-
-                datos.push({ 
-                    edad, 
-                    saldo: saldo > 0 ? saldo : 0, 
-                    saldoReal: (saldo > 0 ? saldo : 0) / Math.pow(1 + inflacion, edad - e0), 
-                    totalAportado 
-                });
+                saldo *= (1 + rate);
+                datos.push({ edad: i, saldo: Math.max(0, saldo), saldoReal: Math.max(0, saldo) / Math.pow(1 + infl, i - e0), totalAportado });
             }
             renderResultados(datos, totalAportado);
         }
 
-        function calcularEscenario(rendimiento, inflacion) {
-            // AHORA USA LOS INPUTS INDEPENDIENTES DE LA PESTAÑA ESCENARIOS
+        function calcularEscenarioIndependiente(rendimiento, inflacion) {
+            // Toma los valores de los inputs NUEVOS de la pestaña Escenarios
             const e0 = +document.getElementById('edadActualEsc').value || 25;
             const eF = +document.getElementById('edadObjetivoEsc').value || 65;
-            const aporteAnual = (+document.getElementById('aporteMensualEsc').value || 100) * 12;
+            const aporte = (+document.getElementById('aporteMensualEsc').value || 0) * 12;
             let saldo = +document.getElementById('montoInicialEsc').value || 0;
             let totalAportado = saldo;
 
-            saldo += aporteAnual;
-            totalAportado += aporteAnual;
-            saldo *= (1 + rendimiento);
+            if (eF <= e0) return { nominal: 0, real: 0 };
 
-            for (let i = e0 + 1; i <= eF; i++) {
-                saldo += aporteAnual;
-                totalAportado += aporteAnual;
+            // Simulación rápida
+            for (let i = e0; i <= eF; i++) {
+                saldo += aporte;
+                totalAportado += aporte;
                 saldo *= (1 + rendimiento);
             }
             
             return { 
                 nominal: saldo, 
-                real: saldo / Math.pow(1 + inflacion, eF - e0), 
-                generado: saldo - totalAportado 
+                real: saldo / Math.pow(1 + inflacion, eF - e0)
             };
         }
 
         function calcularInversa() {
-            const objetivo = +document.getElementById('objetivoInversa').value;
-            const e0 = +document.getElementById('edadActualInversa').value;
-            const eF = +document.getElementById('edadObjetivoInversa').value;
-            const rendimiento = +document.getElementById('rendimientoInversa').value / 100;
-            const montoInicial = +document.getElementById('montoInicialInversa').value;
+            const obj = +document.getElementById('objetivoInversa').value || 0;
+            const e0 = +document.getElementById('edadActualInversa').value || 25;
+            const eF = +document.getElementById('edadObjetivoInversa').value || 65;
+            const rate = (+document.getElementById('rendimientoInversa').value || 0) / 100;
+            const init = +document.getElementById('montoInicialInversa').value || 0;
 
-            if (isNaN(objetivo) || eF <= e0) return;
-
-            const años = eF - e0;
-            const factorFV = Math.pow(1 + rendimiento, años);
-            const montoInicialFuturo = montoInicial * factorFV;
-            const montoRestante = objetivo - montoInicialFuturo;
-            
-            let aporteMensual = 0;
-            if (montoRestante > 0) {
-                const factorAnuidad = (factorFV - 1) / rendimiento;
-                aporteMensual = (montoRestante / factorAnuidad) / 12;
+            if(eF <= e0) return;
+            const n = eF - e0;
+            const fvInit = init * Math.pow(1+rate, n);
+            const gap = obj - fvInit;
+            let pmt = 0;
+            if(gap > 0) {
+                // FV of annuity formula: PMT * ((1+r)^n - 1) / r
+                // PMT = gap * r / ((1+r)^n - 1)
+                pmt = (gap * rate) / (Math.pow(1+rate, n) - 1) / 12;
             }
-
-            const totalAportado = aporteMensual * 12 * años + montoInicial;
+            const totalPropio = (pmt * 12 * n) + init;
 
             document.getElementById('resultadoInversa').innerHTML = `
                 <div class="resume-grid">
-                    <div class="resume-item"><h3>💵 Aporte Mensual</h3><div class="value">${formatearNumero(aporteMensual)}</div><div class="subtitle">Durante ${años} años</div></div>
-                    <div class="resume-item"><h3>📊 Total Aportado</h3><div class="value">${formatearNumero(totalAportado)}</div><div class="subtitle">Capital propio</div></div>
-                    <div class="resume-item"><h3>📈 Intereses</h3><div class="value">${formatearNumero(objetivo - totalAportado)}</div><div class="subtitle">Ganancia compuesta</div></div>
-                    <div class="resume-item"><h3>🎯 Objetivo</h3><div class="value">${formatearNumero(objetivo)}</div><div class="subtitle">A los ${eF} años</div></div>
+                    <div class="resume-item"><h3>Aporte Mensual</h3><div class="value">${formatearNumero(pmt)}</div><div class="subtitle">Necesario</div></div>
+                    <div class="resume-item"><h3>Total Aportado</h3><div class="value">${formatearNumero(totalPropio)}</div><div class="subtitle">Capital</div></div>
+                    <div class="resume-item"><h3>Intereses</h3><div class="value">${formatearNumero(obj - totalPropio)}</div><div class="subtitle">Ganancia</div></div>
+                    <div class="resume-item"><h3>Meta</h3><div class="value">${formatearNumero(obj)}</div><div class="subtitle">A los ${eF} años</div></div>
                 </div>
             `;
         }
 
-        // --- Renderizado ---
+        // --- 5. Renderizado ---
         function renderChart2D(datos) {
-            if (typeof Chart === 'undefined') return;
+            if(typeof Chart === 'undefined') return;
             const ctx = document.getElementById('savingChart').getContext('2d');
-            const isDark = document.body.classList.contains('night');
+            if(myChart) myChart.destroy();
             
-            const style = getComputedStyle(document.body);
-            const textColor = style.getPropertyValue('--text-main').trim();
-            const gridColor = isDark ? 'rgba(148, 163, 184, 0.2)' : 'rgba(226, 232, 240, 0.8)';
-
-            if (myChart) myChart.destroy();
+            const isNight = document.body.classList.contains('night');
+            const colorText = isNight ? '#f1f5f9' : '#1e293b';
+            const colorGrid = isNight ? '#334155' : '#e2e8f0';
 
             const annotations = {};
             milestones.forEach((m, i) => {
-                annotations[`m${i}`] = {
-                    type: 'line',
-                    xMin: m.age,
-                    xMax: m.age,
-                    borderColor: '#f59e0b',
-                    borderWidth: 2,
-                    borderDash: [5, 5],
-                    label: { content: m.desc, enabled: true, position: 'start', backgroundColor: '#f59e0b', color: 'white', font: {size: 10} }
-                };
+                annotations[`m${i}`] = { type: 'line', xMin: m.age, xMax: m.age, borderColor: '#f59e0b', borderWidth: 2, borderDash: [5,5], label: { content: m.desc, enabled: true, position: 'start', backgroundColor: '#f59e0b', color: 'white' } };
             });
 
             myChart = new Chart(ctx, {
@@ -1034,50 +775,44 @@
                 data: {
                     labels: datos.map(d => d.edad),
                     datasets: [
-                        { label: 'Saldo Nominal', data: datos.map(d => d.saldo), borderColor: '#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.1)', fill: true, tension: 0.4 },
-                        { label: 'Poder Real', data: datos.map(d => d.saldoReal), borderColor: '#dc2626', borderWidth: 2, borderDash: [5,5], fill: false, tension: 0.4 }
+                        { label: 'Nominal', data: datos.map(d => d.saldo), borderColor: '#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.1)', fill: true },
+                        { label: 'Real', data: datos.map(d => d.saldoReal), borderColor: '#dc2626', borderDash: [5,5], fill: false }
                     ]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { labels: { color: textColor } },
-                        annotation: { annotations }
-                    },
-                    scales: {
-                        x: { grid: { color: gridColor }, ticks: { color: textColor } },
-                        y: { grid: { color: gridColor }, ticks: { color: textColor, callback: v => formatearNumero(v) } }
-                    }
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: colorText } }, annotation: { annotations } },
+                    scales: { x: { ticks: { color: colorText }, grid: { color: colorGrid } }, y: { ticks: { color: colorText }, grid: { color: colorGrid } } }
                 }
             });
         }
 
         function renderResultados(datos, totalAportado) {
-            const rows = datos.map(d => `<tr><td>${d.edad}</td><td>${formatearNumero(d.saldo)}</td><td>${formatearNumero(d.saldoReal)}</td></tr>`).join('');
-            document.getElementById('tableContainer').innerHTML = `<table><thead><tr><th>Edad</th><th>Saldo Nominal</th><th>Real (Inflación)</th></tr></thead><tbody>${rows}</tbody></table>`;
-            renderChart2D(datos);
-
-            const final = datos[datos.length - 1];
+            const final = datos[datos.length-1];
             const millon = datos.find(d => d.saldo >= 1000000);
-
             document.getElementById('resumen').innerHTML = `
                 <div class="resume-grid">
-                    <div class="resume-item"><h3>🎯 Saldo Final</h3><div class="value">${formatearNumero(final.saldo)}</div><div class="subtitle">Edad ${final.edad}</div></div>
-                    <div class="resume-item"><h3>💪 Poder Real</h3><div class="value">${formatearNumero(final.saldoReal)}</div><div class="subtitle">Dinero de hoy</div></div>
-                    <div class="resume-item"><h3>🚀 Edad Millonario</h3><div class="value">${millon ? millon.edad : '❌'}</div><div class="subtitle">${millon ? '¡Objetivo logrado!' : 'No alcanzado'}</div></div>
-                    <div class="resume-item"><h3>📈 Intereses</h3><div class="value">${formatearNumero(final.saldo - totalAportado)}</div><div class="subtitle">vs ${formatearNumero(totalAportado)} aportados</div></div>
+                    <div class="resume-item"><h3>Saldo Final</h3><div class="value">${formatearNumero(final.saldo)}</div><div class="subtitle">A los ${final.edad} años</div></div>
+                    <div class="resume-item"><h3>Poder Real</h3><div class="value">${formatearNumero(final.saldoReal)}</div><div class="subtitle">Ajustado inflación</div></div>
+                    <div class="resume-item"><h3>Edad Millón</h3><div class="value">${millon ? millon.edad : '-'}</div><div class="subtitle">${millon ? 'Alcanzado' : 'No alcanzado'}</div></div>
+                    <div class="resume-item"><h3>Intereses</h3><div class="value">${formatearNumero(final.saldo - totalAportado)}</div><div class="subtitle">Ganancia</div></div>
                 </div>
             `;
+            
+            const rows = datos.map(d => `<tr><td>${d.edad}</td><td>${formatearNumero(d.saldo)}</td><td>${formatearNumero(d.saldoReal)}</td></tr>`).join('');
+            document.getElementById('tableContainer').innerHTML = `<table><thead><tr><th>Edad</th><th>Nominal</th><th>Real</th></tr></thead><tbody>${rows}</tbody></table>`;
+            
+            renderChart2D(datos);
         }
 
         function renderEscenarios() {
-            const opt = calcularEscenario(0.10, 0.02);
-            const real = calcularEscenario(0.05, 0.03);
-            const pes = calcularEscenario(0.02, 0.05);
+            // Usamos la nueva función con datos independientes
+            const opt = calcularEscenarioIndependiente(0.10, 0.02);
+            const real = calcularEscenarioIndependiente(0.05, 0.03);
+            const pes = calcularEscenarioIndependiente(0.02, 0.05);
 
-            const card = (title, tipo, r, i, data) => `
-                <div class="scenario-card ${tipo}">
+            const card = (title, type, r, i, data) => `
+                <div class="scenario-card ${type}">
                     <h3>${title}</h3>
                     <div class="scenario-stat"><label>Rendimiento ${r*100}% | Inflación ${i*100}%</label></div>
                     <div class="scenario-stat"><label>Final Nominal</label><div class="value">${formatearNumero(data.nominal)}</div></div>
@@ -1090,90 +825,116 @@
                 card('⚠️ Pesimista', 'pesimista', 0.02, 0.05, pes);
         }
 
-        // --- PDF ---
-        async function exportToPDF() {
-            const btn = document.getElementById('exportBtn');
-            const originalText = btn.textContent;
-            btn.textContent = "⏳ Generando...";
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const body = document.body;
+        // --- 6. Core & Eventos ---
+        function autoCalcular() {
+            // Guardar inputs con ID en localStorage
+            document.querySelectorAll('input').forEach(i => {
+                if(i.id) localStorage.setItem(i.id, i.value);
+            });
+            // Guardar listas dinámicas
+            localStorage.setItem('deductionsAdv', JSON.stringify(getDeductions()));
+            localStorage.setItem('withdrawalsAdv', JSON.stringify(getWithdrawals()));
+
+            const tab = document.querySelector('.tab.active');
+            if(!tab) return;
             
-            const wasNight = body.classList.contains('night');
-            if (wasNight) { body.classList.remove('night'); autoCalcular(); }
-            await new Promise(r => setTimeout(r, 100));
-
-            try {
-                const resumenEl = document.getElementById('resumen');
-                const resumenCanvas = await html2canvas(resumenEl, { scale: 2, backgroundColor: '#ffffff' });
-                const chartEl = document.getElementById('chartContainer');
-                const chartCanvas = await html2canvas(chartEl, { scale: 2, backgroundColor: '#ffffff' });
-                
-                pdf.setFontSize(22); pdf.setTextColor(37, 99, 235); pdf.text('Reporte Financiero', 15, 20);
-                pdf.setFontSize(10); pdf.setTextColor(100); pdf.text(`Fecha: ${new Date().toLocaleDateString()}`, 15, 27);
-
-                const width = 180;
-                const rH = (resumenCanvas.height * width) / resumenCanvas.width;
-                pdf.addImage(resumenCanvas.toDataURL('image/png'), 'PNG', 15, 35, width, rH);
-
-                const cH = (chartCanvas.height * width) / chartCanvas.width;
-                let y = 35 + rH + 10;
-                if (y + cH > 280) { pdf.addPage(); y = 20; }
-                pdf.addImage(chartCanvas.toDataURL('image/png'), 'PNG', 15, y, width, cH);
-                
-                pdf.save('plan-financiero.pdf');
-            } catch (e) { alert('Error PDF'); console.error(e); } 
-            finally { if (wasNight) { body.classList.add('night'); autoCalcular(); } btn.textContent = originalText; }
+            const mode = tab.dataset.tab;
+            if (mode === 'basico') calcularBasico();
+            else if (mode === 'avanzado') calcularAvanzado();
+            else if (mode === 'escenarios') renderEscenarios();
+            else if (mode === 'inversa') calcularInversa();
         }
 
-        // --- Init ---
+        async function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const btn = document.getElementById('exportBtn');
+            btn.innerText = "⏳";
+            
+            const wasNight = document.body.classList.contains('night');
+            if(wasNight) { document.body.classList.remove('night'); autoCalcular(); }
+            await new Promise(r => setTimeout(r, 200)); // Espera renderizado
+
+            try {
+                const resC = await html2canvas(document.getElementById('resumen'), {scale:2, backgroundColor:'#fff'});
+                const chartC = await html2canvas(document.getElementById('chartContainer'), {scale:2, backgroundColor:'#fff'});
+                
+                pdf.setFontSize(20); pdf.setTextColor(37, 99, 235); pdf.text("Reporte Financiero", 15, 20);
+                pdf.setFontSize(10); pdf.setTextColor(100); pdf.text(new Date().toLocaleDateString(), 15, 28);
+                
+                const w = 180;
+                const h1 = (resC.height * w) / resC.width;
+                pdf.addImage(resC.toDataURL(), 'PNG', 15, 35, w, h1);
+                
+                const h2 = (chartC.height * w) / chartC.width;
+                let y = 35 + h1 + 10;
+                if (y + h2 > 280) { pdf.addPage(); y = 20; }
+                pdf.addImage(chartC.toDataURL(), 'PNG', 15, y, w, h2);
+                
+                pdf.save("plan.pdf");
+            } catch(e) { console.error(e); alert("Error exportando"); }
+            finally { if(wasNight) { document.body.classList.add('night'); autoCalcular(); } btn.innerText = "📄 Exportar PDF"; }
+        }
+
         function init() {
             generarInputs(camposBasico, 'formBasico');
             generarInputs(camposAvanzado, 'formAvanzado');
             
+            // Cargar valores de Escenarios Independientes desde Storage (si existen)
+            ['montoInicialEsc', 'aporteMensualEsc', 'edadActualEsc', 'edadObjetivoEsc'].forEach(id => {
+                const val = localStorage.getItem(id);
+                if(val) document.getElementById(id).value = val;
+            });
+
+            // Cargar tema
             if (localStorage.getItem('nightMode') === 'true') {
                 document.body.classList.add('night');
                 document.getElementById('toggleNightBtn').textContent = '☀️ Modo día';
             }
 
+            // Eventos Tabs
             document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
-                document.querySelectorAll('.tab, .tab-content').forEach(e => e.classList.remove('active'));
+                document.querySelectorAll('.tab, .tab-content').forEach(x => x.classList.remove('active'));
                 t.classList.add('active');
                 document.getElementById(t.dataset.tab).classList.add('active');
                 autoCalcular();
             }));
 
-            // LISTENERS GENERALES
+            // Eventos Inputs Generales
             document.getElementById('formBasico').addEventListener('input', autoCalcular);
             document.getElementById('formAvanzado').addEventListener('input', autoCalcular);
             document.getElementById('formInversa').addEventListener('input', calcularInversa);
             
-            // LISTENER ESPECÍFICO PARA LOS NUEVOS INPUTS DE ESCENARIOS
-            document.getElementById('montoInicialEsc').addEventListener('input', renderEscenarios);
-            document.getElementById('aporteMensualEsc').addEventListener('input', renderEscenarios);
-            document.getElementById('edadActualEsc').addEventListener('input', renderEscenarios);
-            document.getElementById('edadObjetivoEsc').addEventListener('input', renderEscenarios);
-            
-            document.getElementById('addDeductionBtn').addEventListener('click', () => { addDeductionInput(); autoCalcular(); });
-            document.getElementById('addWithdrawalBtn').addEventListener('click', () => { addWithdrawalInput(); autoCalcular(); });
-            document.getElementById('addMilestoneBtn').addEventListener('click', addMilestoneInput);
+            // Eventos Inputs Escenarios (Nuevos)
+            ['montoInicialEsc', 'aporteMensualEsc', 'edadActualEsc', 'edadObjetivoEsc'].forEach(id => {
+                document.getElementById(id).addEventListener('input', () => {
+                    renderEscenarios();
+                    localStorage.setItem(id, document.getElementById(id).value); // Guardado manual inmediato
+                });
+            });
 
+            // Botones
+            document.getElementById('addDeductionBtn').addEventListener('click', () => addDeductionInput());
+            document.getElementById('addWithdrawalBtn').addEventListener('click', () => addWithdrawalInput());
+            document.getElementById('addMilestoneBtn').addEventListener('click', () => addMilestoneInput());
+            
             document.getElementById('toggleNightBtn').addEventListener('click', (e) => {
-                document.body.classList.toggle('night');
-                const isDark = document.body.classList.contains('night');
+                const isDark = document.body.classList.toggle('night');
                 e.target.textContent = isDark ? '☀️ Modo día' : '🌙 Modo noche';
                 localStorage.setItem('nightMode', isDark);
-                autoCalcular();
+                autoCalcular(); // Redibujar gráfico con nuevos colores
             });
 
             document.getElementById('toggleTableBtn').addEventListener('click', (e) => {
                 const t = document.getElementById('tableContainer');
-                t.style.display = t.style.display === 'none' ? 'block' : 'none';
-                e.target.textContent = t.style.display === 'none' ? '👁️ Mostrar tabla' : '👁️ Ocultar tabla';
+                const hidden = t.style.display === 'none';
+                t.style.display = hidden ? 'block' : 'none';
+                e.target.textContent = hidden ? '👁️ Ocultar tabla' : '👁️ Mostrar tabla';
             });
 
             document.getElementById('exportBtn').addEventListener('click', exportToPDF);
             
+            // Modal
             const modal = document.getElementById('shareModal');
             document.getElementById('shareBtn').addEventListener('click', () => {
                 modal.classList.add('active');
@@ -1184,6 +945,13 @@
                 document.getElementById('shareUrl').select();
                 document.execCommand('copy');
             });
+
+            // Carga inicial de listas dinámicas desde Storage
+            const savedDed = JSON.parse(localStorage.getItem('deductionsAdv') || '{}');
+            Object.entries(savedDed).forEach(([k,v]) => addDeductionInput(k, v));
+            
+            const savedWit = JSON.parse(localStorage.getItem('withdrawalsAdv') || '[]');
+            savedWit.forEach(w => addWithdrawalInput(w.age, w.amount/12));
 
             autoCalcular();
         }
