@@ -636,7 +636,15 @@
             if(icon) icon.classList.toggle('expanded');
         }
 
+        // FORMATO MILLONES CON "M"
         function formatearNumero(numero) {
+            if (numero === null || numero === undefined || isNaN(numero)) return '-';
+            
+            if (Math.abs(numero) >= 1000000) {
+                // Divide por un millón y usa 2 decimales
+                let val = (numero / 1000000);
+                return val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' M';
+            }
             return Math.round(numero).toLocaleString();
         }
 
