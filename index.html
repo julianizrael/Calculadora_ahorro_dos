@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Ahorro e Inversión</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/3.0.1/chartjs-plugin-annotation.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
     <style>
         :root {
             --primary: #2563eb;
@@ -42,6 +44,7 @@
         }
 
         body.night input[type="number"],
+        body.night input[type="text"],
         body.night select {
             background: var(--dark-bg);
             border-color: var(--dark-border);
@@ -308,7 +311,7 @@
             font-size: 0.95rem;
         }
 
-        input[type="number"], select {
+        input[type="number"], input[type="text"], select {
             width: 100%;
             padding: 0.6rem 0.8rem;
             margin-top: 0.3rem;
@@ -318,7 +321,7 @@
             transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        input[type="number"]:focus, select:focus {
+        input[type="number"]:focus, input[type="text"]:focus, select:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
             outline: none;
@@ -689,6 +692,9 @@
         .collapsible-inner {
             padding: 1rem 0;
         }
+
+        /* --- ARREGLO DEL MODAL --- */
+        .modal {
             display: none;
             position: fixed;
             z-index: 1000;
@@ -916,7 +922,6 @@
                     <div class="form-section-title">Parámetros Principales</div>
                 </div>
 
-                <!-- Deducciones Colapsable -->
                 <div class="collapsible-section">
                     <div class="collapsible-header" onclick="toggleCollapsible('deductions')">
                         <h3>💸 Deducciones por gastos</h3>
@@ -932,7 +937,6 @@
                     </div>
                 </div>
 
-                <!-- Retiros Colapsable -->
                 <div class="collapsible-section">
                     <div class="collapsible-header" onclick="toggleCollapsible('withdrawals')">
                         <h3>💰 Retiros programados (jubilación)</h3>
@@ -948,7 +952,6 @@
                     </div>
                 </div>
 
-                <!-- Hitos Colapsable -->
                 <div class="collapsible-section">
                     <div class="collapsible-header" onclick="toggleCollapsible('milestones')">
                         <h3>🎯 Hitos y Objetivos</h3>
@@ -1012,7 +1015,6 @@
         </div>
     </div>
 
-    <!-- Modal para compartir -->
     <div id="shareModal" class="modal">
         <div class="modal-content">
             <h2>🔗 Compartir configuración</h2>
@@ -1203,6 +1205,8 @@
         }
 
         function renderChart2D(datos) {
+            if (typeof Chart === 'undefined') return;
+
             const ctx = document.getElementById('savingChart').getContext('2d');
             const years = datos.map(d => d.edad);
             const nominalData = datos.map(d => d.saldo);
@@ -1721,8 +1725,10 @@
             if (urlParams.has('deductions')) {
                 const deductions = urlParams.get('deductions').split(',');
                 deductions.forEach(d => {
-                    const [age, amount] = d.split(':');
-                    addDeductionInput(age, amount);
+                    if(d.includes(':')) {
+                        const [age, amount] = d.split(':');
+                        addDeductionInput(age, amount);
+                    }
                 });
             }
         }
@@ -1835,21 +1841,6 @@
             document.getElementById('formBasico').addEventListener('input', autoCalcular);
             document.getElementById('formAvanzado').querySelector('.form-section:first-child').addEventListener('input', autoCalcular);
             document.getElementById('formInversa').addEventListener('input', calcularInversa);
-
-            document.querySelectorAll('.deduction-item .remove-deduction-btn').forEach(button => {
-                 button.addEventListener('click', (event) => {
-                    event.target.closest('.deduction-item').remove();
-                    autoCalcular();
-                });
-            });
-            
-            document.querySelectorAll('.deduction-item input').forEach(input => {
-                input.addEventListener('input', autoCalcular);
-            });
-
-            document.querySelectorAll('.withdrawal-item input').forEach(input => {
-                input.addEventListener('input', autoCalcular);
-            });
 
             let touchStartX = 0;
             let touchEndX = 0;
