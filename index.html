@@ -3,470 +3,397 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Ahorro e Inversión</title>
+    <title>Calculadora Financiera</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/3.0.1/chartjs-plugin-annotation.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
-        /* 1. VARIABLES GLOBALES */
+        /* --- 1. DISEÑO MODERNO (VARIABLES) --- */
         :root {
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --secondary: #dc2626;
-            --success: #10b981;
-            --success-hover: #059669;
-            --warning: #f59e0b;
+            /* Paleta Moderna */
+            --primary: #6366f1;       /* Indigo Vibrante */
+            --primary-light: #e0e7ff; /* Indigo muy suave */
+            --primary-hover: #4f46e5;
             
-            --bg-body: #f8fafc;
+            --accent: #10b981;        /* Esmeralda para dinero */
+            --danger: #ef4444;        /* Rojo suave */
+            
+            /* Fondos y Textos (Modo Día - Clean) */
+            --bg-body: #f1f5f9;       /* Gris muy pálido, casi blanco */
             --bg-card: #ffffff;
-            --bg-input: #ffffff;
-            --bg-stat: #f1f5f9;
+            --bg-input: #f8fafc;
+            --border-input: #e2e8f0;
             
-            --text-main: #1e293b;
-            --text-muted: #64748b;
+            --text-main: #0f172a;     /* Slate 900 */
+            --text-muted: #64748b;    /* Slate 500 */
             
-            --border-color: #e2e8f0;
+            /* UI Elements */
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
             
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-card: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            --shadow-float: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
         }
 
-        /* 2. VARIABLES MODO NOCHE */
+        /* Variables Modo Noche (Deep Dark) */
         body.night {
-            --bg-body: #0f172a;
-            --bg-card: #1e293b;
-            --bg-input: #0f172a;
-            --bg-stat: #0f172a;
+            --bg-body: #020617;       /* Slate 950 */
+            --bg-card: #0f172a;       /* Slate 900 */
+            --bg-input: #1e293b;      /* Slate 800 */
+            --border-input: #334155;
             
-            --text-main: #f1f5f9;
+            --text-main: #f8fafc;
             --text-muted: #94a3b8;
             
-            --border-color: #334155;
+            --primary: #818cf8;       /* Indigo más claro para contraste */
+            --primary-light: #1e1b4b;
             
-            --shadow: none;
-            --shadow-lg: none;
+            --shadow-card: none;
+            --shadow-float: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
         }
 
-        /* 3. ESTILOS BASE */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
+        /* --- 2. RESET & BASE --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
         body {
-            line-height: 1.6;
+            font-family: 'Inter', sans-serif;
             background-color: var(--bg-body);
             color: var(--text-main);
-            padding-bottom: 1.5rem;
-            transition: background-color 0.3s, color 0.3s;
-            touch-action: pan-y;
+            line-height: 1.5;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            padding-bottom: 3rem;
+            -webkit-font-smoothing: antialiased;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1100px; /* Un poco más estrecho para lectura */
             margin: 0 auto;
             padding: 0 1.5rem;
         }
 
-        /* --- Header --- */
+        /* --- 3. HEADER MINIMALISTA --- */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 1rem 0 1rem;
-            flex-wrap: wrap;
-            gap: 1rem;
+            padding: 2rem 0;
+            margin-bottom: 1rem;
         }
 
         h1 {
-            font-size: 2.2rem;
-            color: var(--primary);
+            font-size: 1.75rem;
             font-weight: 800;
+            letter-spacing: -0.025em;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; /* Texto degradado moderno */
         }
 
-        .header-buttons {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
+        .header-buttons { display: flex; gap: 0.8rem; }
 
-        .night-toggle, .share-btn, .export-btn {
-            padding: 0.6rem 1.2rem;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 1rem;
+        .btn-icon {
+            background: var(--bg-card);
+            color: var(--text-main);
+            border: 1px solid var(--border-input);
+            padding: 0.6rem 1rem;
+            border-radius: var(--radius-sm);
             font-weight: 600;
-            background-color: var(--primary);
-            color: white;
-            transition: background-color 0.2s, transform 0.1s;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
         }
 
-        .share-btn { background-color: var(--success); }
-        .share-btn:hover { background-color: var(--success-hover); }
-        .export-btn { background-color: var(--warning); }
-        .export-btn:hover { background-color: #d97706; }
-        .night-toggle:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
+        .btn-icon:hover { transform: translateY(-1px); box-shadow: var(--shadow-card); }
+        .btn-primary { background: var(--primary); color: white; border: none; }
+        .btn-primary:hover { background: var(--primary-hover); }
 
-        /* --- Tabs --- */
+        /* --- 4. TABS FLOTANTES (Segment Control) --- */
         .tabs {
             display: flex;
-            flex-wrap: nowrap;
-            margin-bottom: 0;
-            border-bottom: 3px solid var(--border-color);
+            background: var(--bg-input); /* Fondo gris suave */
+            padding: 0.3rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 2rem;
+            gap: 0.5rem;
             overflow-x: auto;
-            overflow-y: hidden;
-            -webkit-overflow-scrolling: touch;
-            padding-bottom: 1px;
+            border: none; /* Sin borde inferior */
         }
         
-        .tabs::-webkit-scrollbar { height: 0px; }
+        .tabs::-webkit-scrollbar { height: 0; }
 
         .tab {
-            padding: 0.8rem 1.5rem;
-            cursor: pointer;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-main);
-            border-top-left-radius: 12px;
-            border-top-right-radius: 12px;
-            background-color: var(--bg-body);
-            border: 1px solid var(--border-color);
-            border-bottom: none;
-            margin-bottom: -1px;
-            transition: background-color 0.2s, color 0.2s;
-            min-width: 140px;
+            flex: 1;
             text-align: center;
+            padding: 0.6rem 1rem;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            transition: all 0.2s ease;
             white-space: nowrap;
-            flex-shrink: 0;
         }
-
-        .tab:hover:not(.active) { filter: brightness(0.95); }
 
         .tab.active {
             background-color: var(--bg-card);
             color: var(--primary);
-            border-bottom: 3px solid var(--primary);
-            padding-bottom: 0.8rem;
+            box-shadow: var(--shadow-sm); /* Efecto elevación */
         }
 
-        .tab-content {
-            background: var(--bg-card);
-            padding: 1.5rem;
-            border-bottom-left-radius: 18px;
-            border-bottom-right-radius: 18px;
-            border-top-right-radius: 18px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-            display: none;
-            margin-bottom: 1rem;
-        }
+        .tab:hover:not(.active) { color: var(--text-main); }
 
+        /* --- 5. TARJETAS Y FORMULARIOS --- */
+        .tab-content { display: none; animation: fadeIn 0.4s ease; }
         .tab-content.active { display: block; }
 
-        /* --- Forms --- */
         form {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Columnas más anchas */
             gap: 1.5rem;
         }
 
-        .form-section {
-            grid-column: 1 / -1;
-            padding: 0;
-            display: grid;
-            grid-template-columns: subgrid;
-            gap: 1.5rem;
-        }
-
-        .form-section-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 0.5rem;
-            grid-column: 1 / -1;
-        }
-        
-        .form-input-group { display: flex; flex-direction: column; }
+        .form-input-group { display: flex; flex-direction: column; gap: 0.4rem; }
 
         label {
-            display: block;
+            font-size: 0.85rem;
             font-weight: 600;
-            color: var(--text-main);
-            font-size: 0.95rem;
-            margin-bottom: 0.3rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
+        /* INPUTS MODERNOS (Filled Style) */
         input[type="number"], input[type="text"], select {
             width: 100%;
-            padding: 0.7rem 0.9rem;
+            padding: 0.8rem 1rem;
             background-color: var(--bg-input);
+            border: 2px solid transparent; /* Borde invisible por defecto */
+            border-radius: var(--radius-sm);
+            font-size: 1.1rem;
             color: var(--text-main);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            font-weight: 500;
+            transition: all 0.2s;
         }
 
-        input:focus, select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        input:hover { background-color: var(--bg-body); } /* Ligero cambio al hover */
+        
+        input:focus {
             outline: none;
+            background-color: var(--bg-card);
+            border-color: var(--primary); /* Borde de color al enfocar */
+            box-shadow: 0 0 0 4px var(--primary-light); /* Anillo de foco suave */
         }
 
-        button {
-            padding: 0.7rem 1rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 600;
-            transition: background-color 0.2s;
-            white-space: nowrap;
-        }
-        
-        /* Dynamic Lists */
-        .deductions-container {
-            display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1rem; 
+        /* Textos de dinero alineados a la derecha */
+        input.money-input { text-align: right; font-variant-numeric: tabular-nums; }
+
+        /* --- 6. SECCIONES COLAPSABLES (Clean) --- */
+        .collapsible-section {
             grid-column: 1 / -1;
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--border-input);
         }
 
-        .deduction-item {
-            display: grid;
-            grid-template-columns: 1fr 1fr auto;
-            gap: 1rem;
-            align-items: flex-end;
-            padding: 1rem;
-            background: var(--bg-body);
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
+        .collapsible-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.2rem;
+            cursor: pointer;
+            background: transparent;
+            transition: background 0.2s;
+        }
+        .collapsible-header:hover { background: var(--bg-input); }
+        
+        .collapsible-header h3 {
+            font-size: 1rem; color: var(--text-main); font-weight: 700; margin: 0;
         }
         
-        #addDeductionBtn {
-            background-color: var(--success); color: white; width: fit-content;
+        .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .collapsible-content.expanded { max-height: 2000px; }
+        .collapsible-inner { padding: 1.5rem; background: var(--bg-body); border-top: 1px solid var(--border-input); }
+
+        /* Items de lista */
+        .deduction-item {
+            background: var(--bg-card);
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            display: grid; grid-template-columns: 1fr 1fr auto; gap: 1rem; align-items: end;
+            margin-bottom: 0.8rem;
+            box-shadow: var(--shadow-sm);
         }
 
-        .remove-deduction-btn {
-            background-color: var(--secondary); color: white; height: fit-content; padding: 0.7rem;
-        }
+        .btn-small { padding: 0.5rem 0.8rem; font-size: 0.85rem; border-radius: 6px; }
+        .btn-add { background: var(--primary-light); color: var(--primary); width: 100%; margin-top: 0.5rem; }
+        .btn-add:hover { background: var(--primary); color: white; }
+        .btn-remove { background: #fee2e2; color: var(--danger); border: none; }
+        .btn-remove:hover { background: var(--danger); color: white; }
 
-        .controls { margin-bottom: 1rem; display: flex; justify-content: flex-end; gap: 0.5rem; flex-wrap: wrap; }
-        .controls button { background-color: #64748b; color: white; }
-
-        /* --- Resumen --- */
+        /* --- 7. RESUMEN (Dashboard Style) --- */
         .resume-card {
             background: var(--bg-card);
-            padding: 1.5rem;
-            border-radius: 18px;
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border-color);
-            margin-bottom: 1rem;
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-card);
+            margin: 2rem 0;
+            border: 1px solid var(--border-input);
         }
 
         .resume-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
+            gap: 2rem;
         }
 
-        .resume-item {
-            text-align: center;
-            border-radius: 12px;
-            padding: 1rem;
-            background: var(--bg-stat);
-            border: 1px solid var(--border-color);
-        }
+        .resume-item { text-align: left; } /* Alineación izquierda es más moderna */
         
-        .resume-item h3 { font-size: 1rem; color: var(--primary-hover); margin-bottom: 0.5rem; }
-        .resume-item .value { font-size: 2.2rem; font-weight: 800; color: var(--text-main); }
-        .resume-item .subtitle { font-size: 0.9rem; color: var(--text-muted); }
-
-        /* --- Table --- */
-        #tableContainer { margin-bottom: 1rem; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; text-align: left; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); background: var(--bg-card); }
-        th, td { padding: 12px 15px; border: 1px solid var(--border-color); color: var(--text-main); }
-        th { background-color: var(--primary); color: white; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; }
-        tr:nth-child(even) { background-color: var(--bg-body); }
-
-        /* --- Chart --- */
-        #chartContainer {
-            width: 100%; max-width: 1000px; height: 500px; margin: 0.75rem auto;
-            background: var(--bg-card); border-radius: 18px; box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border-color); padding: 1.2rem; position: relative;
+        .resume-item h3 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.05em;
         }
-        #savingChart { width: 100% !important; height: 100% !important; }
 
-        /* --- ESCENARIOS --- */
+        .resume-item .value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+        }
+
+        .resume-item .subtitle {
+            font-size: 0.9rem;
+            color: var(--primary);
+            font-weight: 500;
+            margin-top: 0.3rem;
+        }
+
+        /* --- 8. ESCENARIOS (Cards Limpias) --- */
         .scenarios-top-bar {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin-bottom: 2rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 1.5rem;
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
+            background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius-md);
+            margin-bottom: 1.5rem; box-shadow: var(--shadow-sm); border: 1px solid var(--border-input);
         }
-        
-        .scenarios-top-bar .form-section-title { grid-column: 1 / -1; }
 
         .scenarios-container {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-bottom: 1rem;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;
         }
 
         .scenario-card {
-            background: var(--bg-card); padding: 1.5rem; border-radius: 12px;
-            border: 2px solid var(--border-color); transition: transform 0.2s, box-shadow 0.2s;
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-input);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
         }
-        .scenario-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-        .scenario-card.optimista { border-color: var(--success); }
-        .scenario-card.realista { border-color: var(--primary); }
-        .scenario-card.pesimista { border-color: var(--secondary); }
 
-        .scenario-card h3 { font-size: 1.3rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
-        .scenario-card.optimista h3 { color: var(--success); }
-        .scenario-card.realista h3 { color: var(--primary); }
-        .scenario-card.pesimista h3 { color: var(--secondary); }
-
-        .scenario-stat {
-            margin: 0.8rem 0; padding: 0.8rem; background: var(--bg-stat);
-            border: 1px solid var(--border-color); border-radius: 8px;
+        /* Barra de color superior */
+        .scenario-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px;
         }
-        .scenario-stat label { font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 0.2rem;}
-        .scenario-stat .value { font-size: 1.5rem; font-weight: 700; color: var(--text-main); }
+        .scenario-card.optimista::before { background: var(--accent); }
+        .scenario-card.realista::before { background: var(--primary); }
+        .scenario-card.pesimista::before { background: var(--danger); }
 
-        /* --- Collapsibles & Modal --- */
-        .collapsible-section { 
-            margin-bottom: 1rem; 
-            grid-column: 1 / -1; /* ANCHO COMPLETO */
+        .scenario-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-float); }
+
+        .scenario-card h3 {
+            font-size: 1.4rem; color: var(--text-main); margin-bottom: 1.5rem;
         }
+
+        .scenario-stat { margin-bottom: 1rem; }
+        .scenario-stat label { display: block; font-size: 0.8rem; margin-bottom: 0.2rem; }
+        .scenario-stat .value { font-size: 1.6rem; font-weight: 700; color: var(--text-main); }
+
+        /* --- 9. GRÁFICO & TABLA --- */
+        #chartContainer {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--border-input);
+            height: 450px;
+            margin-top: 2rem;
+        }
+
+        #tableContainer { margin-top: 1rem; overflow-x: auto; border-radius: var(--radius-md); border: 1px solid var(--border-input); }
+        table { width: 100%; border-collapse: collapse; background: var(--bg-card); }
+        th { background: var(--bg-input); padding: 1rem; text-align: left; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; }
+        td { padding: 1rem; border-bottom: 1px solid var(--border-input); font-size: 0.95rem; color: var(--text-main); }
+        tr:last-child td { border-bottom: none; }
+
+        /* --- TOOLTIPS (Glassy) --- */
+        .tooltip-container { position: relative; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .tooltip-icon {
+            width: 16px; height: 16px; border-radius: 50%;
+            background: var(--bg-input); color: var(--text-muted);
+            display: flex; justify-content: center; align-items: center;
+            font-size: 0.7rem; font-weight: bold; cursor: help; border: 1px solid var(--border-input);
+        }
+        .tooltip {
+            visibility: hidden; opacity: 0; position: absolute; bottom: 140%; left: 50%; transform: translateX(-50%) translateY(10px);
+            width: 280px; padding: 1rem; border-radius: 12px;
+            background: rgba(255, 255, 255, 0.95); /* Glass effect light */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            color: #334155; font-size: 0.9rem; z-index: 50;
+            transition: all 0.2s; pointer-events: none;
+        }
+        body.night .tooltip {
+            background: rgba(15, 23, 42, 0.95); /* Glass effect dark */
+            border-color: rgba(255,255,255,0.1);
+            color: #e2e8f0;
+        }
+        .tooltip-container:hover .tooltip { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
+        .tooltip-title { display: block; font-weight: 700; margin-bottom: 0.3rem; color: var(--primary); }
+        .tooltip-example { display: block; margin-top: 0.5rem; font-size: 0.8rem; color: var(--accent); font-style: italic; }
+
+        /* --- UTILS --- */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .collapsible-header {
-            display: flex; justify-content: space-between; align-items: center; padding: 1rem;
-            background: var(--bg-stat); border: 1px solid var(--border-color); border-radius: 12px; cursor: pointer;
-        }
-        .collapsible-header h3 { font-size: 1.1rem; color: var(--primary); margin: 0; }
-        .collapsible-icon { font-size: 1.5rem; transition: transform 0.3s; color: var(--text-main); }
-        .collapsible-icon.expanded { transform: rotate(180deg); }
-        .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
-        .collapsible-content.expanded { max-height: 2000px; transition: max-height 0.5s ease-in; }
-        .collapsible-inner { padding: 1rem 0; }
+        .modal { display: none; position: fixed; z-index: 1000; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center; animation: fadeIn 0.2s; }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--bg-card); padding: 2rem; border-radius: var(--radius-lg); width: 90%; max-width: 450px; box-shadow: var(--shadow-float); }
 
-        /* --- ESTILOS DE TOOLTIP MEJORADOS --- */
-        .tooltip-container { position: relative; display: inline-flex; align-items: center; gap: 0.4rem; cursor: help; }
-        
-        .tooltip-icon { 
-            width: 18px; height: 18px; 
-            display: flex; justify-content: center; align-items: center; 
-            border-radius: 50%; 
-            background-color: var(--primary); 
-            color: white; 
-            font-size: 0.75rem; 
-            font-weight: bold; 
-            cursor: pointer;
-        }
-
-        .tooltip { 
-            visibility: hidden; opacity: 0; 
-            position: absolute; z-index: 100; 
-            bottom: 130%; left: 50%; 
-            transform: translateX(-50%) translateY(5px); 
-            background: var(--bg-card); 
-            color: var(--text-main); 
-            padding: 1rem; 
-            border: 1px solid var(--border-color); 
-            border-radius: 12px; 
-            width: 260px; 
-            text-align: left; 
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15); 
-            pointer-events: none; 
-            transition: all 0.2s ease-in-out;
-            font-size: 0.9rem;
-        }
-
-        .tooltip::after {
-            content: ''; position: absolute; top: 100%; left: 50%; margin-left: -6px;
-            border-width: 6px; border-style: solid;
-            border-color: var(--bg-card) transparent transparent transparent;
-        }
-        
-        /* Detalles internos del tooltip */
-        .tooltip-title {
-            display: block;
-            font-weight: 700;
-            margin-bottom: 4px;
-            color: var(--primary);
-        }
-
-        .tooltip-text {
-            display: block;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-            line-height: 1.4;
-        }
-
-        .tooltip-example { 
-            display: block; 
-            padding-top: 8px; 
-            border-top: 1px solid var(--border-color); 
-            font-style: italic; 
-            font-size: 0.85rem; 
-            color: var(--success); 
-        }
-
-        .tooltip-container:hover .tooltip { 
-            visibility: visible; opacity: 1; 
-            transform: translateX(-50%) translateY(0); 
-        }
-
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); animation: fadeIn 0.3s; }
-        .modal.active { display: flex; justify-content: center; align-items: center; }
-        .modal-content { background: var(--bg-card); padding: 2rem; border-radius: 18px; max-width: 500px; width: 90%; box-shadow: var(--shadow-lg); animation: slideIn 0.3s; }
-        .modal-content h2 { color: var(--primary); margin-bottom: 1rem; }
-        .modal-buttons { display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1.5rem; }
-        .modal-buttons .btn-primary { background: var(--primary); color: white; }
-        .modal-buttons .btn-secondary { background: #94a3b8; color: white; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        @media (max-width: 900px) {
-            .scenarios-top-bar { grid-template-columns: 1fr 1fr; }
-        }
-
+        /* --- RESPONSIVE --- */
         @media (max-width: 768px) {
-            .container { padding: 0 0.5rem; }
-            .header { flex-direction: column; gap: 0.75rem; text-align: center; }
-            .header-buttons { justify-content: center; width: 100%; }
-            .tabs { justify-content: flex-start; }
-            .deduction-item { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
-            .remove-deduction-btn { grid-column: 1 / -1; }
-            .controls { flex-direction: column; }
-            #chartContainer { height: 400px; padding: 0.5rem; }
+            .header { flex-direction: column; gap: 1rem; text-align: center; }
             .scenarios-top-bar { grid-template-columns: 1fr; }
+            .deduction-item { grid-template-columns: 1fr 1fr; }
+            .remove-deduction-btn { grid-column: 1 / -1; width: 100%; margin-top: 0.5rem; }
+            .resume-item .value { font-size: 2rem; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>💰 Calculadora de Ahorro</h1>
+            <h1>Calculadora Financiera</h1>
             <div class="header-buttons">
-                <button id="shareBtn" class="share-btn">🔗 Compartir</button>
-                <button id="exportBtn" class="export-btn">📄 Exportar PDF</button>
-                <button id="toggleNightBtn" class="night-toggle">🌙 Modo noche</button>
+                <button id="shareBtn" class="btn-icon">🔗 Compartir</button>
+                <button id="exportBtn" class="btn-icon">📄 PDF</button>
+                <button id="toggleNightBtn" class="btn-icon btn-primary">🌙 Tema</button>
             </div>
         </div>
         
         <div class="tabs">
-            <div class="tab active" data-tab="basico">📊 Básico</div>
-            <div class="tab" data-tab="avanzado">🎯 Avanzado</div>
-            <div class="tab" data-tab="escenarios">🔮 Escenarios</div>
-            <div class="tab" data-tab="inversa">🧮 Calc. Inversa</div>
+            <button class="tab active" data-tab="basico">Básico</button>
+            <button class="tab" data-tab="avanzado">Avanzado</button>
+            <button class="tab" data-tab="escenarios">Escenarios</button>
+            <button class="tab" data-tab="inversa">Objetivo</button>
         </div>
 
         <div id="basico" class="tab-content active">
@@ -476,20 +403,18 @@
         <div id="avanzado" class="tab-content">
             <form id="formAvanzado" onsubmit="return false;">
                 <div class="form-section">
-                    <div class="form-section-title">Parámetros Principales</div>
+                    <div class="form-section-title" style="grid-column: 1/-1; margin-bottom: 1rem; font-size: 1.2rem; font-weight: 800;">Parámetros Avanzados</div>
                 </div>
 
                 <div class="collapsible-section">
                     <div class="collapsible-header" onclick="toggleCollapsible('deductions')">
-                        <h3>💸 Deducciones por gastos</h3>
+                        <h3>Gastos Grandes & Deducciones</h3>
                         <span class="collapsible-icon" id="deductions-icon">▼</span>
                     </div>
                     <div class="collapsible-content" id="deductions-content">
                         <div class="collapsible-inner">
-                            <div class="form-section deductions-section">
-                                <div class="deductions-container" id="deductionsContainer"></div>
-                                <button type="button" id="addDeductionBtn">➕ Añadir gasto</button>
-                            </div>
+                            <div class="deductions-container" id="deductionsContainer"></div>
+                            <button type="button" class="btn-icon btn-add" id="addDeductionBtn">+ Agregar Nuevo Gasto</button>
                         </div>
                     </div>
                 </div>
@@ -499,20 +424,20 @@
         <div id="escenarios" class="tab-content">
             <form class="scenarios-top-bar">
                 <div class="form-input-group">
-                    <label>Monto inicial hoy</label>
-                    <input type="number" id="montoInicialEsc" value="0" placeholder="0">
+                    <label>Capital Inicial</label>
+                    <input type="text" class="money-input" id="montoInicialEsc" value="0" inputmode="numeric">
                 </div>
                 <div class="form-input-group">
-                    <label>Aporte mensual</label>
-                    <input type="number" id="aporteMensualEsc" value="100" placeholder="100">
+                    <label>Aporte Mensual</label>
+                    <input type="text" class="money-input" id="aporteMensualEsc" value="100" inputmode="numeric">
                 </div>
                 <div class="form-input-group">
                     <label>Edad Actual</label>
-                    <input type="number" id="edadActualEsc" value="25" placeholder="25">
+                    <input type="number" id="edadActualEsc" value="25">
                 </div>
                 <div class="form-input-group">
                     <label>Edad Objetivo</label>
-                    <input type="number" id="edadObjetivoEsc" value="65" placeholder="65">
+                    <input type="number" id="edadObjetivoEsc" value="65">
                 </div>
             </form>
             <div class="scenarios-container" id="scenariosContainer"></div>
@@ -521,10 +446,9 @@
         <div id="inversa" class="tab-content">
             <form id="formInversa" onsubmit="return false;">
                 <div class="form-section">
-                    <div class="form-section-title">Calcula cuánto necesitas ahorrar</div>
                     <div class="form-input-group">
-                        <label>Monto objetivo</label>
-                        <input type="number" id="objetivoInversa" value="1000000">
+                        <label>¿Cuánto quieres juntar?</label>
+                        <input type="text" class="money-input" id="objetivoInversa" value="1.000.000" inputmode="numeric" style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">
                     </div>
                     <div class="form-input-group">
                         <label>Edad actual</label>
@@ -535,25 +459,25 @@
                         <input type="number" id="edadObjetivoInversa" value="65">
                     </div>
                     <div class="form-input-group">
-                        <label>Rendimiento anual (%)</label>
+                        <label>Rentabilidad estimada (%)</label>
                         <input type="number" id="rendimientoInversa" value="5" step="0.1">
                     </div>
                     <div class="form-input-group">
-                        <label>Monto inicial disponible</label>
-                        <input type="number" id="montoInicialInversa" value="0">
+                        <label>Capital inicial</label>
+                        <input type="text" class="money-input" id="montoInicialInversa" value="0" inputmode="numeric">
                     </div>
                 </div>
             </form>
-            <div id="resultadoInversa" class="resume-card" style="margin-top: 1rem;"></div>
+            <div id="resultadoInversa" class="resume-card" style="margin-top: 2rem;"></div>
         </div>
 
         <div id="resumen" class="resume-card"></div>
 
         <div class="controls">
-            <button id="toggleTableBtn">👁️ Ocultar tabla</button>
+            <button id="toggleTableBtn" class="btn-icon">Ver Tabla Detallada</button>
         </div>
 
-        <div id="tableContainer"></div>
+        <div id="tableContainer" style="display:none;"></div>
         
         <div id="chartContainer">
             <canvas id="savingChart"></canvas>
@@ -562,12 +486,12 @@
 
     <div id="shareModal" class="modal">
         <div class="modal-content">
-            <h2>🔗 Compartir configuración</h2>
-            <p>Copia este enlace para compartir tu configuración:</p>
+            <h2 style="margin-bottom:1rem;">🔗 Compartir</h2>
+            <p style="color:var(--text-muted); margin-bottom:1rem;">Copia este enlace para guardar tu configuración:</p>
             <input type="text" id="shareUrl" readonly>
             <div class="modal-buttons">
-                <button class="btn-primary" id="copyUrlBtn">📋 Copiar</button>
-                <button class="btn-secondary" id="closeModalBtn">Cerrar</button>
+                <button class="btn-icon btn-primary" id="copyUrlBtn">Copiar</button>
+                <button class="btn-icon" id="closeModalBtn">Cerrar</button>
             </div>
         </div>
     </div>
@@ -575,28 +499,28 @@
     <script>
         // --- 1. Configuración ---
         const camposBasico = [
-            ['Edad inicio', 'edadInicioBasico', 25, { title: 'Edad Actual', text: 'La edad con la que comenzarás el plan de inversión.', example: 'Ej: Si tienes 30 años, pon 30.' }],
-            ['Edad fin', 'edadFinBasico', 65, { title: 'Edad Objetivo', text: 'Edad a la que planeas retirarte o usar el dinero.', example: 'Ej: 65 años para jubilación.' }],
-            ['Monto inicial', 'montoInicialBasico', 0, { title: 'Capital Inicial', text: 'Dinero que ya tienes ahorrado hoy.', example: 'Ej: $10,000 en el banco.' }],
-            ['Aporte mensual', 'aporteMensualBasico', 100, { title: 'Ahorro Mensual', text: 'Dinero que puedes separar de tu sueldo cada mes.', example: 'Ej: $200 por mes.' }],
-            ['Rendimiento anual (%)', 'rendimientoBasico', 5, { title: 'Tasa de Interés', text: 'Ganancia esperada de tus inversiones al año.', example: 'Ej: S&P 500 promedio histórico ~8-10%.' }],
-            ['Inflación anual (%)', 'inflacionBasico', 3, { title: 'Inflación', text: 'Pérdida de valor del dinero anual.', example: 'Ej: Promedio histórico dólar ~3%.' }],
+            ['Edad inicio', 'edadInicioBasico', 25, { title: 'Edad Actual', text: 'Edad con la que inicias la inversión.', example: 'Ej: 30' }],
+            ['Edad fin', 'edadFinBasico', 65, { title: 'Edad Objetivo', text: 'Edad a la que planeas retirar el dinero.', example: 'Ej: 65' }],
+            ['Monto inicial', 'montoInicialBasico', 0, { title: 'Capital Inicial', text: 'Dinero que ya tienes ahorrado.', example: 'Ej: 10.000' }],
+            ['Aporte mensual', 'aporteMensualBasico', 100, { title: 'Ahorro Mensual', text: 'Dinero que separarás cada mes.', example: 'Ej: 200' }],
+            ['Rendimiento anual (%)', 'rendimientoBasico', 5, { title: 'Tasa Interés', text: 'Rentabilidad anual esperada.', example: 'Ej: 5-8% (S&P 500)' }],
+            ['Inflación anual (%)', 'inflacionBasico', 3, { title: 'Inflación', text: 'Pérdida de valor del dinero.', example: 'Ej: 3% Histórico' }],
         ];
 
         const camposAvanzado = [
-            ['Monto inicial', 'montoInicialAdv', 0, { title: 'Capital Inicial', text: 'Ahorros actuales disponibles.', example: 'Ej: $5,000.' }],
-            ['Edad actual (Etapa 1)', 'edadInicioAdv', 25, { title: 'Fase Junior', text: 'Tu edad al comenzar la primera etapa.', example: 'Ej: 20-25 años.' }],
-            ['Aporte mensual etapa 1', 'aporteTramo1', 1200, { title: 'Ahorro Fase 1', text: 'Capacidad de ahorro inicial.', example: 'Ej: Ahorro bajo mientras estudias.' }],
-            ['Edad inicio etapa 2', 'edadCambio1Adv', 35, { title: 'Cambio a Fase 2', text: 'Edad donde mejoran tus ingresos.', example: 'Ej: A los 35 años con mejor puesto.' }],
-            ['Aporte mensual etapa 2', 'aporteTramo2', 1500, { title: 'Ahorro Fase 2', text: 'Capacidad de ahorro media.', example: 'Ej: Aumento de sueldo.' }],
-            ['Edad etapa 3', 'edadCambio2Adv', 50, { title: 'Fase Senior', text: 'Última etapa antes del retiro.', example: 'Ej: A los 50 años.' }],
-            ['Aporte mensual etapa 3', 'aporteTramo3', 1800, { title: 'Ahorro Máximo', text: 'Capacidad de ahorro en tu pico de carrera.', example: 'Ej: Prioridad total al ahorro.' }],
-            ['Edad objetivo', 'edadFinAdv', 65, { title: 'Retiro', text: 'Edad final del plan.', example: 'Ej: 65 años.' }],
-            ['Rendimiento anual (%)', 'rendimientoAdv', 5, { title: 'Interés', text: 'Rentabilidad de la cartera.', example: 'Ej: 5% conservador.' }],
-            ['Inflación anual (%)', 'inflacionAdv', 3, { title: 'Inflación', text: 'Ajuste por costo de vida.', example: 'Ej: 3% anual.' }],
+            ['Monto inicial', 'montoInicialAdv', 0, { title: 'Capital', text: 'Dinero base.' }],
+            ['Edad actual', 'edadInicioAdv', 25, { title: 'Inicio', text: 'Edad actual.' }],
+            ['Aporte Etapa 1', 'aporteTramo1', 1200, { title: 'Fase 1', text: 'Ahorro inicial mensual.' }],
+            ['Edad cambio a Etapa 2', 'edadCambio1Adv', 35, { title: 'Cambio', text: 'Edad donde mejora tu sueldo.' }],
+            ['Aporte Etapa 2', 'aporteTramo2', 1500, { title: 'Fase 2', text: 'Ahorro medio mensual.' }],
+            ['Edad cambio a Etapa 3', 'edadCambio2Adv', 50, { title: 'Cambio', text: 'Fase final de carrera.' }],
+            ['Aporte Etapa 3', 'aporteTramo3', 1800, { title: 'Fase 3', text: 'Ahorro máximo mensual.' }],
+            ['Edad Retiro', 'edadFinAdv', 65, { title: 'Fin', text: 'Edad objetivo.' }],
+            ['Rendimiento (%)', 'rendimientoAdv', 5, { title: 'Tasa', text: 'Interés compuesto anual.' }],
+            ['Inflación (%)', 'inflacionAdv', 3, { title: 'IPC', text: 'Ajuste costo de vida.' }],
         ];
 
-        let milestones = [];
+        let milestones = []; // (Opcional si decidimos reincorporarlo, por ahora simplificado)
         let myChart = null;
 
         // --- 2. Utilidades ---
@@ -607,16 +531,30 @@
             if(icon) icon.classList.toggle('expanded');
         }
 
-        // FORMATO MILLONES CON "M"
+        // FORMATO: Millones con "M", Miles con puntos
         function formatearNumero(numero) {
             if (numero === null || numero === undefined || isNaN(numero)) return '-';
             
+            // Si es mayor a 1 millón, usar formato compacto
             if (Math.abs(numero) >= 1000000) {
-                // Divide por un millón y usa 2 decimales
                 let val = (numero / 1000000);
                 return val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' M';
             }
+            // Si no, formato estándar con miles
             return Math.round(numero).toLocaleString();
+        }
+
+        // Formateador para INPUTS (mientras escribes): solo puntos de miles, sin "M"
+        function formatInputDisplay(value) {
+            if (value === '' || value === undefined) return '';
+            const raw = value.toString().replace(/\D/g, '');
+            return raw.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        function cleanNumber(value) {
+            if (!value) return 0;
+            let clean = value.toString().replace(/\./g, '').replace(/,/g, '.');
+            return parseFloat(clean) || 0;
         }
 
         function getStoredValue(id, defaultValue) {
@@ -626,20 +564,10 @@
             return storedValue !== null ? storedValue : defaultValue;
         }
 
-        function createDynamicItem(containerId, className, htmlContent, removeCallback) {
-            const container = document.getElementById(containerId);
-            if(!container) return;
-            const div = document.createElement('div');
-            div.className = className;
-            div.innerHTML = htmlContent;
-            container.appendChild(div);
-
-            const removeBtn = div.querySelector(`button[class^="remove-"]`);
-            if(removeBtn) removeBtn.addEventListener('click', () => { div.remove(); if(removeCallback) removeCallback(); });
-
-            div.querySelectorAll('input').forEach(input => {
-                input.addEventListener('input', () => { if(removeCallback) removeCallback(); });
-            });
+        function getMoneyValue(id) {
+            const el = document.getElementById(id);
+            if (!el) return 0;
+            return cleanNumber(el.value);
         }
 
         // --- 3. Generadores UI ---
@@ -648,14 +576,20 @@
             if(!form) return;
             const targetElement = formId === 'formAvanzado' ? form.querySelector('.form-section:first-child') : form;
             
-            if(formId === 'formAvanzado') targetElement.innerHTML = '<div class="form-section-title">Parámetros Principales</div>';
+            if(formId === 'formAvanzado') targetElement.innerHTML = ''; // Limpiar para que el título no se duplique
 
             campos.forEach(([labelText, id, valor, tooltipObj]) => {
-                const value = getStoredValue(id, valor);
+                const isMoney = id.includes('monto') || id.includes('aporte') || id.includes('objetivo') || id.includes('Tramo');
+                const type = isMoney ? 'text' : 'number';
+                const className = isMoney ? 'money-input' : '';
+                const inputMode = isMoney ? 'inputmode="numeric"' : '';
+                
+                let savedValue = getStoredValue(id, valor);
+                if(isMoney) savedValue = formatInputDisplay(savedValue);
+
                 const div = document.createElement('div');
                 div.className = 'form-input-group';
                 
-                // Generar HTML del tooltip enriquecido
                 let labelHTML = labelText;
                 if (tooltipObj) {
                     labelHTML = `
@@ -669,21 +603,50 @@
                         </div>`;
                 }
 
-                div.innerHTML = `<label for="${id}">${labelHTML}</label><input type="number" id="${id}" value="${value}">`;
+                div.innerHTML = `<label for="${id}">${labelHTML}</label><input type="${type}" id="${id}" value="${savedValue}" class="${className}" ${inputMode}>`;
                 targetElement.appendChild(div);
             });
         }
 
+        // Input Formatting Event
+        function setupInputFormatting() {
+            document.body.addEventListener('input', function(e) {
+                if (e.target.classList.contains('money-input')) {
+                    const start = e.target.selectionStart;
+                    const oldLen = e.target.value.length;
+                    const formatted = formatInputDisplay(e.target.value);
+                    e.target.value = formatted;
+                    const newLen = formatted.length;
+                    e.target.setSelectionRange(start + (newLen - oldLen), start + (newLen - oldLen));
+                }
+                if (e.target.tagName === 'INPUT') autoCalcular();
+            });
+        }
+
+        function createDynamicItem(containerId, className, htmlContent, removeCallback) {
+            const container = document.getElementById(containerId);
+            if(!container) return;
+            const div = document.createElement('div');
+            div.className = className;
+            div.innerHTML = htmlContent;
+            container.appendChild(div);
+
+            const removeBtn = div.querySelector(`button[class^="remove-"]`);
+            if(removeBtn) removeBtn.addEventListener('click', () => { div.remove(); if(removeCallback) removeCallback(); });
+        }
+
         function addDeductionInput(edad = '', monto = '') {
             createDynamicItem('deductionsContainer', 'deduction-item', 
-                `<div class="form-input-group"><label>Edad</label><input type="number" class="deduction-age" value="${edad}"></div><div class="form-input-group"><label>Monto</label><input type="number" class="deduction-amount" value="${monto}"></div><button class="remove-deduction-btn">➖</button>`, autoCalcular);
+                `<div class="form-input-group"><label>Edad</label><input type="number" class="deduction-age" value="${edad}"></div>
+                 <div class="form-input-group"><label>Monto Gasto</label><input type="text" class="deduction-amount money-input" inputmode="numeric" value="${formatInputDisplay(monto)}"></div>
+                 <button class="btn-icon btn-remove remove-deduction-btn">Eliminar</button>`, autoCalcular);
         }
 
         function getDeductions() {
             const d = {};
             document.querySelectorAll('.deduction-item').forEach(i => {
                 const age = parseInt(i.querySelector('.deduction-age').value);
-                const amt = parseFloat(i.querySelector('.deduction-amount').value);
+                const amt = cleanNumber(i.querySelector('.deduction-amount').value);
                 if(!isNaN(age) && !isNaN(amt)) d[age] = (d[age]||0) + amt;
             });
             return d;
@@ -693,10 +656,10 @@
         function calcularBasico() {
             const e0 = +document.getElementById('edadInicioBasico').value || 25;
             const eF = +document.getElementById('edadFinBasico').value || 65;
-            const aporte = (+document.getElementById('aporteMensualBasico').value || 0) * 12;
+            const aporte = getMoneyValue('aporteMensualBasico') * 12;
             const rate = (+document.getElementById('rendimientoBasico').value || 0) / 100;
             const infl = (+document.getElementById('inflacionBasico').value || 0) / 100;
-            let saldo = +document.getElementById('montoInicialBasico').value || 0;
+            let saldo = getMoneyValue('montoInicialBasico');
             
             if(eF <= e0) return;
             const datos = [];
@@ -719,12 +682,12 @@
 
             const e1 = +document.getElementById('edadCambio1Adv').value || 35;
             const e2 = +document.getElementById('edadCambio2Adv').value || 50;
-            const a1 = (+document.getElementById('aporteTramo1').value || 0) * 12;
-            const a2 = (+document.getElementById('aporteTramo2').value || 0) * 12;
-            const a3 = (+document.getElementById('aporteTramo3').value || 0) * 12;
+            const a1 = getMoneyValue('aporteTramo1') * 12;
+            const a2 = getMoneyValue('aporteTramo2') * 12;
+            const a3 = getMoneyValue('aporteTramo3') * 12;
             const rate = (+document.getElementById('rendimientoAdv').value || 0) / 100;
             const infl = (+document.getElementById('inflacionAdv').value || 0) / 100;
-            let saldo = +document.getElementById('montoInicialAdv').value || 0;
+            let saldo = getMoneyValue('montoInicialAdv');
 
             const ded = getDeductions();
             const datos = [];
@@ -745,8 +708,8 @@
         function calcularEscenarioIndependiente(rendimiento, inflacion) {
             const e0 = +document.getElementById('edadActualEsc').value || 25;
             const eF = +document.getElementById('edadObjetivoEsc').value || 65;
-            const aporte = (+document.getElementById('aporteMensualEsc').value || 0) * 12;
-            let saldo = +document.getElementById('montoInicialEsc').value || 0;
+            const aporte = getMoneyValue('aporteMensualEsc') * 12;
+            let saldo = getMoneyValue('montoInicialEsc');
             let edadMillon = null;
 
             if (eF <= e0) return { nominal: 0, real: 0, edadMillon: '-' };
@@ -767,11 +730,11 @@
         }
 
         function calcularInversa() {
-            const obj = +document.getElementById('objetivoInversa').value || 0;
+            const obj = getMoneyValue('objetivoInversa');
             const e0 = +document.getElementById('edadActualInversa').value || 25;
             const eF = +document.getElementById('edadObjetivoInversa').value || 65;
             const rate = (+document.getElementById('rendimientoInversa').value || 0) / 100;
-            const init = +document.getElementById('montoInicialInversa').value || 0;
+            const init = getMoneyValue('montoInicialInversa');
 
             if(eF <= e0) return;
             const n = eF - e0;
@@ -785,10 +748,10 @@
 
             document.getElementById('resultadoInversa').innerHTML = `
                 <div class="resume-grid">
-                    <div class="resume-item"><h3>Aporte Mensual</h3><div class="value">${formatearNumero(pmt)}</div><div class="subtitle">Necesario</div></div>
-                    <div class="resume-item"><h3>Total Aportado</h3><div class="value">${formatearNumero(totalPropio)}</div><div class="subtitle">Capital</div></div>
-                    <div class="resume-item"><h3>Intereses</h3><div class="value">${formatearNumero(obj - totalPropio)}</div><div class="subtitle">Ganancia</div></div>
-                    <div class="resume-item"><h3>Meta</h3><div class="value">${formatearNumero(obj)}</div><div class="subtitle">A los ${eF} años</div></div>
+                    <div class="resume-item"><h3>Aporte Mensual Necesario</h3><div class="value">${formatearNumero(pmt)}</div><div class="subtitle">Ahorro mensual sugerido</div></div>
+                    <div class="resume-item"><h3>Total que Aportarás</h3><div class="value">${formatearNumero(totalPropio)}</div><div class="subtitle">De tu bolsillo</div></div>
+                    <div class="resume-item"><h3>Intereses Ganados</h3><div class="value">${formatearNumero(obj - totalPropio)}</div><div class="subtitle">Dinero pasivo</div></div>
+                    <div class="resume-item"><h3>Meta Final</h3><div class="value">${formatearNumero(obj)}</div><div class="subtitle">A los ${eF} años</div></div>
                 </div>
             `;
         }
@@ -799,30 +762,58 @@
             const ctx = document.getElementById('savingChart').getContext('2d');
             if(myChart) myChart.destroy();
             
-            const isNight = document.body.classList.contains('night');
-            const colorText = isNight ? '#f1f5f9' : '#1e293b';
-            const colorGrid = isNight ? '#334155' : '#e2e8f0';
-
-            const annotations = {};
-            milestones.forEach((m, i) => {
-                annotations[`m${i}`] = { type: 'line', xMin: m.age, xMax: m.age, borderColor: '#f59e0b', borderWidth: 2, borderDash: [5,5], label: { content: m.desc, enabled: true, position: 'start', backgroundColor: '#f59e0b', color: 'white' } };
-            });
-
+            // Colores modernos desde CSS
+            const style = getComputedStyle(document.body);
+            const primary = style.getPropertyValue('--primary').trim();
+            const accent = style.getPropertyValue('--accent').trim();
+            const textMuted = style.getPropertyValue('--text-muted').trim();
+            
             myChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: datos.map(d => d.edad),
                     datasets: [
-                        { label: 'Nominal', data: datos.map(d => d.saldo), borderColor: '#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.1)', fill: true },
-                        { label: 'Real', data: datos.map(d => d.saldoReal), borderColor: '#dc2626', borderDash: [5,5], fill: false }
+                        { 
+                            label: 'Saldo Nominal', 
+                            data: datos.map(d => d.saldo), 
+                            borderColor: primary, 
+                            backgroundColor: (context) => {
+                                const ctx = context.chart.ctx;
+                                const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                                gradient.addColorStop(0, primary + '40'); // Hex + opacity
+                                gradient.addColorStop(1, primary + '00');
+                                return gradient;
+                            },
+                            fill: true,
+                            pointRadius: 0,
+                            pointHoverRadius: 6,
+                            borderWidth: 3,
+                            tension: 0.4 
+                        },
+                        { 
+                            label: 'Poder Real', 
+                            data: datos.map(d => d.saldoReal), 
+                            borderColor: accent, 
+                            borderDash: [5,5], 
+                            fill: false,
+                            pointRadius: 0,
+                            borderWidth: 2,
+                            tension: 0.4 
+                        }
                     ]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
                     plugins: { 
-                        legend: { labels: { color: colorText } }, 
-                        annotation: { annotations },
+                        legend: { labels: { color: textMuted, font: {family: 'Inter'} } }, 
                         tooltip: {
+                            backgroundColor: style.getPropertyValue('--bg-card').trim(),
+                            titleColor: style.getPropertyValue('--text-main').trim(),
+                            bodyColor: textMuted,
+                            borderColor: style.getPropertyValue('--border-input').trim(),
+                            borderWidth: 1,
+                            padding: 10,
                             callbacks: {
                                 label: function(context) {
                                     return context.dataset.label + ': ' + formatearNumero(context.raw);
@@ -831,13 +822,10 @@
                         }
                     },
                     scales: { 
-                        x: { ticks: { color: colorText }, grid: { color: colorGrid } }, 
+                        x: { ticks: { color: textMuted }, grid: { display:false } }, 
                         y: { 
-                            ticks: { 
-                                color: colorText, 
-                                callback: function(value) { return formatearNumero(value); } 
-                            }, 
-                            grid: { color: colorGrid } 
+                            ticks: { color: textMuted, callback: (v) => formatearNumero(v) }, 
+                            grid: { color: style.getPropertyValue('--border-input').trim(), borderDash: [4,4] } 
                         } 
                     }
                 }
@@ -847,17 +835,18 @@
         function renderResultados(datos, totalAportado) {
             const final = datos[datos.length-1];
             const millon = datos.find(d => d.saldo >= 1000000);
+            
             document.getElementById('resumen').innerHTML = `
                 <div class="resume-grid">
-                    <div class="resume-item"><h3>Saldo Final</h3><div class="value">${formatearNumero(final.saldo)}</div><div class="subtitle">A los ${final.edad} años</div></div>
-                    <div class="resume-item"><h3>Poder Real</h3><div class="value">${formatearNumero(final.saldoReal)}</div><div class="subtitle">Ajustado inflación</div></div>
-                    <div class="resume-item"><h3>Edad Millón</h3><div class="value">${millon ? millon.edad : '-'}</div><div class="subtitle">${millon ? 'Alcanzado' : 'No alcanzado'}</div></div>
-                    <div class="resume-item"><h3>Intereses</h3><div class="value">${formatearNumero(final.saldo - totalAportado)}</div><div class="subtitle">Ganancia</div></div>
+                    <div class="resume-item"><h3>Saldo Final Nominal</h3><div class="value">${formatearNumero(final.saldo)}</div><div class="subtitle">A los ${final.edad} años</div></div>
+                    <div class="resume-item"><h3>Poder de Compra Real</h3><div class="value">${formatearNumero(final.saldoReal)}</div><div class="subtitle">Ajustado por inflación</div></div>
+                    <div class="resume-item"><h3>Edad del Millón</h3><div class="value">${millon ? millon.edad : '-'}</div><div class="subtitle">${millon ? '¡Objetivo logrado!' : 'No alcanzado'}</div></div>
+                    <div class="resume-item"><h3>Total Intereses</h3><div class="value">${formatearNumero(final.saldo - totalAportado)}</div><div class="subtitle">Vs. ${formatearNumero(totalAportado)} aportados</div></div>
                 </div>
             `;
             
             const rows = datos.map(d => `<tr><td>${d.edad}</td><td>${formatearNumero(d.saldo)}</td><td>${formatearNumero(d.saldoReal)}</td></tr>`).join('');
-            document.getElementById('tableContainer').innerHTML = `<table><thead><tr><th>Edad</th><th>Nominal</th><th>Real</th></tr></thead><tbody>${rows}</tbody></table>`;
+            document.getElementById('tableContainer').innerHTML = `<table><thead><tr><th>Edad</th><th>Saldo Nominal</th><th>Saldo Real</th></tr></thead><tbody>${rows}</tbody></table>`;
             
             renderChart2D(datos);
         }
@@ -910,10 +899,11 @@
             await new Promise(r => setTimeout(r, 200));
 
             try {
+                // Capturas limpias (fondo blanco forzado)
                 const resC = await html2canvas(document.getElementById('resumen'), {scale:2, backgroundColor:'#fff'});
                 const chartC = await html2canvas(document.getElementById('chartContainer'), {scale:2, backgroundColor:'#fff'});
                 
-                pdf.setFontSize(20); pdf.setTextColor(37, 99, 235); pdf.text("Reporte Financiero", 15, 20);
+                pdf.setFontSize(24); pdf.setTextColor(99, 102, 241); pdf.text("Reporte Financiero", 15, 20);
                 pdf.setFontSize(10); pdf.setTextColor(100); pdf.text(new Date().toLocaleDateString(), 15, 28);
                 
                 const w = 180;
@@ -927,10 +917,11 @@
                 
                 pdf.save("plan.pdf");
             } catch(e) { console.error(e); alert("Error exportando"); }
-            finally { if(wasNight) { document.body.classList.add('night'); autoCalcular(); } btn.innerText = "📄 Exportar PDF"; }
+            finally { if(wasNight) { document.body.classList.add('night'); autoCalcular(); } btn.innerText = "📄 PDF"; }
         }
 
         function init() {
+            setupInputFormatting();
             generarInputs(camposBasico, 'formBasico');
             generarInputs(camposAvanzado, 'formAvanzado');
             
@@ -941,7 +932,7 @@
 
             if (localStorage.getItem('nightMode') === 'true') {
                 document.body.classList.add('night');
-                document.getElementById('toggleNightBtn').textContent = '☀️ Modo día';
+                document.getElementById('toggleNightBtn').innerText = '☀️ Modo día';
             }
 
             document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
@@ -951,10 +942,12 @@
                 autoCalcular();
             }));
 
+            // Listeners globales para recálculo
             document.getElementById('formBasico').addEventListener('input', autoCalcular);
             document.getElementById('formAvanzado').addEventListener('input', autoCalcular);
             document.getElementById('formInversa').addEventListener('input', calcularInversa);
             
+            // Listeners específicos escenarios
             ['montoInicialEsc', 'aporteMensualEsc', 'edadActualEsc', 'edadObjetivoEsc'].forEach(id => {
                 document.getElementById(id).addEventListener('input', () => {
                     renderEscenarios();
@@ -966,16 +959,16 @@
             
             document.getElementById('toggleNightBtn').addEventListener('click', (e) => {
                 const isDark = document.body.classList.toggle('night');
-                e.target.textContent = isDark ? '☀️ Modo día' : '🌙 Modo noche';
+                e.target.innerText = isDark ? '☀️ Modo día' : '🌙 Modo noche';
                 localStorage.setItem('nightMode', isDark);
-                autoCalcular();
+                autoCalcular(); // Redibujar gráfico con nuevos colores
             });
 
             document.getElementById('toggleTableBtn').addEventListener('click', (e) => {
                 const t = document.getElementById('tableContainer');
                 const hidden = t.style.display === 'none';
                 t.style.display = hidden ? 'block' : 'none';
-                e.target.textContent = hidden ? '👁️ Ocultar tabla' : '👁️ Mostrar tabla';
+                e.target.innerText = hidden ? 'Ocultar Tabla' : 'Ver Tabla Detallada';
             });
 
             document.getElementById('exportBtn').addEventListener('click', exportToPDF);
@@ -991,6 +984,7 @@
                 document.execCommand('copy');
             });
 
+            // Cargar deducciones guardadas
             const savedDed = JSON.parse(localStorage.getItem('deductionsAdv') || '{}');
             Object.entries(savedDed).forEach(([k,v]) => addDeductionInput(k, v));
 
