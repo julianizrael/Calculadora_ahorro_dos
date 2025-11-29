@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Financiera</title>
+    <title>Calculadora Financiera Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/3.0.1/chartjs-plugin-annotation.min.js"></script>
@@ -11,266 +11,150 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
-        /* --- 1. VARIABLES --- */
+        /* --- VARIABLES --- */
         :root {
-            --primary: #6366f1;
-            --primary-light: #e0e7ff;
-            --primary-hover: #4f46e5;
-            --accent: #10b981;
-            --danger: #ef4444;
-            
-            --bg-body: #f1f5f9;
-            --bg-card: #ffffff;
-            --bg-input: #f8fafc;
-            --border-input: #e2e8f0;
-            --border-strong: #cbd5e1;
-            
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 20px;
-            
+            --primary: #6366f1; --primary-light: #e0e7ff; --primary-hover: #4f46e5;
+            --accent: #10b981; --danger: #ef4444; --warning: #f59e0b;
+            --bg-body: #f1f5f9; --bg-card: #ffffff; --bg-input: #f8fafc;
+            --border-input: #e2e8f0; --border-strong: #cbd5e1;
+            --text-main: #0f172a; --text-muted: #64748b;
+            --radius-sm: 8px; --radius-md: 12px; --radius-lg: 20px;
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-card: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
             --shadow-float: 0 10px 15px -3px rgb(0 0 0 / 0.1);
         }
 
         body.night {
-            --bg-body: #020617;
-            --bg-card: #0f172a;
-            --bg-input: #1e293b;
-            --border-input: #334155;
-            --border-strong: #475569;
-            
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            
-            --primary: #818cf8;
-            --primary-light: #1e1b4b;
-            
-            --shadow-card: none;
+            --bg-body: #020617; --bg-card: #0f172a; --bg-input: #1e293b;
+            --border-input: #334155; --border-strong: #475569;
+            --text-main: #f8fafc; --text-muted: #94a3b8;
+            --primary: #818cf8; --primary-light: #1e1b4b; --shadow-card: none;
         }
 
-        /* --- 2. BASE --- */
+        /* --- BASE --- */
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            line-height: 1.5;
-            padding-bottom: 3rem;
-            transition: background 0.3s, color 0.3s;
-        }
-
+        body { font-family: 'Inter', sans-serif; background: var(--bg-body); color: var(--text-main); line-height: 1.5; padding-bottom: 3rem; transition: background 0.3s, color 0.3s; }
         .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
 
-        /* --- 3. HEADER --- */
-        .header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 2rem 0; margin-bottom: 1rem;
-        }
-
-        h1 {
-            font-size: 1.8rem; font-weight: 800; letter-spacing: -0.03em;
-            background: linear-gradient(to right, var(--primary), var(--accent));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-
+        /* --- HEADER --- */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 2rem 0; margin-bottom: 1rem; }
+        h1 { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.03em; background: linear-gradient(to right, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .header-buttons { display: flex; gap: 0.8rem; }
-
-        .btn-icon {
-            background: var(--bg-card); color: var(--text-main);
-            border: 1px solid var(--border-input); padding: 0.6rem 1rem;
-            border-radius: var(--radius-sm); font-weight: 600; font-size: 0.9rem;
-            cursor: pointer; transition: all 0.2s;
-        }
+        .btn-icon { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-input); padding: 0.6rem 1rem; border-radius: var(--radius-sm); font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
         .btn-icon:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
         .btn-primary { background: var(--primary); color: white; border: none; }
         .btn-primary:hover { background: var(--primary-hover); }
 
-        /* --- 4. TABS REFINADAS --- */
-        .tabs {
-            display: flex;
-            background: var(--bg-card);
-            padding: 4px;
-            border-radius: var(--radius-md);
-            margin-bottom: 2rem;
-            border: 1px solid var(--border-input);
-            box-shadow: var(--shadow-sm);
-            gap: 0; 
-        }
-
-        .tab {
-            flex: 1; text-align: center; padding: 0.7rem;
-            border-radius: var(--radius-sm);
-            font-size: 0.95rem; font-weight: 600; color: var(--text-muted);
-            cursor: pointer; border: none; background: transparent;
-            transition: all 0.2s ease; position: relative; 
-        }
-
-        /* Línea separadora */
-        .tab:not(:first-child)::before {
-            content: ''; position: absolute; left: 0; top: 25%; height: 50%; width: 1px;
-            background-color: var(--border-input); transition: opacity 0.2s; opacity: 1;
-        }
-        .tab.active::before { opacity: 0; }
-        .tab.active + .tab::before { opacity: 0; }
-
+        /* --- TABS --- */
+        .tabs { display: flex; background: var(--bg-card); padding: 4px; border-radius: var(--radius-md); margin-bottom: 2rem; border: 1px solid var(--border-input); box-shadow: var(--shadow-sm); gap: 0; }
+        .tab { flex: 1; text-align: center; padding: 0.7rem; border-radius: var(--radius-sm); font-size: 0.95rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border: none; background: transparent; transition: all 0.2s ease; position: relative; }
+        .tab:not(:first-child)::before { content: ''; position: absolute; left: 0; top: 25%; height: 50%; width: 1px; background-color: var(--border-input); transition: opacity 0.2s; opacity: 1; }
+        .tab.active::before, .tab.active + .tab::before { opacity: 0; }
         .tab:hover { color: var(--primary); }
         .tab.active { background-color: var(--primary-light); color: var(--primary); }
 
-        /* --- 5. GRID SYSTEM & FORMULARIOS --- */
+        /* --- FORMS & INPUTS --- */
         .tab-content { display: none; animation: fadeIn 0.3s ease; }
         .tab-content.active { display: block; }
-
-        form {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-        }
-
-        #avanzado .form-section-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            grid-column: 1 / -1; 
-        }
-
+        form { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
         .form-input-group { display: flex; flex-direction: column; gap: 0.5rem; }
-
-        label {
-            font-size: 0.85rem; font-weight: 600; color: var(--text-muted);
-            text-transform: uppercase; letter-spacing: 0.04em;
-        }
-
-        input[type="number"], input[type="text"], select {
-            width: 100%; padding: 0.8rem 1rem;
-            background-color: var(--bg-input);
-            border: 1px solid var(--border-input);
-            border-radius: var(--radius-sm);
-            font-size: 1.1rem; color: var(--text-main); font-weight: 500;
-            transition: all 0.2s; text-align: left; 
-        }
-
-        input:focus {
-            outline: none; border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-light);
-            background-color: var(--bg-card);
-        }
-
-        /* Botón mágico para el input de rendimiento */
+        label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+        input[type="number"], input[type="text"], select { width: 100%; padding: 0.8rem 1rem; background-color: var(--bg-input); border: 1px solid var(--border-input); border-radius: var(--radius-sm); font-size: 1.1rem; color: var(--text-main); font-weight: 500; transition: all 0.2s; text-align: left; }
+        input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); background-color: var(--bg-card); }
+        
+        /* Botón mágico */
         .input-with-action { position: relative; display: flex; align-items: center; }
-        .btn-magic { 
-            position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-            background: var(--primary-light); color: var(--primary); border: none;
-            width: 32px; height: 32px; border-radius: 6px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
-            transition: all 0.2s;
-        }
+        .btn-magic { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: var(--primary-light); color: var(--primary); border: none; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; transition: all 0.2s; }
         .btn-magic:hover { background: var(--primary); color: white; }
 
-        /* --- 6. SECCIONES --- */
-        .form-section-title {
-            grid-column: 1 / -1;
-            font-size: 1.2rem; font-weight: 800; color: var(--text-main);
-            padding-bottom: 0.5rem; border-bottom: 2px solid var(--border-input);
-            margin-bottom: 1rem; margin-top: 0.5rem;
+        /* --- LAYOUTS ESPECIFICOS AVANZADO --- */
+        /* Fila Superior (General) */
+        .advanced-general-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-input);
         }
 
-        .collapsible-section {
-            grid-column: 1 / -1;
+        /* Filas de Etapas (Stage Rows) */
+        .stage-row {
+            display: grid;
+            grid-template-columns: 100px 1fr 1fr; /* Edad fija, resto flexible */
+            gap: 1.5rem;
+            align-items: center;
             background: var(--bg-card);
-            border-radius: var(--radius-md);
             border: 1px solid var(--border-input);
-            margin-top: 1rem;
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 1rem;
+            position: relative;
+            transition: border-color 0.2s;
+        }
+        
+        .stage-row:hover { border-color: var(--primary); }
+        
+        /* Etiqueta de la etapa */
+        .stage-label {
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: var(--bg-body);
+            padding: 0 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            border-radius: 4px;
         }
 
-        .collapsible-header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 1.2rem; cursor: pointer; transition: background 0.2s;
-        }
+        /* --- SECCIONES COLAPSABLES --- */
+        .collapsible-section { grid-column: 1 / -1; background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-input); margin-top: 1rem; }
+        .collapsible-header { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem; cursor: pointer; transition: background 0.2s; }
         .collapsible-header:hover { background: var(--bg-input); }
         .collapsible-header h3 { font-size: 1rem; font-weight: 700; margin: 0; color: var(--text-main); }
-        
         .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
         .collapsible-content.expanded { max-height: 2000px; }
         .collapsible-inner { padding: 1.5rem; border-top: 1px solid var(--border-input); background: var(--bg-body); }
-
-        .deductions-container { display: flex; flex-direction: column; gap: 0.8rem; }
         
-        .deduction-item {
-            background: var(--bg-card); padding: 1rem; border-radius: var(--radius-sm);
-            border: 1px solid var(--border-input);
-            display: grid; grid-template-columns: 1fr 1fr auto; gap: 1rem; align-items: end;
-        }
-
+        .deductions-container { display: flex; flex-direction: column; gap: 0.8rem; }
+        .deduction-item { background: var(--bg-card); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-input); display: grid; grid-template-columns: 1fr 1fr auto; gap: 1rem; align-items: end; }
         .btn-add { background: var(--primary-light); color: var(--primary); border:none; width: 100%; margin-top:1rem; border-radius: 8px; padding: 0.8rem; font-weight:600; cursor: pointer; }
         .btn-add:hover { background: var(--primary); color: white; }
         .btn-remove { background: #fee2e2; color: var(--danger); border:none; padding: 0.8rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600;}
         .btn-remove:hover { background: var(--danger); color: white; }
 
-        /* --- 7. RESUMEN --- */
-        .resume-card {
-            background: var(--bg-card); border-radius: var(--radius-lg);
-            padding: 2rem; box-shadow: var(--shadow-card);
-            margin: 2rem 0; border: 1px solid var(--border-input);
-        }
+        /* --- DASHBOARD, CHART, SCENARIOS --- */
+        .resume-card { background: var(--bg-card); border-radius: var(--radius-lg); padding: 2rem; box-shadow: var(--shadow-card); margin: 2rem 0; border: 1px solid var(--border-input); }
         .resume-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; }
-        
         .resume-item h3 { font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; letter-spacing: 0.05em; }
         .resume-item .value { font-size: 2.2rem; font-weight: 800; color: var(--text-main); }
         .resume-item .subtitle { font-size: 0.9rem; color: var(--primary); font-weight: 500; margin-top: 0.3rem; }
 
-        /* --- 8. ESCENARIOS --- */
-        .scenarios-top-bar {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
-            background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius-md);
-            margin-bottom: 1.5rem; border: 1px solid var(--border-input);
-        }
+        .scenarios-top-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; border: 1px solid var(--border-input); }
         .scenarios-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
-        
-        .scenario-card {
-            background: var(--bg-card); padding: 2rem; border-radius: var(--radius-lg);
-            border: 1px solid var(--border-input); transition: all 0.3s; position: relative; overflow: hidden;
-        }
+        .scenario-card { background: var(--bg-card); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--border-input); transition: all 0.3s; position: relative; overflow: hidden; }
         .scenario-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-float); }
-        
         .scenario-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; }
         .scenario-card.optimista::before { background: var(--accent); }
         .scenario-card.realista::before { background: var(--primary); }
         .scenario-card.pesimista::before { background: var(--danger); }
-
         .scenario-card h3 { font-size: 1.4rem; color: var(--text-main); margin-bottom: 1.5rem; }
         .scenario-stat { margin-bottom: 1rem; }
         .scenario-stat label { display: block; font-size: 0.8rem; margin-bottom: 0.2rem; color: var(--text-muted); }
         .scenario-stat .value { font-size: 1.5rem; font-weight: 700; color: var(--text-main); }
 
-        /* --- 9. GRAFICO & TABLA --- */
-        #chartContainer {
-            background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-card); border: 1px solid var(--border-input);
-            height: 450px; margin-top: 2rem;
-        }
+        #chartContainer { background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-card); border: 1px solid var(--border-input); height: 450px; margin-top: 2rem; }
         #tableContainer { margin-top: 1rem; overflow-x: auto; border-radius: var(--radius-md); border: 1px solid var(--border-input); display:none;}
         table { width: 100%; border-collapse: collapse; background: var(--bg-card); }
         th { background: var(--bg-input); padding: 1rem; text-align: left; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; }
         td { padding: 1rem; border-bottom: 1px solid var(--border-input); font-size: 0.95rem; color: var(--text-main); }
 
-        /* --- EXTRAS --- */
+        /* --- EXTRAS & MODAL --- */
         .tooltip-container { position: relative; display: inline-flex; align-items: center; gap: 0.5rem; }
-        .tooltip-icon {
-            width: 18px; height: 18px; border-radius: 50%; background: var(--bg-input); color: var(--text-muted);
-            display: flex; justify-content: center; align-items: center; font-size: 0.75rem; font-weight: bold;
-            cursor: help; border: 1px solid var(--border-input);
-        }
-        .tooltip {
-            visibility: hidden; opacity: 0; position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%) translateY(5px);
-            width: 250px; padding: 1rem; border-radius: 12px; background: rgba(255,255,255,0.95); backdrop-filter: blur(5px);
-            border: 1px solid var(--border-input); box-shadow: var(--shadow-float); color: #334155; font-size: 0.85rem; z-index: 50; transition: all 0.2s; pointer-events: none;
-        }
+        .tooltip-icon { width: 18px; height: 18px; border-radius: 50%; background: var(--bg-input); color: var(--text-muted); display: flex; justify-content: center; align-items: center; font-size: 0.75rem; font-weight: bold; cursor: help; border: 1px solid var(--border-input); }
+        .tooltip { visibility: hidden; opacity: 0; position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%) translateY(5px); width: 250px; padding: 1rem; border-radius: 12px; background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); border: 1px solid var(--border-input); box-shadow: var(--shadow-float); color: #334155; font-size: 0.85rem; z-index: 50; transition: all 0.2s; pointer-events: none; }
         body.night .tooltip { background: rgba(15, 23, 42, 0.95); color: #e2e8f0; }
         .tooltip-container:hover .tooltip { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
         .tooltip-title { display: block; font-weight: 700; margin-bottom: 0.3rem; color: var(--primary); }
@@ -278,38 +162,37 @@
 
         .modal { display: none; position: fixed; z-index: 1000; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); align-items: center; justify-content: center; animation: fadeIn 0.2s; }
         .modal.active { display: flex; }
-        .modal-content { background: var(--bg-card); padding: 2rem; border-radius: var(--radius-lg); width: 90%; max-width: 800px; box-shadow: var(--shadow-float); }
+        .modal-content { background: var(--bg-card); padding: 2rem; border-radius: var(--radius-lg); width: 90%; max-width: 700px; box-shadow: var(--shadow-float); }
         .controls { margin-bottom: 1rem; display: flex; justify-content: flex-end; gap: 0.5rem; flex-wrap: wrap; }
         .controls button { background-color: #64748b; color: white; }
 
-        /* --- PORTFOLIO BUILDER STYLES --- */
+        /* --- PORTFOLIO --- */
         .portfolio-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
         .portfolio-controls { display: flex; flex-direction: column; gap: 1.5rem; }
-        
         .profile-buttons { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
         .btn-profile { flex: 1; padding: 0.5rem; font-size: 0.85rem; border: 1px solid var(--border-input); background: var(--bg-input); color: var(--text-muted); border-radius: 8px; cursor: pointer; transition: all 0.2s; }
         .btn-profile:hover { background: var(--bg-body); color: var(--text-main); }
         .btn-profile.active { background: var(--primary-light); color: var(--primary); border-color: var(--primary); font-weight: 700; }
-
         .slider-group { margin-bottom: 1rem; }
         .slider-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600; color: var(--text-main); }
         .slider-val { color: var(--primary); }
-        
         input[type=range] { width: 100%; -webkit-appearance: none; background: transparent; padding: 0; margin: 0; border: none; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: var(--primary); cursor: pointer; margin-top: -7px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: var(--border-input); border-radius: 2px; }
-        
         .portfolio-stats { text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; background: var(--bg-input); border-radius: 16px; padding: 1.5rem; }
         .final-return { font-size: 2.5rem; font-weight: 800; color: var(--primary); line-height: 1; margin: 1rem 0; }
         .risk-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
         .risk-low { background: #dcfce7; color: #166534; }
         .risk-med { background: #fef9c3; color: #854d0e; }
         .risk-high { background: #fee2e2; color: #991b1b; }
-        
-        /* Modal Buttons */
         .modal-buttons { display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1.5rem; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 900px) {
+            .advanced-general-row { grid-template-columns: 1fr; gap: 1rem; }
+            .scenarios-top-bar { grid-template-columns: 1fr 1fr; }
+        }
 
         @media (max-width: 768px) {
             .header { flex-direction: column; gap: 1rem; text-align: center; }
@@ -317,6 +200,7 @@
             .deduction-item { grid-template-columns: 1fr 1fr; }
             .btn-remove { grid-column: 1/-1; width: 100%; margin-top: 0.5rem; }
             .portfolio-layout { grid-template-columns: 1fr; }
+            .stage-row { grid-template-columns: 1fr; padding-top: 2.5rem; } /* Apilar en movil */
         }
     </style>
 </head>
@@ -343,11 +227,80 @@
 
         <div id="avanzado" class="tab-content">
             <form id="formAvanzado" onsubmit="return false;">
-                <div class="form-section-content" id="advancedFieldsContainer">
-                    <div class="form-section-title">Estrategia por Etapas de Vida</div>
+                
+                <div class="advanced-general-row">
+                    <div class="form-input-group">
+                        <label>Monto Inicial</label>
+                        <input type="text" class="money-input" id="advMontoInicial" value="0" inputmode="numeric">
                     </div>
+                    <div class="form-input-group">
+                        <label>Inflación Gral (%)</label>
+                        <input type="number" id="advInflacion" value="3" step="0.1">
+                    </div>
+                    <div class="form-input-group">
+                        <label>Edad Retiro</label>
+                        <input type="number" id="advEdadFin" value="65">
+                    </div>
+                </div>
 
-                <div class="collapsible-section">
+                <div class="stage-row">
+                    <span class="stage-label">Etapa 1 (Inicio)</span>
+                    <div class="form-input-group">
+                        <label>Edad Inicio</label>
+                        <input type="number" id="advEdad1" value="25" readonly style="opacity: 0.7; cursor: not-allowed;">
+                    </div>
+                    <div class="form-input-group">
+                        <label>Aporte Mensual</label>
+                        <input type="text" class="money-input" id="advAporte1" value="500" inputmode="numeric">
+                    </div>
+                    <div class="form-input-group">
+                        <label>Rendimiento Anual (%)</label>
+                        <div class="input-with-action">
+                            <input type="number" id="advRend1" value="8" step="0.1">
+                            <button type="button" class="btn-magic" onclick="openPortfolioModal('advRend1')">🪄</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stage-row">
+                    <span class="stage-label">Etapa 2 (Crecimiento)</span>
+                    <div class="form-input-group">
+                        <label>Edad Inicio</label>
+                        <input type="number" id="advEdad2" value="35">
+                    </div>
+                    <div class="form-input-group">
+                        <label>Aporte Mensual</label>
+                        <input type="text" class="money-input" id="advAporte2" value="1000" inputmode="numeric">
+                    </div>
+                    <div class="form-input-group">
+                        <label>Rendimiento Anual (%)</label>
+                        <div class="input-with-action">
+                            <input type="number" id="advRend2" value="6" step="0.1">
+                            <button type="button" class="btn-magic" onclick="openPortfolioModal('advRend2')">🪄</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stage-row">
+                    <span class="stage-label">Etapa 3 (Consolidación)</span>
+                    <div class="form-input-group">
+                        <label>Edad Inicio</label>
+                        <input type="number" id="advEdad3" value="50">
+                    </div>
+                    <div class="form-input-group">
+                        <label>Aporte Mensual</label>
+                        <input type="text" class="money-input" id="advAporte3" value="1500" inputmode="numeric">
+                    </div>
+                    <div class="form-input-group">
+                        <label>Rendimiento Anual (%)</label>
+                        <div class="input-with-action">
+                            <input type="number" id="advRend3" value="4" step="0.1">
+                            <button type="button" class="btn-magic" onclick="openPortfolioModal('advRend3')">🪄</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapsible-section" style="margin-top: 2rem;">
                     <div class="collapsible-header" onclick="toggleCollapsible('deductions')">
                         <h3>Deducciones & Gastos Grandes</h3>
                         <span style="font-size:1.2rem; color:var(--text-muted);">+</span>
@@ -429,7 +382,6 @@
     <div id="portfolioModal" class="modal">
         <div class="modal-content" style="max-width: 700px;">
             <h2 style="margin-bottom:1.5rem;">🪄 Asistente de Inversión</h2>
-            
             <div class="portfolio-layout">
                 <div class="portfolio-controls">
                     <div class="profile-buttons">
@@ -437,36 +389,24 @@
                         <button class="btn-profile" onclick="setProfile('moderate')">⚖️ Moderado</button>
                         <button class="btn-profile" onclick="setProfile('aggressive')">🚀 Agresivo</button>
                     </div>
-
                     <div class="slider-group">
-                        <div class="slider-header">
-                            <span>Acciones (S&P 500)</span>
-                            <span class="slider-val" id="valStocks">60%</span>
-                        </div>
+                        <div class="slider-header"><span>Acciones (S&P 500)</span><span class="slider-val" id="valStocks">60%</span></div>
                         <input type="range" id="rangeStocks" min="0" max="100" value="60" oninput="updatePortfolio(this.id)">
                         <small style="color:var(--text-muted); font-size:0.75rem;">Histórico: ~12% (Alto Riesgo)</small>
                     </div>
-
                     <div class="slider-group">
-                        <div class="slider-header">
-                            <span>Bonos (Renta Fija)</span>
-                            <span class="slider-val" id="valBonds">40%</span>
-                        </div>
+                        <div class="slider-header"><span>Bonos (Renta Fija)</span><span class="slider-val" id="valBonds">40%</span></div>
                         <input type="range" id="rangeBonds" min="0" max="100" value="40" oninput="updatePortfolio(this.id)">
                         <small style="color:var(--text-muted); font-size:0.75rem;">Histórico: ~4.5% (Riesgo Medio)</small>
                     </div>
                 </div>
-
                 <div class="portfolio-stats">
-                    <div style="width: 140px; height: 140px; margin-bottom: 1rem;">
-                        <canvas id="donutChart"></canvas>
-                    </div>
+                    <div style="width: 140px; height: 140px; margin-bottom: 1rem;"><canvas id="donutChart"></canvas></div>
                     <div style="font-size:0.9rem; color:var(--text-muted);">Retorno Histórico Esperado</div>
                     <div class="final-return" id="finalReturnDisplay">9.0%</div>
                     <div id="riskBadge" class="risk-badge risk-med">Riesgo Medio</div>
                 </div>
             </div>
-
             <div class="modal-buttons" style="margin-top:2rem;">
                 <button class="btn-icon btn-primary" onclick="applyPortfolio()">✅ Usar esta Tasa</button>
                 <button class="btn-icon" onclick="closePortfolioModal()">Cancelar</button>
@@ -485,19 +425,8 @@
             ['Inflación (%)', 'inflacionBasico', 3, { title: 'Inflación', text: 'Pérdida de valor del dinero.', example: 'Ej: 3% Histórico' }],
         ];
 
-        const camposAvanzado = [
-            ['Monto inicial', 'montoInicialAdv', 0, { title: 'Capital', text: 'Dinero base.' }],
-            ['Edad actual', 'edadInicioAdv', 25, { title: 'Inicio', text: 'Edad actual.' }],
-            ['Aporte Etapa 1', 'aporteTramo1', 1200, { title: 'Fase 1', text: 'Ahorro inicial.' }],
-            ['Edad cambio Etapa 2', 'edadCambio1Adv', 35, { title: 'Cambio', text: 'Edad de mejora salarial.' }],
-            ['Aporte Etapa 2', 'aporteTramo2', 1500, { title: 'Fase 2', text: 'Ahorro medio.' }],
-            ['Edad cambio Etapa 3', 'edadCambio2Adv', 50, { title: 'Cambio', text: 'Fase senior.' }],
-            ['Aporte Etapa 3', 'aporteTramo3', 1800, { title: 'Fase 3', text: 'Ahorro máximo.' }],
-            ['Edad Retiro', 'edadFinAdv', 65, { title: 'Fin', text: 'Edad objetivo.' }],
-            ['Rendimiento (%)', 'rendimientoAdv', 5, { title: 'Tasa', text: 'Interés anual.' }],
-            ['Inflación (%)', 'inflacionAdv', 3, { title: 'IPC', text: 'Costo de vida.' }],
-        ];
-
+        // Ya no necesitamos camposAvanzado array, usamos HTML directo
+        
         let milestones = []; 
         let myChart = null;
         let donutChart = null;
@@ -543,16 +472,14 @@
             return cleanNumber(el.value);
         }
 
-        // --- 3. GENERACIÓN UI ---
+        // --- 3. GENERACIÓN UI (Solo Básico) ---
         function generarInputs(campos, formId) {
             const form = document.getElementById(formId);
             if(!form) return;
-            
-            const targetElement = formId === 'formAvanzado' ? document.getElementById('advancedFieldsContainer') : form;
-            if(formId === 'formBasico') targetElement.innerHTML = '';
+            form.innerHTML = ''; // Limpiar siempre para básico
 
             campos.forEach(([labelText, id, valor, tooltipObj]) => {
-                const isMoney = id.includes('monto') || id.includes('aporte') || id.includes('objetivo') || id.includes('Tramo');
+                const isMoney = id.includes('monto') || id.includes('aporte') || id.includes('objetivo');
                 const isRate = id.includes('rendimiento');
                 const type = isMoney ? 'text' : 'number';
                 const className = isMoney ? 'money-input' : '';
@@ -577,7 +504,7 @@
                         </div>`;
                 }
 
-                if (isRate && (id === 'rendimientoBasico' || id === 'rendimientoAdv')) {
+                if (isRate) {
                     div.innerHTML = `
                         <label for="${id}">${labelHTML}</label>
                         <div class="input-with-action">
@@ -588,7 +515,7 @@
                     div.innerHTML = `<label for="${id}">${labelHTML}</label><input type="${type}" id="${id}" value="${savedValue}" class="${className}" ${inputMode}>`;
                 }
                 
-                targetElement.appendChild(div);
+                form.appendChild(div);
             });
         }
 
@@ -635,7 +562,7 @@
             return d;
         }
 
-        // --- 4. LÓGICA PORTFOLIO (MODAL) ---
+        // --- 4. LÓGICA PORTFOLIO ---
         function openPortfolioModal(targetId) {
             currentTargetInput = targetId;
             document.getElementById('portfolioModal').classList.add('active');
@@ -687,7 +614,7 @@
             document.getElementById('valStocks').innerText = s + '%';
             document.getElementById('valBonds').innerText = b + '%';
 
-            // Fórmula: (Stocks * 12%) + (Bonds * 4.5%)
+            // Stocks 12%, Bonds 4.5%
             let weightedReturn = (s * 0.12) + (b * 0.045);
             let finalPercent = weightedReturn.toFixed(2);
             
@@ -738,29 +665,52 @@
         }
 
         function calcularAvanzado() {
-            const e0 = +document.getElementById('edadInicioAdv').value || 25;
-            const eF = +document.getElementById('edadFinAdv').value || 65;
-            if(eF <= e0) return;
+            // Recoger Inputs del HTML Nuevo
+            const saldoInicial = getMoneyValue('advMontoInicial');
+            const edadRetiro = +document.getElementById('advEdadFin').value || 65;
+            const inflacion = (+document.getElementById('advInflacion').value || 0) / 100;
 
-            const e1 = +document.getElementById('edadCambio1Adv').value || 35;
-            const e2 = +document.getElementById('edadCambio2Adv').value || 50;
-            const a1 = getMoneyValue('aporteTramo1') * 12;
-            const a2 = getMoneyValue('aporteTramo2') * 12;
-            const a3 = getMoneyValue('aporteTramo3') * 12;
-            const rate = (+document.getElementById('rendimientoAdv').value || 0) / 100;
-            const infl = (+document.getElementById('inflacionAdv').value || 0) / 100;
-            let saldo = getMoneyValue('montoInicialAdv');
+            const edad1 = +document.getElementById('advEdad1').value || 25; // Inicio
+            const aporte1 = getMoneyValue('advAporte1') * 12;
+            const rate1 = (+document.getElementById('advRend1').value || 0) / 100;
+
+            const edad2 = +document.getElementById('advEdad2').value || 35; 
+            const aporte2 = getMoneyValue('advAporte2') * 12;
+            const rate2 = (+document.getElementById('advRend2').value || 0) / 100;
+
+            const edad3 = +document.getElementById('advEdad3').value || 50; 
+            const aporte3 = getMoneyValue('advAporte3') * 12;
+            const rate3 = (+document.getElementById('advRend3').value || 0) / 100;
+
+            if (edadRetiro <= edad1) return;
 
             const ded = getDeductions();
             const datos = [];
-            let totalAportado = saldo;
+            let totalAportado = saldoInicial;
+            let saldo = saldoInicial;
 
-            for(let i = e0; i <= eF; i++) {
-                let aporte = i < e1 ? a1 : (i < e2 ? a2 : a3);
-                saldo += aporte; totalAportado += aporte;
+            // Loop principal de edad
+            for (let i = edad1; i <= edadRetiro; i++) {
+                let currentRate = rate1;
+                let currentAporte = aporte1;
+
+                // Determinar etapa
+                if (i >= edad3) { currentRate = rate3; currentAporte = aporte3; }
+                else if (i >= edad2) { currentRate = rate2; currentAporte = aporte2; }
+
+                saldo += currentAporte;
+                totalAportado += currentAporte;
+
                 if(ded[i]) saldo -= ded[i];
-                saldo *= (1 + rate);
-                datos.push({ edad: i, saldo: Math.max(0, saldo), saldoReal: Math.max(0, saldo) / Math.pow(1 + infl, i - e0), totalAportado });
+
+                saldo *= (1 + currentRate);
+                
+                datos.push({ 
+                    edad: i, 
+                    saldo: Math.max(0, saldo), 
+                    saldoReal: Math.max(0, saldo) / Math.pow(1 + inflacion, i - edad1), 
+                    totalAportado 
+                });
             }
             renderResultados(datos, totalAportado);
         }
@@ -910,6 +860,7 @@
 
         // --- 7. CORE ---
         function autoCalcular() {
+            // Guardar inputs generales
             document.querySelectorAll('input').forEach(i => { if(i.id && !i.id.includes('range')) localStorage.setItem(i.id, i.value); });
             localStorage.setItem('deductionsAdv', JSON.stringify(getDeductions()));
 
@@ -956,14 +907,30 @@
 
         function init() {
             setupInputFormatting();
+            // Para Básico generamos, para Avanzado ya existe el HTML
             generarInputs(camposBasico, 'formBasico');
-            generarInputs(camposAvanzado, 'formAvanzado');
             
-            ['montoInicialEsc', 'aporteMensualEsc', 'edadActualEsc', 'edadObjetivoEsc'].forEach(id => {
-                const val = localStorage.getItem(id);
-                if(val) document.getElementById(id).value = val;
+            // Cargar datos en Avanzado manualmente desde LS si existen
+            ['advMontoInicial', 'advInflacion', 'advEdadFin', 'advEdad1', 'advAporte1', 'advRend1', 
+             'advEdad2', 'advAporte2', 'advRend2', 'advEdad3', 'advAporte3', 'advRend3'].forEach(id => {
+                 let val = localStorage.getItem(id);
+                 if(val) {
+                     // Si es dinero, formatear
+                     if(id.includes('Monto') || id.includes('Aporte')) val = formatInputDisplay(val);
+                     document.getElementById(id).value = val;
+                 }
             });
 
+            // Cargar escenarios
+            ['montoInicialEsc', 'aporteMensualEsc', 'edadActualEsc', 'edadObjetivoEsc'].forEach(id => {
+                let val = localStorage.getItem(id);
+                if(val) {
+                    if(id.includes('monto') || id.includes('aporte')) val = formatInputDisplay(val);
+                    document.getElementById(id).value = val;
+                }
+            });
+
+            // Theme
             const isNight = localStorage.getItem('nightMode') === 'true';
             if (isNight) {
                 document.body.classList.add('night');
@@ -972,6 +939,7 @@
                 document.getElementById('toggleNightBtn').innerText = '🌙 Oscuro';
             }
 
+            // Events
             document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
                 document.querySelectorAll('.tab, .tab-content').forEach(x => x.classList.remove('active'));
                 t.classList.add('active');
@@ -979,16 +947,8 @@
                 autoCalcular();
             }));
 
-            document.getElementById('formBasico').addEventListener('input', autoCalcular);
-            document.getElementById('formAvanzado').addEventListener('input', autoCalcular);
-            document.getElementById('formInversa').addEventListener('input', calcularInversa);
-            
-            ['montoInicialEsc', 'aporteMensualEsc', 'edadActualEsc', 'edadObjetivoEsc'].forEach(id => {
-                document.getElementById(id).addEventListener('input', () => {
-                    renderEscenarios();
-                    localStorage.setItem(id, document.getElementById(id).value);
-                });
-            });
+            // Auto-Bind general
+            document.querySelectorAll('input').forEach(i => i.addEventListener('input', autoCalcular));
 
             document.getElementById('addDeductionBtn').addEventListener('click', () => addDeductionInput());
             
