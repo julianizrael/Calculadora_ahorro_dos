@@ -441,30 +441,19 @@
                     <div class="slider-group">
                         <div class="slider-header">
                             <span>Acciones (S&P 500)</span>
-                            <span class="slider-val" id="valStocks">50%</span>
+                            <span class="slider-val" id="valStocks">60%</span>
                         </div>
-                        <input type="range" id="rangeStocks" min="0" max="100" value="50" oninput="updatePortfolio(this.id)">
-                        <small style="color:var(--text-muted); font-size:0.75rem;">Histórico: ~10% (Alto Riesgo)</small>
+                        <input type="range" id="rangeStocks" min="0" max="100" value="60" oninput="updatePortfolio(this.id)">
+                        <small style="color:var(--text-muted); font-size:0.75rem;">Histórico: ~12% (Alto Riesgo)</small>
                     </div>
 
                     <div class="slider-group">
                         <div class="slider-header">
                             <span>Bonos (Renta Fija)</span>
-                            <span class="slider-val" id="valBonds">30%</span>
+                            <span class="slider-val" id="valBonds">40%</span>
                         </div>
-                        <input type="range" id="rangeBonds" min="0" max="100" value="30" oninput="updatePortfolio(this.id)">
+                        <input type="range" id="rangeBonds" min="0" max="100" value="40" oninput="updatePortfolio(this.id)">
                         <small style="color:var(--text-muted); font-size:0.75rem;">Histórico: ~4.5% (Riesgo Medio)</small>
-                    </div>
-
-                    <div class="slider-group">
-                        <div class="slider-header">
-                            <span>Efectivo / Caja</span>
-                            <span class="slider-val" id="valCash">20%</span>
-                        </div>
-                        <div style="height:4px; background:#e2e8f0; border-radius:2px; margin-top:8px; position:relative;">
-                            <div id="barCash" style="height:100%; background:#94a3b8; width:20%; transition:width 0.2s;"></div>
-                        </div>
-                        <small style="color:var(--text-muted); font-size:0.75rem; margin-top:8px; display:block;">Histórico: ~2% (Sin Riesgo)</small>
                     </div>
                 </div>
 
@@ -473,7 +462,7 @@
                         <canvas id="donutChart"></canvas>
                     </div>
                     <div style="font-size:0.9rem; color:var(--text-muted);">Retorno Histórico Esperado</div>
-                    <div class="final-return" id="finalReturnDisplay">5.0%</div>
+                    <div class="final-return" id="finalReturnDisplay">9.0%</div>
                     <div id="riskBadge" class="risk-badge risk-med">Riesgo Medio</div>
                 </div>
             </div>
@@ -656,10 +645,10 @@
                 donutChart = new Chart(ctx, {
                     type: 'doughnut',
                     data: {
-                        labels: ['Acciones', 'Bonos', 'Caja'],
+                        labels: ['Acciones', 'Bonos'],
                         datasets: [{
-                            data: [50, 30, 20],
-                            backgroundColor: ['#6366f1', '#a5b4fc', '#94a3b8'],
+                            data: [60, 40],
+                            backgroundColor: ['#6366f1', '#10b981'],
                             borderWidth: 0,
                             hoverOffset: 4
                         }]
@@ -680,9 +669,9 @@
             const buttons = document.querySelectorAll('.btn-profile');
             buttons.forEach(b => b.classList.remove('active'));
 
-            if(type === 'conservative') { rangeStocks.value = 20; rangeBonds.value = 60; buttons[0].classList.add('active'); }
-            else if(type === 'moderate') { rangeStocks.value = 50; rangeBonds.value = 40; buttons[1].classList.add('active'); }
-            else if(type === 'aggressive') { rangeStocks.value = 90; rangeBonds.value = 10; buttons[2].classList.add('active'); }
+            if(type === 'conservative') { rangeStocks.value = 20; rangeBonds.value = 80; buttons[0].classList.add('active'); }
+            else if(type === 'moderate') { rangeStocks.value = 60; rangeBonds.value = 40; buttons[1].classList.add('active'); }
+            else if(type === 'aggressive') { rangeStocks.value = 100; rangeBonds.value = 0; buttons[2].classList.add('active'); }
             updatePortfolio();
         }
 
@@ -692,33 +681,26 @@
             let s = parseInt(rangeStocks.value);
             let b = parseInt(rangeBonds.value);
             
-            if (s + b > 100) {
-                if (sourceId === 'rangeStocks') b = 100 - s;
-                else s = 100 - b;
-                rangeStocks.value = s;
-                rangeBonds.value = b;
-            }
-            let c = 100 - s - b;
+            if (sourceId === 'rangeStocks') { b = 100 - s; rangeBonds.value = b; }
+            else { s = 100 - b; rangeStocks.value = s; }
 
             document.getElementById('valStocks').innerText = s + '%';
             document.getElementById('valBonds').innerText = b + '%';
-            document.getElementById('valCash').innerText = c + '%';
-            document.getElementById('barCash').style.width = c + '%';
 
-            // CORRECCIÓN MATEMÁTICA: Usar el valor directo sin multiplicar por 100 al final
-            let weightedReturn = (s * 0.10) + (b * 0.045) + (c * 0.02);
+            // Fórmula: (Stocks * 12%) + (Bonds * 4.5%)
+            let weightedReturn = (s * 0.12) + (b * 0.045);
             let finalPercent = weightedReturn.toFixed(2);
             
             document.getElementById('finalReturnDisplay').innerText = finalPercent + '%';
 
             const badge = document.getElementById('riskBadge');
             badge.className = 'risk-badge';
-            if (s > 75) { badge.classList.add('risk-high'); badge.innerText = 'Riesgo Alto'; }
-            else if (s > 35) { badge.classList.add('risk-med'); badge.innerText = 'Riesgo Medio'; }
+            if (s > 80) { badge.classList.add('risk-high'); badge.innerText = 'Riesgo Alto'; }
+            else if (s > 40) { badge.classList.add('risk-med'); badge.innerText = 'Riesgo Medio'; }
             else { badge.classList.add('risk-low'); badge.innerText = 'Riesgo Bajo'; }
 
             if(donutChart) {
-                donutChart.data.datasets[0].data = [s, b, c];
+                donutChart.data.datasets[0].data = [s, b];
                 donutChart.update();
             }
         }
