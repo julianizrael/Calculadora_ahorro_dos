@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Financiera Pro</title>
+    <title>Calculadora Financiera</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/3.0.1/chartjs-plugin-annotation.min.js"></script>
@@ -51,7 +51,7 @@
         .tab:not(:first-child)::before { content: ''; position: absolute; left: 0; top: 25%; height: 50%; width: 1px; background-color: var(--border-input); transition: opacity 0.2s; opacity: 1; }
         .tab.active::before, .tab.active + .tab::before { opacity: 0; }
         .tab:hover { color: var(--primary); }
-        .tab.active { background-color: var(--primary-light); color: var(--primary); }
+        .tab.active { background: var(--primary-light); color: var(--primary); }
 
         /* --- FORMS & INPUTS --- */
         .tab-content { display: none; animation: fadeIn 0.3s ease; }
@@ -62,51 +62,46 @@
         input[type="number"], input[type="text"], select { width: 100%; padding: 0.8rem 1rem; background-color: var(--bg-input); border: 1px solid var(--border-input); border-radius: var(--radius-sm); font-size: 1.1rem; color: var(--text-main); font-weight: 500; transition: all 0.2s; text-align: left; }
         input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); background-color: var(--bg-card); }
         
-        /* Botón mágico */
         .input-with-action { position: relative; display: flex; align-items: center; }
         .btn-magic { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: var(--primary-light); color: var(--primary); border: none; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; transition: all 0.2s; }
         .btn-magic:hover { background: var(--primary); color: white; }
 
-        /* --- LAYOUTS ESPECIFICOS AVANZADO --- */
-        /* Fila Superior (General) */
+        /* --- LAYOUT AVANZADO (CORREGIDO) --- */
+        /* Fila Superior */
         .advanced-general-row {
+            grid-column: 1 / -1; /* Ocupa todo el ancho */
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(3, 1fr); /* 3 columnas iguales */
             gap: 1.5rem;
             margin-bottom: 2rem;
             padding-bottom: 1.5rem;
             border-bottom: 1px solid var(--border-input);
         }
 
-        /* Filas de Etapas (Stage Rows) */
+        /* Filas de Etapas */
         .stage-row {
+            grid-column: 1 / -1; /* Ocupa todo el ancho */
             display: grid;
-            grid-template-columns: 100px 1fr 1fr; /* Edad fija, resto flexible */
+            grid-template-columns: repeat(3, 1fr); /* 3 columnas iguales */
             gap: 1.5rem;
-            align-items: center;
+            align-items: end; /* Alinear inputs abajo con las etiquetas */
             background: var(--bg-card);
             border: 1px solid var(--border-input);
             padding: 1.5rem;
             border-radius: var(--radius-md);
             margin-bottom: 1rem;
             position: relative;
-            transition: border-color 0.2s;
         }
         
-        .stage-row:hover { border-color: var(--primary); }
-        
-        /* Etiqueta de la etapa */
-        .stage-label {
-            position: absolute;
-            top: -10px;
-            left: 15px;
-            background: var(--bg-body);
-            padding: 0 10px;
-            font-size: 0.75rem;
+        /* Título pequeño de la etapa */
+        .stage-title {
+            grid-column: 1 / -1;
+            font-size: 0.9rem;
             font-weight: 700;
             color: var(--primary);
-            text-transform: uppercase;
-            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            border-bottom: 1px dashed var(--border-input);
+            padding-bottom: 0.5rem;
         }
 
         /* --- SECCIONES COLAPSABLES --- */
@@ -132,7 +127,7 @@
         .resume-item .value { font-size: 2.2rem; font-weight: 800; color: var(--text-main); }
         .resume-item .subtitle { font-size: 0.9rem; color: var(--primary); font-weight: 500; margin-top: 0.3rem; }
 
-        .scenarios-top-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; border: 1px solid var(--border-input); }
+        .scenarios-top-bar { grid-column: 1/-1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; border: 1px solid var(--border-input); }
         .scenarios-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
         .scenario-card { background: var(--bg-card); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--border-input); transition: all 0.3s; position: relative; overflow: hidden; }
         .scenario-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-float); }
@@ -190,17 +185,14 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         @media (max-width: 900px) {
-            .advanced-general-row { grid-template-columns: 1fr; gap: 1rem; }
-            .scenarios-top-bar { grid-template-columns: 1fr 1fr; }
+            .advanced-general-row, .stage-row, .scenarios-top-bar { grid-template-columns: 1fr; gap: 1rem; }
         }
 
         @media (max-width: 768px) {
             .header { flex-direction: column; gap: 1rem; text-align: center; }
-            .scenarios-top-bar { grid-template-columns: 1fr; }
             .deduction-item { grid-template-columns: 1fr 1fr; }
             .btn-remove { grid-column: 1/-1; width: 100%; margin-top: 0.5rem; }
             .portfolio-layout { grid-template-columns: 1fr; }
-            .stage-row { grid-template-columns: 1fr; padding-top: 2.5rem; } /* Apilar en movil */
         }
     </style>
 </head>
@@ -228,23 +220,26 @@
         <div id="avanzado" class="tab-content">
             <form id="formAvanzado" onsubmit="return false;">
                 
+                <div class="form-section-title">Datos Globales</div>
                 <div class="advanced-general-row">
                     <div class="form-input-group">
                         <label>Monto Inicial</label>
                         <input type="text" class="money-input" id="advMontoInicial" value="0" inputmode="numeric">
                     </div>
                     <div class="form-input-group">
-                        <label>Inflación Gral (%)</label>
-                        <input type="number" id="advInflacion" value="3" step="0.1">
-                    </div>
-                    <div class="form-input-group">
                         <label>Edad Retiro</label>
                         <input type="number" id="advEdadFin" value="65">
                     </div>
+                    <div class="form-input-group">
+                        <label>Inflación Global (%)</label>
+                        <input type="number" id="advInflacion" value="3" step="0.1">
+                    </div>
                 </div>
 
+                <div class="form-section-title">Plan por Etapas</div>
+                
                 <div class="stage-row">
-                    <span class="stage-label">Etapa 1 (Inicio)</span>
+                    <div class="stage-title">Etapa 1</div>
                     <div class="form-input-group">
                         <label>Edad Inicio</label>
                         <input type="number" id="advEdad1" value="25" readonly style="opacity: 0.7; cursor: not-allowed;">
@@ -254,7 +249,7 @@
                         <input type="text" class="money-input" id="advAporte1" value="500" inputmode="numeric">
                     </div>
                     <div class="form-input-group">
-                        <label>Rendimiento Anual (%)</label>
+                        <label>Rendimiento (%)</label>
                         <div class="input-with-action">
                             <input type="number" id="advRend1" value="8" step="0.1">
                             <button type="button" class="btn-magic" onclick="openPortfolioModal('advRend1')">🪄</button>
@@ -263,7 +258,7 @@
                 </div>
 
                 <div class="stage-row">
-                    <span class="stage-label">Etapa 2 (Crecimiento)</span>
+                    <div class="stage-title">Etapa 2</div>
                     <div class="form-input-group">
                         <label>Edad Inicio</label>
                         <input type="number" id="advEdad2" value="35">
@@ -273,7 +268,7 @@
                         <input type="text" class="money-input" id="advAporte2" value="1000" inputmode="numeric">
                     </div>
                     <div class="form-input-group">
-                        <label>Rendimiento Anual (%)</label>
+                        <label>Rendimiento (%)</label>
                         <div class="input-with-action">
                             <input type="number" id="advRend2" value="6" step="0.1">
                             <button type="button" class="btn-magic" onclick="openPortfolioModal('advRend2')">🪄</button>
@@ -282,7 +277,7 @@
                 </div>
 
                 <div class="stage-row">
-                    <span class="stage-label">Etapa 3 (Consolidación)</span>
+                    <div class="stage-title">Etapa 3</div>
                     <div class="form-input-group">
                         <label>Edad Inicio</label>
                         <input type="number" id="advEdad3" value="50">
@@ -292,7 +287,7 @@
                         <input type="text" class="money-input" id="advAporte3" value="1500" inputmode="numeric">
                     </div>
                     <div class="form-input-group">
-                        <label>Rendimiento Anual (%)</label>
+                        <label>Rendimiento (%)</label>
                         <div class="input-with-action">
                             <input type="number" id="advRend3" value="4" step="0.1">
                             <button type="button" class="btn-magic" onclick="openPortfolioModal('advRend3')">🪄</button>
@@ -382,6 +377,7 @@
     <div id="portfolioModal" class="modal">
         <div class="modal-content" style="max-width: 700px;">
             <h2 style="margin-bottom:1.5rem;">🪄 Asistente de Inversión</h2>
+            
             <div class="portfolio-layout">
                 <div class="portfolio-controls">
                     <div class="profile-buttons">
@@ -389,24 +385,36 @@
                         <button class="btn-profile" onclick="setProfile('moderate')">⚖️ Moderado</button>
                         <button class="btn-profile" onclick="setProfile('aggressive')">🚀 Agresivo</button>
                     </div>
+
                     <div class="slider-group">
-                        <div class="slider-header"><span>Acciones (S&P 500)</span><span class="slider-val" id="valStocks">60%</span></div>
+                        <div class="slider-header">
+                            <span>Acciones (S&P 500)</span>
+                            <span class="slider-val" id="valStocks">60%</span>
+                        </div>
                         <input type="range" id="rangeStocks" min="0" max="100" value="60" oninput="updatePortfolio(this.id)">
                         <small style="color:var(--text-muted); font-size:0.75rem;">Histórico: ~12% (Alto Riesgo)</small>
                     </div>
+
                     <div class="slider-group">
-                        <div class="slider-header"><span>Bonos (Renta Fija)</span><span class="slider-val" id="valBonds">40%</span></div>
+                        <div class="slider-header">
+                            <span>Bonos (Renta Fija)</span>
+                            <span class="slider-val" id="valBonds">40%</span>
+                        </div>
                         <input type="range" id="rangeBonds" min="0" max="100" value="40" oninput="updatePortfolio(this.id)">
                         <small style="color:var(--text-muted); font-size:0.75rem;">Histórico: ~4.5% (Riesgo Medio)</small>
                     </div>
                 </div>
+
                 <div class="portfolio-stats">
-                    <div style="width: 140px; height: 140px; margin-bottom: 1rem;"><canvas id="donutChart"></canvas></div>
+                    <div style="width: 140px; height: 140px; margin-bottom: 1rem;">
+                        <canvas id="donutChart"></canvas>
+                    </div>
                     <div style="font-size:0.9rem; color:var(--text-muted);">Retorno Histórico Esperado</div>
                     <div class="final-return" id="finalReturnDisplay">9.0%</div>
                     <div id="riskBadge" class="risk-badge risk-med">Riesgo Medio</div>
                 </div>
             </div>
+
             <div class="modal-buttons" style="margin-top:2rem;">
                 <button class="btn-icon btn-primary" onclick="applyPortfolio()">✅ Usar esta Tasa</button>
                 <button class="btn-icon" onclick="closePortfolioModal()">Cancelar</button>
@@ -425,8 +433,6 @@
             ['Inflación (%)', 'inflacionBasico', 3, { title: 'Inflación', text: 'Pérdida de valor del dinero.', example: 'Ej: 3% Histórico' }],
         ];
 
-        // Ya no necesitamos camposAvanzado array, usamos HTML directo
-        
         let milestones = []; 
         let myChart = null;
         let donutChart = null;
@@ -472,7 +478,7 @@
             return cleanNumber(el.value);
         }
 
-        // --- 3. GENERACIÓN UI (Solo Básico) ---
+        // --- 3. GENERACIÓN UI ---
         function generarInputs(campos, formId) {
             const form = document.getElementById(formId);
             if(!form) return;
@@ -562,7 +568,7 @@
             return d;
         }
 
-        // --- 4. LÓGICA PORTFOLIO ---
+        // --- 4. LÓGICA PORTFOLIO (MODAL) ---
         function openPortfolioModal(targetId) {
             currentTargetInput = targetId;
             document.getElementById('portfolioModal').classList.add('active');
@@ -665,12 +671,12 @@
         }
 
         function calcularAvanzado() {
-            // Recoger Inputs del HTML Nuevo
+            // Inputs
             const saldoInicial = getMoneyValue('advMontoInicial');
             const edadRetiro = +document.getElementById('advEdadFin').value || 65;
             const inflacion = (+document.getElementById('advInflacion').value || 0) / 100;
 
-            const edad1 = +document.getElementById('advEdad1').value || 25; // Inicio
+            const edad1 = +document.getElementById('advEdad1').value || 25; 
             const aporte1 = getMoneyValue('advAporte1') * 12;
             const rate1 = (+document.getElementById('advRend1').value || 0) / 100;
 
@@ -689,12 +695,10 @@
             let totalAportado = saldoInicial;
             let saldo = saldoInicial;
 
-            // Loop principal de edad
             for (let i = edad1; i <= edadRetiro; i++) {
                 let currentRate = rate1;
                 let currentAporte = aporte1;
 
-                // Determinar etapa
                 if (i >= edad3) { currentRate = rate3; currentAporte = aporte3; }
                 else if (i >= edad2) { currentRate = rate2; currentAporte = aporte2; }
 
@@ -833,7 +837,7 @@
             `;
             
             const rows = datos.map(d => `<tr><td>${d.edad}</td><td>${formatearNumero(d.saldo)}</td><td>${formatearNumero(d.saldoReal)}</td></tr>`).join('');
-            document.getElementById('tableContainer').innerHTML = `<table><thead><tr><th>Edad</th><th>Nominal</th><th>Real</th></tr></thead><tbody>${rows}</tbody></table>`;
+            document.getElementById('tableContainer').innerHTML = `<table><thead><tr><th>Edad</th><th>Saldo Nominal</th><th>Saldo Real</th></tr></thead><tbody>${rows}</tbody></table>`;
             
             renderChart2D(datos);
         }
@@ -860,7 +864,6 @@
 
         // --- 7. CORE ---
         function autoCalcular() {
-            // Guardar inputs generales
             document.querySelectorAll('input').forEach(i => { if(i.id && !i.id.includes('range')) localStorage.setItem(i.id, i.value); });
             localStorage.setItem('deductionsAdv', JSON.stringify(getDeductions()));
 
@@ -907,30 +910,21 @@
 
         function init() {
             setupInputFormatting();
-            // Para Básico generamos, para Avanzado ya existe el HTML
             generarInputs(camposBasico, 'formBasico');
+            // Avanzado ya tiene HTML estático ahora, no se genera.
             
-            // Cargar datos en Avanzado manualmente desde LS si existen
-            ['advMontoInicial', 'advInflacion', 'advEdadFin', 'advEdad1', 'advAporte1', 'advRend1', 
-             'advEdad2', 'advAporte2', 'advRend2', 'advEdad3', 'advAporte3', 'advRend3'].forEach(id => {
-                 let val = localStorage.getItem(id);
-                 if(val) {
-                     // Si es dinero, formatear
-                     if(id.includes('Monto') || id.includes('Aporte')) val = formatInputDisplay(val);
-                     document.getElementById(id).value = val;
-                 }
-            });
-
-            // Cargar escenarios
-            ['montoInicialEsc', 'aporteMensualEsc', 'edadActualEsc', 'edadObjetivoEsc'].forEach(id => {
+            ['montoInicialEsc', 'aporteMensualEsc', 'edadActualEsc', 'edadObjetivoEsc', 
+             'advMontoInicial', 'advInflacion', 'advEdadFin', 
+             'advEdad1', 'advAporte1', 'advRend1',
+             'advEdad2', 'advAporte2', 'advRend2',
+             'advEdad3', 'advAporte3', 'advRend3'].forEach(id => {
                 let val = localStorage.getItem(id);
                 if(val) {
-                    if(id.includes('monto') || id.includes('aporte')) val = formatInputDisplay(val);
+                    if(id.includes('Monto') || id.includes('Aporte') || id.includes('Inicial')) val = formatInputDisplay(val);
                     document.getElementById(id).value = val;
                 }
             });
 
-            // Theme
             const isNight = localStorage.getItem('nightMode') === 'true';
             if (isNight) {
                 document.body.classList.add('night');
@@ -939,7 +933,6 @@
                 document.getElementById('toggleNightBtn').innerText = '🌙 Oscuro';
             }
 
-            // Events
             document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
                 document.querySelectorAll('.tab, .tab-content').forEach(x => x.classList.remove('active'));
                 t.classList.add('active');
@@ -947,7 +940,7 @@
                 autoCalcular();
             }));
 
-            // Auto-Bind general
+            // Auto-Bind general para todos los inputs
             document.querySelectorAll('input').forEach(i => i.addEventListener('input', autoCalcular));
 
             document.getElementById('addDeductionBtn').addEventListener('click', () => addDeductionInput());
