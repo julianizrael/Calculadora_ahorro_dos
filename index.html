@@ -246,7 +246,7 @@
                     <span class="stage-label">Etapa 1</span>
                     <div class="form-input-group">
                         <label>Edad Inicio</label>
-                        <input type="number" id="advEdad1" value="25" readonly style="opacity: 0.7; cursor: not-allowed;">
+                        <input type="number" id="advEdad1" value="25">
                     </div>
                     <div class="form-input-group">
                         <label>Aporte Mensual</label>
@@ -299,7 +299,7 @@
                     </div>
                 </div>
 
-                <div class="collapsible-section">
+                <div class="collapsible-section" style="margin-top: 2rem;">
                     <div class="collapsible-header" onclick="toggleCollapsible('deductions')">
                         <h3>Deducciones & Gastos Grandes</h3>
                         <span style="font-size:1.2rem; color:var(--text-muted);">+</span>
@@ -572,7 +572,7 @@
             return d;
         }
 
-        // --- 4. LÓGICA PORTFOLIO (MODAL) ---
+        // --- 4. LÓGICA PORTFOLIO ---
         function openPortfolioModal(targetId) {
             currentTargetInput = targetId;
             document.getElementById('portfolioModal').classList.add('active');
@@ -674,7 +674,6 @@
         }
 
         function calcularAvanzado() {
-            // Inputs
             const saldoInicial = getMoneyValue('advMontoInicial');
             const edadRetiro = +document.getElementById('advEdadFin').value || 65;
             const inflacion = (+document.getElementById('advInflacion').value || 0) / 100;
