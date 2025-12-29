@@ -123,7 +123,6 @@
         .scenario-stat .value { font-size: 1.3rem; font-weight: 700; color: var(--text-main); }
 
         #chartContainer { background: var(--bg-card); padding: 1rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-card); border: 1px solid var(--border-input); height: 400px; margin-top: 1.5rem; position: relative;}
-        /* KEY FIX: Min-height to force render */
         #savingChart { width: 100%; height: 100%; min-height: 350px; }
         
         #tableContainer { margin-top: 1rem; overflow-x: auto; border-radius: var(--radius-md); border: 1px solid var(--border-input); display:none;}
@@ -186,7 +185,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Calculadora Financiera <span class="version-badge">v2.4</span></h1>
+            <h1>Calculadora Financiera <span class="version-badge">v2.5</span></h1>
             <div class="header-buttons">
                 <button id="exportBtn" class="btn-icon">📄 PDF</button>
                 <button id="toggleNightBtn" class="btn-icon btn-primary">🌙 Oscuro</button>
@@ -420,7 +419,6 @@
             ['Inflación (%)', 'inflacionBasico', 3, { title: 'Inflación', text: 'Pérdida de valor del dinero.', example: 'Ej: 3% Histórico' }],
         ];
 
-        let milestones = []; 
         let myChart = null;
         let donutChart = null;
         let currentTargetInput = null;
@@ -467,7 +465,7 @@
             return cleanNumber(el.value);
         }
 
-        // --- 3. GENERACIÓN UI (Solo Básico) ---
+        // --- 3. GENERACIÓN UI ---
         function generarInputs(campos, formId) {
             const form = document.getElementById(formId);
             if(!form) return;
@@ -537,7 +535,6 @@
             div.innerHTML = htmlContent;
             container.appendChild(div);
 
-            // Listener de Eliminar
             const removeBtn = div.querySelector(`button[class*="remove"]`);
             if(removeBtn) removeBtn.addEventListener('click', () => { 
                 div.remove(); 
@@ -545,7 +542,7 @@
                 autoCalcular();
             });
 
-            // Listener para inputs dentro del item dinámico (CRÍTICO PARA PERSISTENCIA)
+            // Listener CRÍTICO para persistencia
             div.querySelectorAll('input').forEach(input => {
                 input.addEventListener('input', () => {
                     autoCalcular();
@@ -572,7 +569,7 @@
             return list;
         }
 
-        // --- 5. LÓGICA PORTFOLIO (MODAL) ---
+        // --- 5. LÓGICA PORTFOLIO ---
         function openPortfolioModal(targetId) {
             currentTargetInput = targetId;
             document.getElementById('portfolioModal').classList.add('active');
@@ -708,7 +705,6 @@
                 saldo += currentAporte;
                 totalAportado += currentAporte;
 
-                // Restar deducciones
                 const currentDeds = dedList.filter(d => parseInt(d.age) === i);
                 currentDeds.forEach(d => {
                     saldo -= cleanNumber(d.amount);
@@ -774,7 +770,6 @@
 
         // --- 7. RENDERIZADO ---
         function renderChart2D(datos) {
-            if(typeof Chart === 'undefined') return;
             const ctx = document.getElementById('savingChart').getContext('2d');
             if(myChart) myChart.destroy();
             
@@ -869,11 +864,11 @@
                 card('⚠️ Pesimista', 'pesimista', 0.02, 0.05, pes);
         }
 
-        // --- 8. CORE & EVENTS ---
+        // --- 8. CORE ---
         function autoCalcular() {
-            // Guardar Inputs Normales
+            // Guardar inputs
             document.querySelectorAll('input').forEach(i => { if(i.id && !i.id.includes('range')) localStorage.setItem(i.id, i.value); });
-            // Guardar Deducciones
+            // Guardar deducciones
             localStorage.setItem('deductionsAdv', JSON.stringify(getDeductions()));
 
             const tab = document.querySelector('.tab.active');
@@ -917,42 +912,39 @@
             finally { if(wasNight) { document.body.classList.add('night'); autoCalcular(); } btn.innerText = oldTxt; }
         }
 
+        // --- INIT PRINCIPAL ---
         function init() {
             setupInputFormatting();
             generarInputs(camposBasico, 'formBasico');
             
-            // 1. CARGAR INPUTS NORMALES
-            const inputsToLoad = [
-                'edadInicioBasico', 'edadFinBasico', 'montoInicialBasico', 'aporteMensualBasico', 'rendimientoBasico', 'inflacionBasico',
-                'montoInicialEsc', 'aporteMensualEsc', 'edadActualEsc', 'edadObjetivoEsc', 
-                'advMontoInicial', 'advInflacion', 'advEdadFin', 
-                'advEdad1', 'advAporte1', 'advRend1',
-                'advEdad2', 'advAporte2', 'advRend2',
-                'advEdad3', 'advAporte3', 'advRend3'
-            ];
-
-            inputsToLoad.forEach(id => {
+            // 1. Cargar Inputs Normales
+            ['montoInicialEsc', 'aporteMensualEsc', 'edadActualEsc', 'edadObjetivoEsc', 
+             'advMontoInicial', 'advInflacion', 'advEdadFin', 
+             'advEdad1', 'advAporte1', 'advRend1',
+             'advEdad2', 'advAporte2', 'advRend2',
+             'advEdad3', 'advAporte3', 'advRend3',
+             'edadInicioBasico', 'edadFinBasico', 'montoInicialBasico', 'aporteMensualBasico', 'rendimientoBasico', 'inflacionBasico'
+            ].forEach(id => {
                 let val = localStorage.getItem(id);
                 if(val) {
-                    if(id.includes('Monto') || id.includes('Aporte') || id.includes('Inicial')) {
-                        val = formatInputDisplay(val);
-                    }
+                    if(id.includes('Monto') || id.includes('Aporte') || id.includes('Inicial')) val = formatInputDisplay(val);
                     const el = document.getElementById(id);
                     if(el) el.value = val;
                 }
             });
 
-            // 2. CARGAR DEDUCCIONES
+            // 2. Cargar Deducciones
             const savedDed = JSON.parse(localStorage.getItem('deductionsAdv') || '[]');
             if (Array.isArray(savedDed) && savedDed.length > 0) {
                 savedDed.forEach(item => addDeductionInput(item.age, item.amount));
+                // Abrir acordeón si hay datos
                 const content = document.getElementById('deductions-content');
                 const icon = document.getElementById('deductions-icon');
                 if(content) content.classList.add('expanded');
                 if(icon) icon.classList.add('expanded');
             }
 
-            // 3. TEMA Y LISTENERS
+            // 3. Tema
             const isNight = localStorage.getItem('nightMode') === 'true';
             if (isNight) {
                 document.body.classList.add('night');
@@ -961,15 +953,13 @@
                 document.getElementById('toggleNightBtn').innerText = '🌙 Oscuro';
             }
 
+            // 4. Listeners
             document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
                 document.querySelectorAll('.tab, .tab-content').forEach(x => x.classList.remove('active'));
                 t.classList.add('active');
                 document.getElementById(t.dataset.tab).classList.add('active');
-                autoCalcular();
-                // FORZAR RESIZE AL CAMBIAR TAB PARA CORREGIR GRAFICO
-                setTimeout(() => {
-                    window.dispatchEvent(new Event('resize'));
-                }, 50);
+                // IMPORTANTE: Recalcular al cambiar de tab para asegurar renderizado de Chart.js
+                setTimeout(() => { autoCalcular(); }, 50);
             }));
 
             document.querySelectorAll('input').forEach(i => i.addEventListener('input', autoCalcular));
@@ -991,15 +981,20 @@
 
             document.getElementById('exportBtn').addEventListener('click', exportToPDF);
             document.getElementById('closeModalBtn').addEventListener('click', () => closePortfolioModal());
-
-            // 4. CALCULO INICIAL CON RETRASO
-            setTimeout(() => {
-                autoCalcular();
-                window.dispatchEvent(new Event('resize')); // Fix clave para el gráfico
-            }, 300);
         }
 
-        document.addEventListener('DOMContentLoaded', init);
+        // --- SOLUCIÓN DE CARGA DEFINITIVA ---
+        document.addEventListener('DOMContentLoaded', () => {
+            init(); // Carga datos y estructura
+        });
+
+        // Esperar a que todo (estilos, fuentes, layout) esté listo antes de calcular y pintar
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                autoCalcular(); 
+                if(myChart) myChart.resize(); // Fuerza ajuste final
+            }, 150);
+        });
     </script>
 </body>
 </html>
