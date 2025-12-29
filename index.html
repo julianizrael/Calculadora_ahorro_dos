@@ -563,16 +563,16 @@
         }
 
         function getDeductions() {
-            const d = {};
+            const list = [];
             document.querySelectorAll('.deduction-item').forEach(i => {
-                const age = parseInt(i.querySelector('.deduction-age').value);
-                const amt = cleanNumber(i.querySelector('.deduction-amount').value);
-                if(!isNaN(age) && !isNaN(amt)) d[age] = (d[age]||0) + amt;
+                const age = i.querySelector('.deduction-age').value;
+                const amt = i.querySelector('.deduction-amount').value;
+                if(age && amt) list.push({ age, amount: amt });
             });
-            return d;
+            return list;
         }
 
-        // --- 4. LÓGICA PORTFOLIO ---
+        // --- 4. LÓGICA PORTFOLIO (MODAL) ---
         function openPortfolioModal(targetId) {
             currentTargetInput = targetId;
             document.getElementById('portfolioModal').classList.add('active');
@@ -674,6 +674,7 @@
         }
 
         function calcularAvanzado() {
+            // Inputs
             const saldoInicial = getMoneyValue('advMontoInicial');
             const edadRetiro = +document.getElementById('advEdadFin').value || 65;
             const inflacion = (+document.getElementById('advInflacion').value || 0) / 100;
@@ -692,7 +693,7 @@
 
             if (edadRetiro <= edad1) return;
 
-            const ded = getDeductions();
+            const ded = getDeductions(); // Ahora devuelve Array
             const datos = [];
             let totalAportado = saldoInicial;
             let saldo = saldoInicial;
@@ -707,7 +708,11 @@
                 saldo += currentAporte;
                 totalAportado += currentAporte;
 
-                if(ded[i]) saldo -= ded[i];
+                // Restar deducciones para este año (puede haber varias)
+                const currentDeds = ded.filter(d => parseInt(d.age) === i);
+                currentDeds.forEach(d => {
+                    saldo -= cleanNumber(d.amount);
+                });
 
                 saldo *= (1 + currentRate);
                 
@@ -866,7 +871,9 @@
 
         // --- 7. CORE ---
         function autoCalcular() {
+            // Guardar Inputs normales
             document.querySelectorAll('input').forEach(i => { if(i.id && !i.id.includes('range')) localStorage.setItem(i.id, i.value); });
+            // Guardar Deducciones (Lista de Objetos)
             localStorage.setItem('deductionsAdv', JSON.stringify(getDeductions()));
 
             const tab = document.querySelector('.tab.active');
@@ -963,8 +970,9 @@
             document.getElementById('exportBtn').addEventListener('click', exportToPDF);
             document.getElementById('closeModalBtn').addEventListener('click', () => closePortfolioModal());
 
-            const savedDed = JSON.parse(localStorage.getItem('deductionsAdv') || '{}');
-            Object.entries(savedDed).forEach(([k,v]) => addDeductionInput(k, v));
+            // REPARADO: Carga Correcta de Deducciones
+            const savedDed = JSON.parse(localStorage.getItem('deductionsAdv') || '[]');
+            savedDed.forEach(item => addDeductionInput(item.age, item.amount));
 
             autoCalcular();
         }
