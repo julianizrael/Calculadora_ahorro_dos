@@ -113,6 +113,8 @@
         .collapsible-header h3 { font-size: 0.85rem; font-weight: 700; margin: 0; color: var(--text-main); }
         .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
         .collapsible-content.expanded { max-height: 2000px; }
+        .collapsible-icon { font-size: 1rem; transition: transform 0.3s; color: var(--text-muted); }
+        .collapsible-icon.expanded { transform: rotate(180deg); }
         .collapsible-inner { padding: 1rem; border-top: 1px solid var(--border-input); background: var(--bg-body); }
         
         .deductions-container { display: flex; flex-direction: column; gap: 0.5rem; }
@@ -302,7 +304,7 @@
                 <div class="collapsible-section" style="margin-top: 2rem;">
                     <div class="collapsible-header" onclick="toggleCollapsible('deductions')">
                         <h3>Deducciones & Gastos Grandes</h3>
-                        <span style="font-size:1.2rem; color:var(--text-muted);">+</span>
+                        <span class="collapsible-icon" id="deductions-icon">▼</span>
                     </div>
                     <div class="collapsible-content" id="deductions-content">
                         <div class="collapsible-inner">
@@ -445,7 +447,9 @@
         // --- 2. UTILIDADES ---
         function toggleCollapsible(section) {
             const content = document.getElementById(`${section}-content`);
+            const icon = document.getElementById(`${section}-icon`);
             if(content) content.classList.toggle('expanded');
+            if(icon) icon.classList.toggle('expanded');
         }
 
         function formatearNumero(numero) {
@@ -572,7 +576,7 @@
             return list;
         }
 
-        // --- 4. LÓGICA PORTFOLIO (MODAL) ---
+        // --- 4. LÓGICA PORTFOLIO ---
         function openPortfolioModal(targetId) {
             currentTargetInput = targetId;
             document.getElementById('portfolioModal').classList.add('active');
@@ -674,7 +678,6 @@
         }
 
         function calcularAvanzado() {
-            // Inputs
             const saldoInicial = getMoneyValue('advMontoInicial');
             const edadRetiro = +document.getElementById('advEdadFin').value || 65;
             const inflacion = (+document.getElementById('advInflacion').value || 0) / 100;
@@ -708,7 +711,7 @@
                 saldo += currentAporte;
                 totalAportado += currentAporte;
 
-                // Restar deducciones para este año (puede haber varias)
+                // Restar deducciones
                 const currentDeds = ded.filter(d => parseInt(d.age) === i);
                 currentDeds.forEach(d => {
                     saldo -= cleanNumber(d.amount);
@@ -873,7 +876,7 @@
         function autoCalcular() {
             // Guardar Inputs normales
             document.querySelectorAll('input').forEach(i => { if(i.id && !i.id.includes('range')) localStorage.setItem(i.id, i.value); });
-            // Guardar Deducciones (Lista de Objetos)
+            // Guardar Deducciones
             localStorage.setItem('deductionsAdv', JSON.stringify(getDeductions()));
 
             const tab = document.querySelector('.tab.active');
@@ -972,7 +975,16 @@
 
             // REPARADO: Carga Correcta de Deducciones
             const savedDed = JSON.parse(localStorage.getItem('deductionsAdv') || '[]');
-            savedDed.forEach(item => addDeductionInput(item.age, item.amount));
+            if (Array.isArray(savedDed)) {
+                savedDed.forEach(item => addDeductionInput(item.age, item.amount));
+                // Si hay datos, abrir acordeón
+                if (savedDed.length > 0) {
+                     const content = document.getElementById('deductions-content');
+                     const icon = document.getElementById('deductions-icon');
+                     if(content) content.classList.add('expanded');
+                     if(icon) icon.classList.add('expanded');
+                }
+            }
 
             autoCalcular();
         }
