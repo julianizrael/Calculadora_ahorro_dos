@@ -45,12 +45,11 @@
             display: flex; align-items: center; gap: 10px;
         }
         
-        /* VERSIÓN VISIBLE */
         .version-badge {
             font-size: 0.8rem;
             background: var(--bg-input);
             color: var(--text-muted);
-            -webkit-text-fill-color: var(--text-muted); /* Override gradient */
+            -webkit-text-fill-color: var(--text-muted);
             padding: 4px 10px;
             border-radius: 20px;
             border: 1px solid var(--border-input);
@@ -224,7 +223,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Calculadora Financiera <span class="version-badge">v2.2</span></h1>
+            <h1>Calculadora Financiera <span class="version-badge">v2.3</span></h1>
             <div class="header-buttons">
                 <button id="exportBtn" class="btn-icon">📄 PDF</button>
                 <button id="toggleNightBtn" class="btn-icon btn-primary">🌙 Oscuro</button>
@@ -458,6 +457,7 @@
             ['Inflación (%)', 'inflacionBasico', 3, { title: 'Inflación', text: 'Pérdida de valor del dinero.', example: 'Ej: 3% Histórico' }],
         ];
 
+        let milestones = []; 
         let myChart = null;
         let donutChart = null;
         let currentTargetInput = null;
@@ -504,7 +504,7 @@
             return cleanNumber(el.value);
         }
 
-        // --- 3. GENERACIÓN UI (Solo Básico) ---
+        // --- 3. GENERACIÓN UI ---
         function generarInputs(campos, formId) {
             const form = document.getElementById(formId);
             if(!form) return;
@@ -579,13 +579,13 @@
             if(removeBtn) removeBtn.addEventListener('click', () => { 
                 div.remove(); 
                 if(removeCallback) removeCallback(); 
-                autoCalcular(); // Forzar guardado al eliminar
+                autoCalcular();
             });
 
             // Listener para inputs dentro del item dinámico (CRÍTICO PARA PERSISTENCIA)
             div.querySelectorAll('input').forEach(input => {
                 input.addEventListener('input', () => {
-                    autoCalcular(); // Guarda cada vez que escribes
+                    autoCalcular();
                 });
             });
         }
@@ -595,7 +595,6 @@
                 `<div class="form-input-group"><label>Edad</label><input type="number" class="deduction-age" value="${edad}"></div>
                  <div class="form-input-group"><label>Monto Gasto</label><input type="text" class="deduction-amount money-input" inputmode="numeric" value="${monto}"></div>
                  <button class="btn-remove remove-deduction-btn">Eliminar</button>`, null);
-                 // Nota: monto ya viene formateado si lo leemos de LS o es string vacío
         }
 
         function getDeductions() {
@@ -604,7 +603,6 @@
                 const age = i.querySelector('.deduction-age').value;
                 const amtVal = i.querySelector('.deduction-amount').value;
                 if(age && amtVal) {
-                    // Guardamos el valor tal cual para visualización
                     list.push({ age: age, amount: amtVal }); 
                 }
             });
@@ -731,7 +729,6 @@
 
             if (edadRetiro <= edad1) return;
 
-            // Al calcular, leemos del DOM para asegurar frescura
             const dedList = getDeductions(); 
             
             const datos = [];
@@ -961,37 +958,41 @@
             setupInputFormatting();
             generarInputs(camposBasico, 'formBasico');
             
-            // 1. CARGAR INPUTS NORMALES
-            ['montoInicialEsc', 'aporteMensualEsc', 'edadActualEsc', 'edadObjetivoEsc', 
-             'advMontoInicial', 'advInflacion', 'advEdadFin', 
-             'advEdad1', 'advAporte1', 'advRend1',
-             'advEdad2', 'advAporte2', 'advRend2',
-             'advEdad3', 'advAporte3', 'advRend3'].forEach(id => {
+            // 1. CARGAR TODOS LOS INPUTS (Básicos y Avanzados)
+            const inputsToLoad = [
+                'edadInicioBasico', 'edadFinBasico', 'montoInicialBasico', 'aporteMensualBasico', 'rendimientoBasico', 'inflacionBasico',
+                'montoInicialEsc', 'aporteMensualEsc', 'edadActualEsc', 'edadObjetivoEsc', 
+                'advMontoInicial', 'advInflacion', 'advEdadFin', 
+                'advEdad1', 'advAporte1', 'advRend1',
+                'advEdad2', 'advAporte2', 'advRend2',
+                'advEdad3', 'advAporte3', 'advRend3'
+            ];
+
+            inputsToLoad.forEach(id => {
                 let val = localStorage.getItem(id);
                 if(val) {
-                    if(id.includes('Monto') || id.includes('Aporte') || id.includes('Inicial')) val = formatInputDisplay(val);
-                    document.getElementById(id).value = val;
+                    // Si es campo de dinero, asegurar formato visual
+                    if(id.includes('Monto') || id.includes('Aporte') || id.includes('Inicial')) {
+                        val = formatInputDisplay(val);
+                    }
+                    const el = document.getElementById(id);
+                    if(el) el.value = val;
                 }
             });
 
-            // 2. CARGAR DEDUCCIONES (ANTES DEL CÁLCULO)
-            try {
+            // 2. CARGAR DEDUCCIONES
+            setTimeout(() => {
                 const savedDed = JSON.parse(localStorage.getItem('deductionsAdv') || '[]');
                 if (Array.isArray(savedDed) && savedDed.length > 0) {
                     savedDed.forEach(item => addDeductionInput(item.age, item.amount));
-                    
-                    // Abrir acordeón automáticamente si hay datos
                     const content = document.getElementById('deductions-content');
                     const icon = document.getElementById('deductions-icon');
                     if(content) content.classList.add('expanded');
                     if(icon) icon.classList.add('expanded');
                 }
-            } catch (e) {
-                console.error("Error cargando deducciones:", e);
-                localStorage.removeItem('deductionsAdv'); // Limpiar si está corrupto
-            }
+            }, 50);
 
-            // Theme
+            // 3. TEMA
             const isNight = localStorage.getItem('nightMode') === 'true';
             if (isNight) {
                 document.body.classList.add('night');
@@ -1000,7 +1001,7 @@
                 document.getElementById('toggleNightBtn').innerText = '🌙 Oscuro';
             }
 
-            // Events
+            // 4. LISTENERS
             document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
                 document.querySelectorAll('.tab, .tab-content').forEach(x => x.classList.remove('active'));
                 t.classList.add('active');
@@ -1008,9 +1009,7 @@
                 autoCalcular();
             }));
 
-            // Listener Global para inputs estáticos
             document.querySelectorAll('input').forEach(i => i.addEventListener('input', autoCalcular));
-
             document.getElementById('addDeductionBtn').addEventListener('click', () => addDeductionInput());
             
             document.getElementById('toggleNightBtn').addEventListener('click', (e) => {
@@ -1030,8 +1029,8 @@
             document.getElementById('exportBtn').addEventListener('click', exportToPDF);
             document.getElementById('closeModalBtn').addEventListener('click', () => closePortfolioModal());
 
-            // 3. CALCULAR AL FINAL
-            autoCalcular();
+            // 5. CALCULAR INICIAL CON RETRASO (Para asegurar Chart.js canvas listo)
+            setTimeout(() => autoCalcular(), 100);
         }
 
         document.addEventListener('DOMContentLoaded', init);
