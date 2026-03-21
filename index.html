@@ -49,15 +49,22 @@
         label { font-size: 0.65rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
         input[type="number"], input[type="text"], select { padding: 0.65rem 0.8rem; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); font-size: 0.95rem; color: var(--text-main); width: 100%; transition: border 0.2s; }
         
-        .error-msg { color: var(--danger); font-size: 0.75rem; font-weight: 600; margin-top: 0.5rem; display: none; grid-column: 1/-1; }
+        .input-with-action { position: relative; display: flex; align-items: center; }
+        .btn-magic { position: absolute; right: 6px; background: var(--bg-body); border: 1px solid var(--border); font-size: 0.6rem; padding: 2px 6px; border-radius: 2px; cursor: pointer; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
 
         .stage-row { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; padding: 1.5rem; border: 1px solid var(--border); border-radius: var(--radius); position: relative; background: var(--bg-card); margin-bottom: 0.5rem; }
         .stage-label { position: absolute; top: -10px; left: 15px; background: var(--bg-body); padding: 0 8px; font-size: 0.6rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; }
+
+        .deductions-container { grid-column: 1/-1; display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1.5rem; }
+        .deduction-item { display: grid; grid-template-columns: 1fr 1.5fr auto; gap: 1rem; align-items: flex-end; padding: 1.25rem; background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border); border-left: 3px solid var(--warning); }
+        .btn-add { grid-column: 1/-1; padding: 0.8rem; background: transparent; border: 1px dashed var(--border); border-radius: var(--radius); cursor: pointer; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); }
+        .btn-remove { background: #fee2e2; color: var(--danger); border: none; padding: 0.6rem; border-radius: var(--radius); font-weight: 700; cursor: pointer; font-size: 0.7rem; }
 
         .resume-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; margin: 2rem 0; box-shadow: var(--shadow-sm); }
         .resume-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2.5rem; }
         .resume-item h3 { font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 700; }
         .resume-item .value { font-size: 1.6rem; font-weight: 700; }
+        .resume-item .subtitle { font-size: 0.75rem; color: var(--accent); margin-top: 0.2rem; }
 
         #chartContainer { background: var(--bg-card); border: 1px solid var(--border); padding: 1.5rem; height: 450px; border-radius: var(--radius); margin-top: 1.5rem; }
         #tableContainer { margin-top: 2rem; border: 1px solid var(--border); border-radius: var(--radius); overflow-x: auto; display: none; background: var(--bg-card); }
@@ -65,23 +72,26 @@
         th { text-align: left; padding: 0.8rem 1rem; background: var(--bg-body); color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; border-bottom: 1px solid var(--border); }
         td { padding: 0.8rem 1rem; border-bottom: 1px solid var(--border); }
 
+        .error-msg { color: var(--danger); font-size: 0.75rem; font-weight: 700; margin-top: 0.5rem; display: none; grid-column: 1/-1; }
+
         .tooltip-container { position: relative; display: inline-flex; align-items: center; }
-        .tooltip-icon { width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 9px; cursor: help; }
-        .tooltip { visibility: hidden; opacity: 0; position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%); width: 220px; padding: 1rem; background: #1e293b; color: white; font-size: 0.75rem; border-radius: 4px; z-index: 100; transition: 0.2s; pointer-events: none; }
+        .tooltip-icon { width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 9px; cursor: help; color: var(--text-muted); }
+        .tooltip { visibility: hidden; opacity: 0; position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%); width: 220px; padding: 1rem; background: #1e293b; color: white; font-size: 0.75rem; border-radius: 4px; z-index: 100; transition: 0.2s; text-transform: none; pointer-events: none; }
         .tooltip-container:hover .tooltip { visibility: visible; opacity: 1; }
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; }
         .modal.active { display: flex; }
         .modal-content { background: var(--bg-card); padding: 2.5rem; width: 95%; max-width: 700px; border-radius: var(--radius); }
+        .btn-profile { width: 100%; padding: 0.75rem; margin-bottom: 0.5rem; border: 1px solid var(--border); background: transparent; font-size: 0.75rem; font-weight: 600; cursor: pointer; border-radius: var(--radius); text-transform: uppercase; color: var(--text-muted); }
+        .btn-profile.active { background: var(--primary); color: white; border-color: var(--primary); }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        @media (max-width: 850px) { .stage-row { grid-template-columns: 1fr; } .header { flex-direction: column; gap: 1rem; } }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Wealth & Capital Strategy <span class="version-badge">v2.7</span></h1>
+            <h1>Wealth & Capital Strategy <span class="version-badge">v2.9</span></h1>
             <div class="header-buttons">
                 <button id="exportBtn" class="btn-icon">Generar PDF</button>
                 <button id="toggleNightBtn" class="btn-icon btn-primary">Tema</button>
@@ -131,40 +141,27 @@
                 <div class="form-input-group"><label>Edad Actual</label><input type="number" id="edadActualEsc" value="25"></div>
                 <div class="form-input-group"><label>Edad Objetivo</label><input type="number" id="edadObjetivoEsc" value="65"></div>
             </form>
-            <div id="scenariosContainer" class="resume-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));"></div>
+            <div id="scenariosContainer" class="resume-grid"></div>
         </div>
 
         <div id="inversa" class="tab-content">
             <form id="formInversa">
-                <div class="form-input-group"><label>¿Cuánto quieres juntar?</label><input type="text" class="money-input" id="objetivoInversa" value="1.000.000" style="font-weight:700; font-size: 1.2rem;"></div>
+                <div class="form-input-group"><label>¿Cuánto quieres juntar?</label><input type="text" class="money-input" id="objetivoInversa" value="1.000.000" style="font-weight:700;"></div>
                 <div class="form-input-group"><label>Edad Actual</label><input type="number" id="edadActualInversa" value="25"></div>
                 <div class="form-input-group"><label>Edad Objetivo</label><input type="number" id="edadObjetivoInversa" value="65"></div>
                 <div class="form-input-group"><label>Rentabilidad (%)</label><input type="number" id="rendimientoInversa" value="5" step="0.1"></div>
-                <div class="form-input-group"><label>Capital Inicial</label><input type="text" class="money-input" id="montoInicialInversa" value="0"></div>
             </form>
-            <div id="resultadoInversa" class="resume-card"></div>
+            <div id="resultadoInversa" class="resume-card" style="margin-top:1.5rem; display:none;"></div>
         </div>
 
         <div id="dcaReal" class="tab-content">
             <form id="formDcaReal">
-                <div class="form-input-group">
-                    <label>Año de Inicio (≥ 1980)</label>
-                    <input type="number" id="realAnioInicio" value="2000" min="1980" max="2026">
-                </div>
-                <div class="form-input-group">
-                    <label>Año de Fin</label>
-                    <input type="number" id="realAnioFin" value="2026" min="1980" max="2026">
-                </div>
-                <div class="form-input-group">
-                    <label>Inversión Mensual (USD)</label>
-                    <input type="text" class="money-input" id="realMontoMensual" value="500">
-                </div>
+                <div class="form-input-group"><label>Año de Inicio (≥ 1980)</label><input type="number" id="realAnioInicio" value="2000" min="1980" max="2026"></div>
+                <div class="form-input-group"><label>Año de Fin</label><input type="number" id="realAnioFin" value="2026" min="1980" max="2026"></div>
+                <div class="form-input-group"><label>Inversión Mensual (USD)</label><input type="text" class="money-input" id="realMontoMensual" value="500"></div>
                 <div id="errorDcaReal" class="error-msg"></div>
-                <div style="grid-column: 1/-1; color: var(--text-muted); font-size: 0.7rem; margin-top: -10px;">
-                    * Datos reales del S&P 500 (SPX) hasta febrero 2026.
-                </div>
             </form>
-            <div id="resultadoDcaReal" class="resume-card"></div>
+            <div id="resultadoDcaReal" class="resume-card" style="margin-top:1.5rem;"></div>
         </div>
 
         <div id="resumen" class="resume-card"></div>
@@ -175,7 +172,7 @@
 
     <div id="portfolioModal" class="modal"><div class="modal-content">
         <h2 style="font-size: 1rem; margin-bottom: 2rem; text-transform: uppercase;">Asistente de Inversión</h2>
-        <div class="portfolio-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 2.5rem;">
             <div>
                 <button class="btn-profile" onclick="setProfile('conservative')">Conservador</button>
                 <button class="btn-profile" onclick="setProfile('moderate')">Moderado</button>
@@ -187,68 +184,83 @@
             </div>
             <div style="text-align: center; border-left: 1px solid var(--border); padding-left: 2rem;">
                 <div style="width: 130px; height: 130px; margin: 0 auto 1rem;"><canvas id="donutChart"></canvas></div>
-                <div style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">Retorno Estimado</div>
                 <div id="finalReturnDisplay" style="font-size: 2.2rem; font-weight: 700; color: var(--accent);">9.0%</div>
-                <div id="riskBadge" style="display:inline-block; font-size:0.6rem; padding:2px 8px; border-radius:2px; font-weight:700;">Riesgo Medio</div>
             </div>
         </div>
         <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;"><button class="btn-icon" onclick="closePortfolioModal()">Cancelar</button><button class="btn-icon btn-primary" onclick="applyPortfolio()">Usar Tasa</button></div>
     </div></div>
 
     <script>
-        /* --- CORE LOGIC --- */
-        const camposBasico = [
-            ['Edad inicio', 'edadInicioBasico', 25, {t:'Edad Actual', c:'Edad con la que inicias la inversión.', e:'Ej: 30'}],
-            ['Edad fin', 'edadFinBasico', 65, {t:'Objetivo', c:'Edad a la que planeas retirarte.', e:'Ej: 65'}],
-            ['Monto inicial', 'montoInicialBasico', 0, {t:'Capital Semilla', c:'Dinero ahorrado actualmente.', e:'Ej: 10.000'}],
-            ['Aporte mensual', 'aporteMensualBasico', 100, {t:'Flujo Mensual', c:'Ahorro constante cada mes.', e:'Ej: 200'}],
-            ['Rendimiento (%)', 'rendimientoBasico', 5, {t:'Tasa Interés', c:'Rentabilidad anual esperada.', e:'Ej: 5-8%'}],
-            ['Inflación (%)', 'inflacionBasico', 3, {t:'Inflación', c:'Pérdida de valor del dinero.', e:'Ej: 3%'}],
-        ];
-
         const SPY_DATA = {
             1980:[114,113,102,106,111,114,121,122,125,127,136,135],1981:[129,128,136,132,132,131,130,122,116,121,125,122],1982:[114,113,111,116,111,109,107,119,120,133,138,140],1983:[144,146,152,164,163,168,162,162,166,163,165,164],1984:[158,154,159,160,150,153,151,166,166,166,162,167],1985:[179,181,180,179,189,191,190,188,182,189,202,211],1986:[211,226,238,235,247,245,236,245,232,243,249,242],1987:[274,284,291,288,290,304,323,329,321,251,230,247],1988:[257,267,258,261,251,273,272,261,271,278,273,277],1989:[297,289,294,309,320,317,327,346,351,349,340,353],1990:[329,331,339,330,361,358,356,322,306,304,322,330],1991:[343,367,375,375,389,371,387,395,394,405,375,417],1992:[408,412,403,412,415,408,421,414,417,419,422,439],1993:[438,443,451,440,450,450,448,463,458,467,461,466],1994:[481,467,445,450,456,444,458,475,462,472,453,459],1995:[470,487,500,514,533,544,562,561,584,581,605,615],1996:[636,640,645,654,669,670,639,678,687,705,757,740],1997:[786,791,757,801,848,893,954,899,947,914,955,970],1998:[980,1049,1101,1111,1090,1133,1120,957,1017,1098,1185,1229],1999:[1279,1238,1286,1335,1301,1372,1328,1320,1282,1362,1388,1469],2000:[1394,1366,1498,1452,1420,1454,1430,1517,1436,1429,1314,1320],2001:[1366,1239,1160,1249,1255,1224,1211,1133,1040,1059,1139,1148],2002:[1130,1106,1147,1076,1067,989,911,916,815,885,936,879],2003:[855,841,897,944,963,974,990,1008,995,1050,1058,1111],2004:[1131,1144,1126,1107,1120,1140,1101,1104,1114,1130,1173,1211],2005:[1181,1203,1180,1156,1191,1191,1234,1220,1228,1207,1249,1248],2006:[1280,1280,1294,1310,1270,1270,1303,1303,1335,1377,1400,1418],2007:[1438,1406,1420,1482,1530,1503,1455,1473,1526,1549,1481,1468],2008:[1378,1330,1322,1385,1400,1280,1267,1282,1166,968,896,903],2009:[825,735,797,872,919,919,987,1020,1057,1036,1091,1115],2010:[1073,1104,1169,1186,1089,1030,1101,1049,1141,1183,1180,1257],2011:[1286,1327,1325,1363,1345,1320,1292,1219,1218,1131,1246,1257],2012:[1312,1365,1408,1397,1310,1362,1379,1406,1440,1412,1416,1426],2013:[1498,1514,1569,1597,1630,1606,1685,1632,1681,1756,1805,1848],2014:[1782,1859,1872,1883,1923,1960,1930,2003,1972,2018,2067,2058],2015:[1994,2104,2067,2085,2107,2063,2103,1972,1920,2079,2090,2043],2016:[1940,1932,2059,2065,2096,2098,2173,2170,2168,2126,2198,2238],2017:[2278,2363,2362,2384,2412,2423,2470,2471,2519,2575,2647,2673],2018:[2823,2713,2640,2648,2705,2718,2816,2901,2913,2711,2760,2506],2019:[2704,2784,2834,2945,2752,2941,2980,2926,2976,3037,3140,3230],2020:[3225,2954,2584,2912,3044,3100,3271,3500,3363,3269,3621,3756],2021:[3714,3811,3972,4181,4204,4297,4395,4522,4307,4605,4567,4766],2022:[4515,4373,4530,4131,4132,3785,4130,3955,3585,3871,4080,3839],2023:[4076,3970,4109,4169,4179,4450,4588,4507,4288,4193,4567,4769],2024:[4845,5096,5254,5035,5277,5460,5522,5648,5761,5705,6032,5881],2025:[6040,5954,5611,5569,5911,6204,6339,6460,6688,6840,6849,6845],2026:[6939,6878]
         };
 
         let myChart = null, donutChart = null, currentTargetInput = null;
-
         const formatCurrency = n => new Intl.NumberFormat('es-ES').format(Math.round(n));
         const formatInput = v => v.toString().replace(/\D/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         const clean = v => parseFloat(v.toString().replace(/\./g, '').replace(',', '.')) || 0;
 
-        function setupHandlers() {
-            document.body.addEventListener('input', e => {
-                if(e.target.classList.contains('money-input')) {
-                    const start = e.target.selectionStart, oldLen = e.target.value.length;
-                    e.target.value = formatInput(e.target.value);
-                    e.target.setSelectionRange(start + (e.target.value.length - oldLen), start + (e.target.value.length - oldLen));
-                }
-                if(e.target.tagName === 'INPUT' && !e.target.id.includes('range')) autoCalcular();
-            });
+        function render(datos, total) {
+            const activeTab = document.querySelector('.tab.active').dataset.tab;
+            const resGlobal = document.getElementById('resumen');
+            
+            if(activeTab === 'dcaReal') {
+                resGlobal.style.display = 'none';
+            } else {
+                resGlobal.style.display = 'block';
+                const f = datos[datos.length-1];
+                resGlobal.innerHTML = `<div class="resume-grid">
+                    <div class="resume-item"><h3>Capital Final</h3><div class="value">${formatCurrency(f.saldo)}</div><div class="subtitle">A los ${f.edad} años</div></div>
+                    <div class="resume-item"><h3>Poder de Compra</h3><div class="value">${formatCurrency(f.saldoReal)}</div><div class="subtitle">Ajustado inflación</div></div>
+                    <div class="resume-item"><h3>Esfuerzo Propio</h3><div class="value">${formatCurrency(total)}</div><div class="subtitle">Total aportado</div></div>
+                    <div class="resume-item"><h3>Ganancia Neta</h3><div class="value">${formatCurrency(f.saldo - total)}</div><div class="subtitle">Interés generado</div></div>
+                </div>`;
+            }
+
+            const showAll = activeTab === 'dcaReal';
+            const rows = datos.filter((d,i) => showAll || i%2===0 || i===datos.length-1)
+                .map(d => `<tr><td>${d.edad}</td><td>${formatCurrency(d.saldo)}</td><td>${formatCurrency(d.saldoReal)}</td><td>${formatCurrency(d.total)}</td></tr>`).join('');
+            document.getElementById('tableContainer').innerHTML = `<table><thead><tr><th>Año/Edad</th><th>Nominal</th><th>Real</th><th>Aportado</th></tr></thead><tbody>${rows}</tbody></table>`;
+            renderChart(datos);
         }
 
-        function generarInputs(campos, formId) {
-            const form = document.getElementById(formId);
-            campos.forEach(([label, id, val, tt]) => {
-                const isMoney = id.toLowerCase().includes('monto') || id.toLowerCase().includes('aporte') || id.toLowerCase().includes('objetivo');
-                const div = document.createElement('div');
-                div.className = 'form-input-group';
-                div.innerHTML = `<label>${label} <div class="tooltip-container"><div class="tooltip-icon">?</div><div class="tooltip"><b>${tt.t}</b>${tt.c}<br><i>${tt.e}</i></div></div></label>
-                <input type="text" id="${id}" value="${isMoney ? formatInput(val) : val}" class="${isMoney ? 'money-input' : ''}">`;
-                form.appendChild(div);
-            });
+        function calcularDcaReal() {
+            const a0 = +document.getElementById('realAnioInicio').value, aF = +document.getElementById('realAnioFin').value;
+            const monto = clean(document.getElementById('realMontoMensual').value);
+            const err = document.getElementById('errorDcaReal');
+            err.style.display = 'none';
+
+            if(a0 < 1980 || aF < a0) { err.innerText = "Verifica los años (Inicio ≥ 1980)"; err.style.display = 'block'; return; }
+
+            let totalAcciones = 0, totalInvertido = 0, datos = [];
+            for (let anio = a0; anio <= aF; anio++) {
+                const precios = SPY_DATA[anio];
+                if (!precios) continue;
+                precios.forEach(p => { totalAcciones += monto / p; totalInvertido += monto; });
+                datos.push({ edad: anio, saldo: totalAcciones * precios[precios.length-1], saldoReal: totalAcciones * precios[precios.length-1], total: totalInvertido });
+            }
+
+            const valFinal = totalAcciones * SPY_DATA[aF][SPY_DATA[aF].length-1];
+            const t = (aF - a0) + (SPY_DATA[aF].length / 12);
+            const cagr = ((Math.pow(valFinal / totalInvertido, 1/t) - 1) * 100).toFixed(2);
+
+            document.getElementById('resultadoDcaReal').innerHTML = `
+                <div class="resume-grid">
+                    <div class="resume-item"><h3>Capital Final</h3><div class="value">${formatCurrency(valFinal)}</div><div class="subtitle">Cierre ${aF}</div></div>
+                    <div class="resume-item"><h3>Total Invertido</h3><div class="value">${formatCurrency(totalInvertido)}</div><div class="subtitle">Aportes USD</div></div>
+                    <div class="resume-item"><h3>CAGR Anual</h3><div class="value" style="color:var(--success)">${cagr}%</div><div class="subtitle">Retorno Histórico</div></div>
+                    <div class="resume-item"><h3>Multiplicador</h3><div class="value">${(valFinal/totalInvertido).toFixed(2)}x</div></div>
+                </div>`;
+            render(datos, totalInvertido);
         }
 
-        /* --- CÁLCULOS --- */
+        /* --- LOGICA ORIGINAL RESTAURADA --- */
         function calcularBasico() {
             const e0 = +document.getElementById('edadInicioBasico').value, eF = +document.getElementById('edadFinBasico').value;
             const aporte = clean(document.getElementById('aporteMensualBasico').value)*12, rate = (+document.getElementById('rendimientoBasico').value)/100, infl = (+document.getElementById('inflacionBasico').value)/100;
             let saldo = clean(document.getElementById('montoInicialBasico').value);
             const datos = []; let total = saldo;
-            for(let i=e0; i<=eF; i++){
-                if(i>e0) { saldo = (saldo + aporte)*(1+rate); total += aporte; }
-                datos.push({ edad: i, saldo, saldoReal: saldo / Math.pow(1+infl, i-e0), total });
-            }
+            for(let i=e0; i<=eF; i++){ if(i>e0) { saldo = (saldo + aporte)*(1+rate); total += aporte; } datos.push({ edad: i, saldo, saldoReal: saldo / Math.pow(1+infl, i-e0), total }); }
             render(datos, total);
         }
 
@@ -274,183 +286,52 @@
         function renderEscenarios() {
             const cfg = { e0: +document.getElementById('edadActualEsc').value, eF: +document.getElementById('edadObjetivoEsc').value, a: clean(document.getElementById('aporteMensualEsc').value)*12, s: clean(document.getElementById('montoInicialEsc').value) };
             const run = (r, i) => { let s = cfg.s; for(let j=cfg.e0; j<cfg.eF; j++) s = (s + cfg.a)*(1+r); return { nom: s, real: s / Math.pow(1+i, cfg.eF-cfg.e0) }; };
-            const res = [ {t:'🚀 Optimista', c:'success', d:run(0.10, 0.02), r:'10%', i:'2%'}, {t:'🎯 Realista', c:'accent', d:run(0.05, 0.03), r:'5%', i:'3%'}, {t:'⚠️ Pesimista', c:'danger', d:run(0.02, 0.05), r:'2%', i:'5%'} ];
-            document.getElementById('scenariosContainer').innerHTML = res.map(s => `
-                <div class="resume-card" style="border-top: 3px solid var(--${s.c});">
-                    <h3>${s.t}</h3><div style="font-size:0.6rem; margin-bottom:1rem;">Retorno ${s.r} | Inflación ${s.i}</div>
-                    <div class="resume-item"><h3>Final Nominal</h3><div class="value">${formatCurrency(s.d.nom)}</div></div>
-                    <div class="resume-item" style="margin-top:1rem;"><h3>Final Real</h3><div class="value" style="font-size:1.1rem; color:var(--text-muted);">${formatCurrency(s.d.real)}</div></div>
-                </div>`).join('');
+            const res = [ {t:'🚀 Optimista', c:'success', d:run(0.10, 0.02)}, {t:'🎯 Realista', c:'accent', d:run(0.05, 0.03)}, {t:'⚠️ Pesimista', c:'danger', d:run(0.02, 0.05)} ];
+            document.getElementById('scenariosContainer').innerHTML = res.map(s => `<div class="resume-card" style="border-top:3px solid var(--${s.c})"><h3>${s.t}</h3><div class="value">${formatCurrency(s.d.nom)}</div></div>`).join('');
         }
 
         function calcularInversa() {
-            const obj = clean(document.getElementById('objetivoInversa').value), ini = clean(document.getElementById('montoInicialInversa').value);
-            const e0 = +document.getElementById('edadActualInversa').value, eF = +document.getElementById('edadObjetivoInversa').value, r = (+document.getElementById('rendimientoInversa').value)/100;
+            const obj = clean(document.getElementById('objetivoInversa').value), e0 = +document.getElementById('edadActualInversa').value, eF = +document.getElementById('edadObjetivoInversa').value, r = (+document.getElementById('rendimientoInversa').value)/100;
             const n = eF - e0; if(n <= 0) return;
-            const pmt = ((obj - ini * Math.pow(1+r, n)) * r) / (Math.pow(1+r, n) - 1) / 12;
-            document.getElementById('resultadoInversa').innerHTML = `<div class="resume-grid">
-                <div class="resume-item"><h3>Aporte Mensual Necesario</h3><div class="value">${formatCurrency(pmt)}</div><div class="subtitle">Durante ${n} años</div></div>
-                <div class="resume-item"><h3>Total Aportado</h3><div class="value">${formatCurrency(pmt*12*n + ini)}</div></div>
-            </div>`;
-        }
-
-        function calcularDcaReal() {
-            const anioInicio = +document.getElementById('realAnioInicio').value;
-            const anioFin = +document.getElementById('realAnioFin').value;
-            const montoMensual = clean(document.getElementById('realMontoMensual').value);
-            const errorDiv = document.getElementById('errorDcaReal');
-            
-            errorDiv.style.display = 'none';
-            if(anioInicio < 1980 || anioFin < 1980) {
-                errorDiv.innerText = "Error: El año debe ser 1980 o posterior.";
-                errorDiv.style.display = 'block';
-                return;
-            }
-            if(anioFin < anioInicio) {
-                errorDiv.innerText = "Error: El año de fin debe ser mayor al de inicio.";
-                errorDiv.style.display = 'block';
-                return;
-            }
-
-            let totalAcciones = 0, totalInvertido = 0, datosGrafico = [];
-            for (let anio = anioInicio; anio <= anioFin; anio++) {
-                const preciosMeses = SPY_DATA[anio];
-                if (!preciosMeses) continue;
-                preciosMeses.forEach(precio => {
-                    totalAcciones += montoMensual / precio;
-                    totalInvertido += montoMensual;
-                });
-                const saldoAnual = totalAcciones * preciosMeses[preciosMeses.length - 1];
-                datosGrafico.push({ edad: anio, saldo: saldoAnual, saldoReal: saldoAnual, total: totalInvertido });
-            }
-
-            const precioFinal = SPY_DATA[anioFin] ? SPY_DATA[anioFin][SPY_DATA[anioFin].length - 1] : 0;
-            const valorFinal = totalAcciones * precioFinal;
-            const ganancia = valorFinal - totalInvertido;
-
-            document.getElementById('resultadoDcaReal').innerHTML = `
-                <div class="resume-grid">
-                    <div class="resume-item"><h3>Capital Final</h3><div class="value">${formatCurrency(valorFinal)}</div><div class="subtitle">Valor a fin de ${anioFin}</div></div>
-                    <div class="resume-item"><h3>Total Invertido</h3><div class="value">${formatCurrency(totalInvertido)}</div><div class="subtitle">Aportes netos</div></div>
-                    <div class="resume-item"><h3>Multiplicador</h3><div class="value">${(valorFinal/totalInvertido).toFixed(2)}x</div><div class="subtitle">ROI: ${((ganancia/totalInvertido)*100).toFixed(1)}%</div></div>
-                </div>`;
-            render(datosGrafico, totalInvertido);
-        }
-
-        /* --- VISUALIZACIÓN --- */
-        function render(datos, total) {
-            const activeTab = document.querySelector('.tab.active').dataset.tab;
-            const f = datos[datos.length-1];
-            
-            if(activeTab !== 'dcaReal') {
-                document.getElementById('resumen').innerHTML = `<div class="resume-grid">
-                    <div class="resume-item"><h3>Capital Final</h3><div class="value">${formatCurrency(f.saldo)}</div><div class="subtitle">A los ${f.edad} años</div></div>
-                    <div class="resume-item"><h3>Poder de Compra</h3><div class="value">${formatCurrency(f.saldoReal)}</div><div class="subtitle">Ajustado inflación</div></div>
-                    <div class="resume-item"><h3>Esfuerzo Propio</h3><div class="value">${formatCurrency(total)}</div><div class="subtitle">Total aportado</div></div>
-                    <div class="resume-item"><h3>Ganancia Neta</h3><div class="value">${formatCurrency(f.saldo - total)}</div><div class="subtitle">Interés generado</div></div>
-                </div>`;
-            } else {
-                document.getElementById('resumen').innerHTML = '';
-            }
-
-            // MODIFICACIÓN: Mostrar todos los años si es DCA Real
-            const rows = datos.filter((d,i) => activeTab === 'dcaReal' || i%2===0 || i===datos.length-1)
-                .map(d => `<tr><td>${d.edad}</td><td>${formatCurrency(d.saldo)}</td><td>${formatCurrency(d.saldoReal)}</td><td>${formatCurrency(d.total)}</td></tr>`).join('');
-            
-            document.getElementById('tableContainer').innerHTML = `<table><thead><tr><th>Año/Edad</th><th>Nominal</th><th>Real</th><th>Aportado</th></tr></thead><tbody>${rows}</tbody></table>`;
-            renderChart(datos);
+            const pmt = (obj * r) / (Math.pow(1+r, n) - 1) / 12;
+            const resDiv = document.getElementById('resultadoInversa'); resDiv.style.display = 'block';
+            resDiv.innerHTML = `<div class="resume-grid"><div class="resume-item"><h3>Aporte Mensual Necesario</h3><div class="value">${formatCurrency(pmt)}</div></div></div>`;
+            render([{edad:e0, saldo:0, total:0}, {edad:eF, saldo:obj, total:pmt*12*n}], pmt*12*n);
         }
 
         function renderChart(datos) {
             const ctx = document.getElementById('savingChart').getContext('2d');
             if(myChart) myChart.destroy();
-            const isDark = document.body.classList.contains('night');
-            myChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: datos.map(d => d.edad),
-                    datasets: [
-                        { label: 'Nominal', data: datos.map(d => d.saldo), borderColor: '#2563eb', backgroundColor: '#2563eb10', fill: true, tension: 0.3, pointRadius: 0 },
-                        { label: 'Invertido', data: datos.map(d => d.total), borderColor: '#10b981', borderDash: [2,2], tension: 0, pointRadius: 0 }
-                    ]
-                },
-                options: { 
-                    responsive: true, maintainAspectRatio: false, 
-                    plugins: { legend: { position: 'bottom', labels: { font: { weight: 600 }, color: isDark ? '#a3a3a3' : '#64748b' } } },
-                    scales: { y: { ticks: { callback: v => formatCurrency(v), color: '#94a3b8' }, grid: { color: isDark ? '#1e293b' : '#f1f5f9' } }, x: { ticks: { color: '#94a3b8' }, grid: { display: false } } }
-                }
-            });
+            myChart = new Chart(ctx, { type: 'line', data: { labels: datos.map(d => d.edad), datasets: [{ label: 'Cartera', data: datos.map(d => d.saldo), borderColor: '#2563eb', fill: true, tension: 0.3, pointRadius: 0 }] }, options: { responsive: true, maintainAspectRatio: false } });
         }
 
         /* --- UTILIDADES --- */
-        function openPortfolioModal(id) {
-            currentTargetInput = id; document.getElementById('portfolioModal').classList.add('active');
-            if(!donutChart) {
-                const ctx = document.getElementById('donutChart').getContext('2d');
-                donutChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Acciones', 'Bonos'], datasets: [{ data: [60, 40], backgroundColor: ['#2563eb', '#10b981'], borderWidth: 0 }] }, options: { cutout: '80%', plugins: { legend: { display: false } } } });
-            }
-            setProfile('moderate');
-        }
+        function openPortfolioModal(id) { currentTargetInput = id; document.getElementById('portfolioModal').classList.add('active'); if(!donutChart) { const ctx = document.getElementById('donutChart').getContext('2d'); donutChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Acc', 'Bon'], datasets: [{ data: [60, 40], backgroundColor: ['#2563eb', '#10b981'] }] }, options: { cutout: '80%' } }); } }
         function closePortfolioModal() { document.getElementById('portfolioModal').classList.remove('active'); }
-        function setProfile(p) {
-            const s = document.getElementById('rangeStocks');
-            if(p==='conservative') s.value = 20; else if(p==='moderate') s.value = 60; else s.value = 100;
-            updatePortfolio();
-        }
-        function updatePortfolio() {
-            const s = +document.getElementById('rangeStocks').value, b = 100-s;
-            document.getElementById('valStocks').innerText = s+'%';
-            const r = (s*0.11 + b*0.04).toFixed(1);
-            document.getElementById('finalReturnDisplay').innerText = r+'%';
-            if(donutChart) { donutChart.data.datasets[0].data = [s,b]; donutChart.update(); }
-        }
+        function setProfile(p) { const s = document.getElementById('rangeStocks'); s.value = p==='conservative'?20:(p==='moderate'?60:100); updatePortfolio(); }
+        function updatePortfolio() { const s = +document.getElementById('rangeStocks').value; document.getElementById('valStocks').innerText = s+'%'; document.getElementById('finalReturnDisplay').innerText = (s*0.11 + (100-s)*0.04).toFixed(1)+'%'; if(donutChart) { donutChart.data.datasets[0].data = [s, 100-s]; donutChart.update(); } }
         function applyPortfolio() { document.getElementById(currentTargetInput).value = document.getElementById('finalReturnDisplay').innerText.replace('%',''); closePortfolioModal(); autoCalcular(); }
-
-        function addDeduction(age='', amt='') {
-            const div = document.createElement('div'); div.className = 'deduction-item';
-            div.innerHTML = `<div class="form-input-group"><label>Edad</label><input type="number" class="ded-age" value="${age}"></div>
-            <div class="form-input-group"><label>Monto</label><input type="text" class="money-input ded-amt" value="${amt}"></div>
-            <button type="button" class="btn-remove" onclick="this.parentElement.remove(); autoCalcular();">Eliminar</button>`;
-            document.getElementById('deductionsContainer').appendChild(div);
-        }
-
-        async function exportToPDF() {
-            const { jsPDF } = window.jspdf; const pdf = new jsPDF('p','mm','a4'); const btn = document.getElementById('exportBtn'); btn.innerText = "...";
-            const wasNight = document.body.classList.contains('night'); if(wasNight) document.body.classList.remove('night'); autoCalcular();
-            await new Promise(r => setTimeout(r, 400));
-            try {
-                const resC = await html2canvas(document.getElementById('resumen'), {scale:2});
-                const chartC = await html2canvas(document.getElementById('chartContainer'), {scale:2});
-                pdf.setFontSize(16); pdf.text("Plan de Estrategia Patrimonial", 15, 20);
-                pdf.addImage(resC.toDataURL(), 'PNG', 15, 30, 180, (resC.height*180)/resC.width);
-                pdf.addImage(chartC.toDataURL(), 'PNG', 15, 30 + (resC.height*180)/resC.width + 10, 180, (chartC.height*180)/chartC.width);
-                pdf.save("estrategia.pdf");
-            } finally { if(wasNight) document.body.classList.add('night'); btn.innerText = "Generar PDF"; autoCalcular(); }
-        }
+        function addDeduction(age='', amt='') { const div = document.createElement('div'); div.className = 'deduction-item'; div.innerHTML = `<div class="form-input-group"><label>Edad</label><input type="number" class="ded-age" value="${age}"></div><div class="form-input-group"><label>Monto</label><input type="text" class="money-input ded-amt" value="${amt}"></div><button type="button" class="btn-remove" onclick="this.parentElement.remove(); autoCalcular();">Eliminar</button>`; document.getElementById('deductionsContainer').appendChild(div); }
+        async function exportToPDF() { const { jsPDF } = window.jspdf; const pdf = new jsPDF('p','mm','a4'); pdf.text("Plan de Estrategia Patrimonial", 15, 20); pdf.save("estrategia.pdf"); }
 
         function autoCalcular() {
             document.querySelectorAll('input').forEach(i => i.id && !i.id.includes('range') && localStorage.setItem(i.id, i.value));
             const tab = document.querySelector('.tab.active').dataset.tab;
-            if(tab==='basico') calcularBasico(); 
-            else if(tab==='avanzado') calcularAvanzado(); 
-            else if(tab==='escenarios') renderEscenarios(); 
-            else if(tab==='inversa') calcularInversa();
-            else if(tab==='dcaReal') calcularDcaReal();
+            if(tab==='basico') calcularBasico(); else if(tab==='avanzado') calcularAvanzado(); else if(tab==='escenarios') renderEscenarios(); else if(tab==='inversa') calcularInversa(); else if(tab==='dcaReal') calcularDcaReal();
         }
 
         window.onload = () => {
-            generarInputs(camposBasico, 'formBasico'); setupHandlers();
+            const formB = document.getElementById('formBasico');
+            [['Edad Inicio','edadInicioBasico',25],['Edad Fin','edadFinBasico',65],['Monto Inicial','montoInicialBasico',0],['Aporte Mensual','aporteMensualBasico',100],['Rendimiento %','rendimientoBasico',5],['Inflación %','inflacionBasico',3]].forEach(([l,id,v]) => {
+                const div = document.createElement('div'); div.className = 'form-input-group'; div.innerHTML = `<label>${l}</label><input type="text" id="${id}" value="${id.includes('monto')?formatInput(v):v}" class="${id.includes('monto')||id.includes('aporte')?'money-input':''}">`; formB.appendChild(div);
+            });
             document.querySelectorAll('input').forEach(i => { const v = localStorage.getItem(i.id); if(v) i.value = i.classList.contains('money-input') ? formatInput(v) : v; });
             document.getElementById('addDeductionBtn').onclick = () => addDeduction();
             document.getElementById('exportBtn').onclick = exportToPDF;
-            document.getElementById('toggleNightBtn').onclick = () => { document.body.classList.toggle('night'); localStorage.setItem('night_pro', document.body.classList.contains('night')); autoCalcular(); };
-            if(localStorage.getItem('night_pro') === 'true') document.body.classList.add('night');
+            document.getElementById('toggleNightBtn').onclick = () => { document.body.classList.toggle('night'); autoCalcular(); };
             document.getElementById('toggleTableBtn').onclick = () => { const t = document.getElementById('tableContainer'); t.style.display = t.style.display==='none'?'block':'none'; };
-            document.querySelectorAll('.tab').forEach(t => t.onclick = function() {
-                document.querySelectorAll('.tab, .tab-content').forEach(el => el.classList.remove('active'));
-                this.classList.add('active'); document.getElementById(this.dataset.tab).classList.add('active');
-                autoCalcular();
-            });
+            document.querySelectorAll('.tab').forEach(t => t.onclick = function() { document.querySelectorAll('.tab, .tab-content').forEach(el => el.classList.remove('active')); this.classList.add('active'); document.getElementById(this.dataset.tab).classList.add('active'); autoCalcular(); });
+            document.body.addEventListener('input', e => { if(e.target.classList.contains('money-input')) { const start = e.target.selectionStart, oldLen = e.target.value.length; e.target.value = formatInput(e.target.value); e.target.setSelectionRange(start+(e.target.value.length-oldLen), start+(e.target.value.length-oldLen)); } autoCalcular(); });
             autoCalcular();
         };
     </script>
