@@ -18,70 +18,89 @@
             --border: #e2e8f0; --text-main: #1e293b; --text-muted: #64748b;
             --radius: 4px; --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
         }
-
         body.night {
             --bg-body: #020617; --bg-card: #0f172a; --bg-input: #1e293b;
             --border: #334155; --text-main: #f8fafc; --text-muted: #94a3b8;
             --primary: #3b82f6; --primary-light: #1e1b4b;
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; background: var(--bg-body); color: var(--text-main); line-height: 1.5; padding: 2rem 0; transition: background 0.3s; }
         .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
 
+        /* HEADER */
         .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 1.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); }
-        h1 { font-size: 1.1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-main); }
-        .version-badge { font-size: 0.65rem; color: var(--text-muted); border: 1px solid var(--border); padding: 2px 8px; border-radius: 2px; margin-left: 10px; font-weight: 500; vertical-align: middle; }
-        
-        .header-buttons { display: flex; gap: 0.75rem; }
-        .btn-icon { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border); padding: 0.5rem 1rem; border-radius: var(--radius); font-weight: 600; font-size: 0.75rem; cursor: pointer; text-transform: uppercase; transition: all 0.2s; }
+        h1 { font-size: 1.1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
+        .version-badge { font-size: 0.65rem; color: var(--text-muted); border: 1px solid var(--border); padding: 2px 8px; border-radius: 2px; margin-left: 10px; font-weight: 500; }
+        .btn-icon { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border); padding: 0.5rem 1rem; border-radius: var(--radius); font-weight: 600; font-size: 0.75rem; cursor: pointer; text-transform: uppercase; }
         .btn-primary { background: var(--primary); color: white; border: none; }
 
+        /* TABS */
         .tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 2rem; gap: 2.5rem; overflow-x: auto; }
-        .tab { padding: 0.75rem 0; border: none; background: transparent; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; cursor: pointer; text-transform: uppercase; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; }
+        .tab { padding: 0.75rem 0; border: none; background: transparent; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; cursor: pointer; text-transform: uppercase; border-bottom: 2px solid transparent; white-space: nowrap; }
         .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-        .tab-content { display: none; animation: fadeIn 0.3s ease; }
-        .tab-content.active { display: block; }
+        /* FORMULARIOS */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
         form { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
         .form-input-group { display: flex; flex-direction: column; gap: 0.4rem; }
         label { font-size: 0.65rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
-        input[type="number"], input[type="text"], select { padding: 0.65rem 0.8rem; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); font-size: 0.95rem; color: var(--text-main); width: 100%; transition: border 0.2s; }
-        
+        input, select { padding: 0.65rem 0.8rem; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); font-size: 0.95rem; color: var(--text-main); width: 100%; }
+
+        /* HELPERS Y COMPONENTES */
+        .input-with-action { position: relative; display: flex; align-items: center; }
+        .btn-magic { position: absolute; right: 6px; background: var(--bg-body); border: 1px solid var(--border); font-size: 0.6rem; padding: 2px 6px; border-radius: 2px; cursor: pointer; font-weight: 700; }
         .stage-row { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; padding: 1.5rem; border: 1px solid var(--border); border-radius: var(--radius); position: relative; background: var(--bg-card); margin-bottom: 0.5rem; }
         .stage-label { position: absolute; top: -10px; left: 15px; background: var(--bg-body); padding: 0 8px; font-size: 0.6rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; }
+        .deduction-item { display: grid; grid-template-columns: 1fr 1.5fr auto; gap: 1rem; align-items: flex-end; padding: 1.25rem; background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border); border-left: 3px solid var(--warning); margin-bottom: 0.5rem; }
+        .btn-add { grid-column: 1/-1; padding: 0.8rem; background: transparent; border: 1px dashed var(--border); border-radius: var(--radius); cursor: pointer; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin: 1rem 0; }
+        .btn-remove { background: #fee2e2; color: var(--danger); border: none; padding: 0.6rem; border-radius: var(--radius); cursor: pointer; }
 
+        /* DASHBOARD */
         .resume-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; margin: 2rem 0; box-shadow: var(--shadow-sm); }
-        .resume-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2.5rem; }
+        .resume-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; }
         .resume-item h3 { font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 700; }
-        .resume-item .value { font-size: 1.6rem; font-weight: 700; }
+        .resume-item .value { font-size: 1.5rem; font-weight: 700; line-height: 1.2; }
+        .resume-item .subtitle { font-size: 0.75rem; color: var(--accent); margin-top: 0.2rem; font-weight: 500; }
 
-        #chartContainer { background: var(--bg-card); border: 1px solid var(--border); padding: 1.5rem; height: 450px; border-radius: var(--radius); margin-top: 1.5rem; }
+        /* TOOLTIPS */
+        .tooltip-container { position: relative; display: inline-flex; align-items: center; }
+        .tooltip-icon { width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 9px; cursor: help; color: var(--text-muted); }
+        .tooltip { visibility: hidden; opacity: 0; position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%); width: 220px; padding: 1rem; background: #1e293b; color: white; font-size: 0.75rem; border-radius: 4px; z-index: 100; transition: 0.2s; pointer-events: none; text-transform: none; line-height: 1.4; }
+        .tooltip-container:hover .tooltip { visibility: visible; opacity: 1; }
+
+        #chartContainer { background: var(--bg-card); border: 1px solid var(--border); padding: 1.5rem; height: 450px; border-radius: var(--radius); }
         #tableContainer { margin-top: 2rem; border: 1px solid var(--border); border-radius: var(--radius); overflow-x: auto; display: none; background: var(--bg-card); }
         table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         th { text-align: left; padding: 0.8rem 1rem; background: var(--bg-body); color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; border-bottom: 1px solid var(--border); }
         td { padding: 0.8rem 1rem; border-bottom: 1px solid var(--border); }
 
-        .error-msg { color: var(--danger); font-size: 0.75rem; font-weight: 700; margin-top: 0.5rem; display: none; grid-column: 1/-1; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--bg-card); padding: 2rem; width: 95%; max-width: 600px; border-radius: var(--radius); }
+        .btn-profile { width: 100%; padding: 0.6rem; margin-bottom: 0.5rem; border: 1px solid var(--border); background: transparent; font-size: 0.7rem; font-weight: 700; cursor: pointer; text-transform: uppercase; }
+        .btn-profile.active { background: var(--primary); color: white; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; } }
+        @media (max-width: 850px) { .stage-row { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Wealth & Capital Strategy <span class="version-badge">v3.0</span></h1>
+            <h1>Strategy Wealth <span class="version-badge">v3.1</span></h1>
             <div class="header-buttons">
-                <button id="exportBtn" class="btn-icon">Generar PDF</button>
+                <button id="exportBtn" class="btn-icon">PDF</button>
                 <button id="toggleNightBtn" class="btn-icon btn-primary">Tema</button>
             </div>
         </div>
         
         <div class="tabs">
-            <button class="tab active" data-tab="basico">Proyección Simple</button>
-            <button class="tab" data-tab="avanzado">Plan por Etapas</button>
+            <button class="tab active" data-tab="basico">Proyección</button>
+            <button class="tab" data-tab="avanzado">Etapas</button>
             <button class="tab" data-tab="escenarios">Escenarios</button>
             <button class="tab" data-tab="inversa">Objetivo</button>
-            <button class="tab" data-tab="dcaReal">DCA Real (Histórico)</button>
+            <button class="tab" data-tab="dcaReal">DCA Real</button>
         </div>
 
         <div id="basico" class="tab-content active"><form id="formBasico"></form></div>
@@ -96,43 +115,57 @@
                 <div class="stage-row"><span class="stage-label">Etapa 1</span>
                     <div class="form-input-group"><label>Edad Inicio</label><input type="number" id="advEdad1" value="25"></div>
                     <div class="form-input-group"><label>Aporte Mensual</label><input type="text" class="money-input" id="advAporte1" value="500"></div>
-                    <div class="form-input-group"><label>Rendimiento (%)</label><input type="number" id="advRend1" value="8" step="0.1"></div>
+                    <div class="form-input-group"><label>Rendimiento (%)</label><div class="input-with-action"><input type="number" id="advRend1" value="8" step="0.1"><button type="button" class="btn-magic" onclick="openPortfolioModal('advRend1')">🪄</button></div></div>
                 </div>
-                </form>
+                <div class="stage-row"><span class="stage-label">Etapa 2</span>
+                    <div class="form-input-group"><label>Edad Inicio</label><input type="number" id="advEdad2" value="35"></div>
+                    <div class="form-input-group"><label>Aporte Mensual</label><input type="text" class="money-input" id="advAporte2" value="1000"></div>
+                    <div class="form-input-group"><label>Rendimiento (%)</label><div class="input-with-action"><input type="number" id="advRend2" value="6" step="0.1"><button type="button" class="btn-magic" onclick="openPortfolioModal('advRend2')">🪄</button></div></div>
+                </div>
+                <div class="stage-row"><span class="stage-label">Etapa 3</span>
+                    <div class="form-input-group"><label>Edad Inicio</label><input type="number" id="advEdad3" value="50"></div>
+                    <div class="form-input-group"><label>Aporte Mensual</label><input type="text" class="money-input" id="advAporte3" value="1500"></div>
+                    <div class="form-input-group"><label>Rendimiento (%)</label><div class="input-with-action"><input type="number" id="advRend3" value="4" step="0.1"><button type="button" class="btn-magic" onclick="openPortfolioModal('advRend3')">🪄</button></div></div>
+                </div>
+                <div class="deductions-container" style="grid-column: 1/-1;">
+                    <div id="deductionsList"></div>
+                    <button type="button" class="btn-add" id="addDeductionBtn">+ Agregar Gasto en una Edad Específica</button>
+                </div>
+            </form>
         </div>
 
         <div id="escenarios" class="tab-content">
-            <form style="margin-bottom: 2rem; background: var(--bg-card); padding: 1.5rem; border: 1px solid var(--border);">
-                <div class="form-input-group"><label>Capital Inicial</label><input type="text" class="money-input" id="montoInicialEsc" value="0"></div>
-                <div class="form-input-group"><label>Aporte Mensual</label><input type="text" class="money-input" id="aporteMensualEsc" value="100"></div>
-                <div class="form-input-group"><label>Edad Actual</label><input type="number" id="edadActualEsc" value="25"></div>
-                <div class="form-input-group"><label>Edad Objetivo</label><input type="number" id="edadObjetivoEsc" value="65"></div>
+            <form style="margin-bottom: 2rem;">
+                <div class="form-input-group"><label>Capital Inicial</label><input type="text" class="money-input" id="escMontoInicial" value="0"></div>
+                <div class="form-input-group"><label>Aporte Mensual</label><input type="text" class="money-input" id="escAporteMensual" value="100"></div>
+                <div class="form-input-group"><label>Edad Actual</label><input type="number" id="escEdadActual" value="25"></div>
+                <div class="form-input-group"><label>Edad Retiro</label><input type="number" id="escEdadRetiro" value="65"></div>
             </form>
-            <div id="scenariosContainer" class="resume-grid"></div>
+            <div id="scenariosGrid" class="resume-grid"></div>
         </div>
 
         <div id="inversa" class="tab-content">
             <form id="formInversa">
-                <div class="form-input-group"><label>Objetivo Capital</label><input type="text" class="money-input" id="objetivoInversa" value="1.000.000"></div>
-                <div class="form-input-group"><label>Edad Actual</label><input type="number" id="edadActualInversa" value="25"></div>
-                <div class="form-input-group"><label>Edad Objetivo</label><input type="number" id="edadObjetivoInversa" value="65"></div>
-                <div class="form-input-group"><label>Rentabilidad (%)</label><input type="number" id="rendimientoInversa" value="5" step="0.1"></div>
+                <div class="form-input-group"><label>¿Cuánto quieres juntar?</label><input type="text" class="money-input" id="invObjetivo" value="1.000.000"></div>
+                <div class="form-input-group"><label>Edad Actual</label><input type="number" id="invEdadActual" value="25"></div>
+                <div class="form-input-group"><label>Edad Retiro</label><input type="number" id="invEdadRetiro" value="65"></div>
+                <div class="form-input-group"><label>Rendimiento (%)</label><input type="number" id="invRend" value="5" step="0.1"></div>
             </form>
-            <div id="resultadoInversa" class="resume-card" style="margin-top:1.5rem; display:none;"></div>
+            <div id="resultadoInversa" class="resume-card"></div>
         </div>
 
         <div id="dcaReal" class="tab-content">
             <form id="formDcaReal">
                 <div class="form-input-group">
-                    <label>Seleccionar Índice / Activo</label>
+                    <label>Activo Histórico</label>
                     <select id="realActivo">
-                        <option value="SPY">S&P 500 (SPY) - Desde 1980</option>
-                        <option value="QQQ">Nasdaq 100 (QQQ) - Desde 1999</option>
-                        <option value="BTC">Bitcoin (BTC) - Desde 2010</option>
+                        <option value="SPY">S&P 500 (SPY)</option>
+                        <option value="QQQ">Nasdaq 100 (QQQ)</option>
+                        <option value="BTC">Bitcoin (BTC)</option>
                     </select>
                 </div>
-                <div class="form-input-group"><label>Año Inicio</label><input type="number" id="realAnioInicio" value="2000"></div>
-                <div class="form-input-group"><label>Año Fin</label><input type="number" id="realAnioFin" value="2026"></div>
+                <div class="form-input-group"><label>Año Inicio (≥ 1980)</label><input type="number" id="realAnioInicio" value="2000" min="1980" max="2026"></div>
+                <div class="form-input-group"><label>Año Fin</label><input type="number" id="realAnioFin" value="2026" min="1980" max="2026"></div>
                 <div class="form-input-group"><label>Inversión Mensual (USD)</label><input type="text" class="money-input" id="realMontoMensual" value="500"></div>
                 <div id="errorDcaReal" class="error-msg"></div>
             </form>
@@ -140,140 +173,239 @@
         </div>
 
         <div id="resumen" class="resume-card"></div>
-        <div style="display: flex; justify-content: flex-end;"><button id="toggleTableBtn" class="btn-icon">Ver Tabla Detallada</button></div>
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;"><button id="toggleTableBtn" class="btn-icon">Tabla Detalle</button></div>
         <div id="tableContainer"></div>
         <div id="chartContainer"><canvas id="savingChart"></canvas></div>
     </div>
 
+    <div id="portfolioModal" class="modal"><div class="modal-content">
+        <h2 style="font-size: 1rem; margin-bottom: 2rem; text-transform: uppercase;">Asistente de Inversión</h2>
+        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 2.5rem;">
+            <div>
+                <button class="btn-profile" onclick="setProfile('conservative')">Conservador</button>
+                <button class="btn-profile" onclick="setProfile('moderate')">Moderado</button>
+                <button class="btn-profile" onclick="setProfile('aggressive')">Agresivo</button>
+                <div style="margin-top: 1.5rem;">
+                    <div style="display:flex; justify-content:space-between; font-size:0.7rem; font-weight:700; color:var(--text-muted); margin-bottom:0.5rem;"><span>ACCIONES</span><span id="valStocks">60%</span></div>
+                    <input type="range" id="rangeStocks" min="0" max="100" value="60" style="width:100%;" oninput="updatePortfolio()">
+                </div>
+            </div>
+            <div style="text-align: center; border-left: 1px solid var(--border); padding-left: 2rem;">
+                <div style="width: 130px; height: 130px; margin: 0 auto 1rem;"><canvas id="donutChart"></canvas></div>
+                <div id="finalReturnDisplay" style="font-size: 2.2rem; font-weight: 700; color: var(--accent);">9.0%</div>
+            </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;"><button class="btn-icon" onclick="closePortfolioModal()">Cerrar</button><button class="btn-icon btn-primary" onclick="applyPortfolio()">Aplicar</button></div>
+    </div></div>
+
     <script>
-        /* --- BASE DE DATOS (HARDCODED) --- */
-        const HISTORICAL_DATA = {
-            SPY: { 1980:[114,113,102,106,111,114,121,122,125,127,136,135],1990:[329,331,339,330,361,358,356,322,306,304,322,330],2000:[1394,1366,1498,1452,1420,1454,1430,1517,1436,1429,1314,1320],2010:[1073,1104,1169,1186,1089,1030,1101,1049,1141,1183,1180,1257],2020:[3225,2954,2584,2912,3044,3100,3271,3500,3363,3269,3621,3756],2024:[4845,5096,5254,5035,5277,5460,5522,5648,5761,5705,6032,5881],2026:[6939,6878] },
-            QQQ: { 1999:[51,52,55,58,62,60,65,68,70,72,78,82],2000:[90,95,115,102,92,85,82,95,78,65,58,55],2010:[45,46,48,50,48,45,48,46,50,52,52,55],2020:[215,200,185,210,225,235,255,270,265,260,285,310],2024:[410,430,445,435,460,480,490,500,510,505,530,520],2026:[590,585] },
-            BTC: { 2010:[0.05,0.05,0.05,0.05,0.05,0.05,0.08,0.07,0.06,0.10,0.20,0.30],2015:[310,250,240,230,235,260,280,230,240,320,380,430],2020:[7200,8500,6400,8600,9400,9100,11300,11600,10700,13700,19700,29000],2024:[42000,62000,71000,60000,68000,62000,66000,59000,64000,70000,95000,99000],2026:[115000,112000] }
+        /* --- BASE DE DATOS --- */
+        const SPY_DATA = {
+            SPY: { 1980:[114,113,102,106,111,114,121,122,125,127,136,135], 2000:[1394,1366,1498,1452,1420,1454,1430,1517,1436,1429,1314,1320], 2024:[4845,5096,5254,5035,5277,5460,5522,5648,5761,5705,6032,5881], 2026:[6939,6878] },
+            QQQ: { 1999:[51,52,55,58,62,60,65,68,70,72,78,82], 2010:[45,46,48,50,48,45,48,46,50,52,52,55], 2024:[410,430,445,435,460,480,490,500,510,505,530,520], 2026:[590,585] },
+            BTC: { 2010:[0.05,0.05,0.05,0.05,0.05,0.05,0.08,0.07,0.06,0.10,0.20,0.30], 2020:[7200,8500,6400,8600,9400,9100,11300,11600,10700,13700,19700,29000], 2024:[42000,62000,71000,60000,68000,62000,66000,59000,64000,70000,95000,99000], 2026:[115000,112000] }
         };
 
-        // Función para rellenar años faltantes con interpolación (para no saturar el código de valores)
-        function getPrice(index, year, month) {
-            const data = HISTORICAL_DATA[index];
-            if (data[year]) return data[year][month] || data[year][0];
-            const years = Object.keys(data).map(Number).sort((a,b)=>a-b);
-            const prevYear = [...years].reverse().find(y => y < year) || years[0];
-            const nextYear = years.find(y => y > year) || years[years.length-1];
-            const ratio = (year - prevYear) / (nextYear - prevYear || 1);
-            const pPrev = data[prevYear][0], pNext = data[nextYear][0];
-            return pPrev + (pNext - pPrev) * ratio;
-        }
+        const configBasico = [
+            ['Edad inicio', 'edadInicioBasico', 25, {t:'Edad Actual', c:'Edad con la que inicias el ahorro.', e:'Ej: 25'}],
+            ['Edad retiro', 'edadFinBasico', 65, {t:'Meta de Tiempo', c:'Edad en la que dejas de aportar.', e:'Ej: 65'}],
+            ['Monto inicial', 'montoInicialBasico', 0, {t:'Capital Semilla', c:'Dinero ahorrado actualmente.', e:'Ej: 10.000'}],
+            ['Aporte mensual', 'aporteMensualBasico', 500, {t:'Capacidad Mensual', c:'Lo que ahorras por mes.', e:'Ej: 500'}],
+            ['Rendimiento (%)', 'rendimientoBasico', 7, {t:'Tasa Anual', c:'Rentabilidad esperada de tu cartera.', e:'Ej: 7-10%'}],
+            ['Inflación (%)', 'inflacionBasico', 3, {t:'Inflación Est.', c:'Para calcular poder de compra real.', e:'Ej: 3%'}],
+        ];
 
-        let myChart = null;
+        let myChart = null, donutChart = null, currentTargetInput = null;
         const formatCurrency = n => new Intl.NumberFormat('es-ES').format(Math.round(n));
         const formatInput = v => v.toString().replace(/\D/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         const clean = v => parseFloat(v.toString().replace(/\./g, '').replace(',', '.')) || 0;
 
         /* --- LÓGICA TIR --- */
-        function calculateIRR(cashFlows) {
-            let guess = 0.01;
+        function calculateTIR(cashFlows) {
+            let r = 0.01; 
             for (let i = 0; i < 100; i++) {
-                let npv = 0, dnpv = 0;
+                let v = 0, dv = 0;
                 for (let j = 0; j < cashFlows.length; j++) {
-                    npv += cashFlows[j] / Math.pow(1 + guess, j);
-                    dnpv -= j * cashFlows[j] / Math.pow(1 + guess, j + 1);
+                    let d = Math.pow(1 + r, j);
+                    v += cashFlows[j] / d;
+                    dv -= j * cashFlows[j] / (d * (1 + r));
                 }
-                let next = guess - npv / dnpv;
-                if (Math.abs(next - guess) < 1e-7) return next;
-                guess = next;
+                let n = r - v / dv;
+                if (Math.abs(n - r) < 1e-7) return n;
+                r = n;
             }
-            return guess;
+            return r;
         }
 
-        function render(datos, total) {
-            const activeTab = document.querySelector('.tab.active').dataset.tab;
-            const resGlobal = document.getElementById('resumen');
-            
-            if(activeTab === 'dcaReal') {
-                resGlobal.style.display = 'none';
-            } else {
-                resGlobal.style.display = 'block';
-                const f = datos[datos.length-1];
-                resGlobal.innerHTML = `<div class="resume-grid">
-                    <div class="resume-item"><h3>Capital Final</h3><div class="value">${formatCurrency(f.saldo)}</div><div class="subtitle">A los ${f.edad} años</div></div>
-                    <div class="resume-item"><h3>Total Invertido</h3><div class="value">${formatCurrency(total)}</div></div>
-                    <div class="resume-item"><h3>Ganancia</h3><div class="value">${formatCurrency(f.saldo - total)}</div></div>
-                </div>`;
-            }
+        function getPrice(act, y, m) {
+            const d = SPY_DATA[act]; if (d[y]) return d[y][m] || d[y][0];
+            const ys = Object.keys(d).map(Number).sort((a,b)=>a-b);
+            const p = [...ys].reverse().find(i => i < y) || ys[0], n = ys.find(i => i > y) || ys[ys.length-1];
+            return d[p][0] + (d[n][0] - d[p][0]) * ((y - p) / (n - p || 1));
+        }
 
-            const rows = datos.map(d => `<tr><td>${d.edad}</td><td>${formatCurrency(d.saldo)}</td><td>${formatCurrency(d.saldoReal || d.saldo)}</td><td>${formatCurrency(d.total)}</td></tr>`).join('');
-            document.getElementById('tableContainer').innerHTML = `<table><thead><tr><th>Año</th><th>Nominal</th><th>Real</th><th>Aportado</th></tr></thead><tbody>${rows}</tbody></table>`;
-            renderChart(datos);
+        /* --- CÁLCULOS TABS --- */
+        function autoCalcular() {
+            document.querySelectorAll('input, select').forEach(i => i.id && localStorage.setItem(i.id, i.value));
+            const tab = document.querySelector('.tab.active').dataset.tab;
+            if(tab === 'basico') calcularBasico();
+            else if(tab === 'avanzado') calcularAvanzado();
+            else if(tab === 'escenarios') calcularEscenarios();
+            else if(tab === 'inversa') calcularInversa();
+            else if(tab === 'dcaReal') calcularDcaReal();
+        }
+
+        function calcularBasico() {
+            const e0 = +document.getElementById('edadInicioBasico').value, eF = +document.getElementById('edadFinBasico').value;
+            const a = clean(document.getElementById('aporteMensualBasico').value)*12, r = (+document.getElementById('rendimientoBasico').value)/100, inf = (+document.getElementById('inflacionBasico').value)/100;
+            let s = clean(document.getElementById('montoInicialBasico').value), t = s, datos = [];
+            for(let i=e0; i<=eF; i++){
+                if(i>e0){ s=(s+a)*(1+r); t+=a; }
+                datos.push({ edad: i, saldo: s, saldoReal: s / Math.pow(1+inf, i-e0), total: t });
+            }
+            renderDashboard(datos, t);
+        }
+
+        function calcularAvanzado() {
+            const eF = +document.getElementById('advEdadFin').value, inf = (+document.getElementById('advInflacion').value)/100;
+            let s = clean(document.getElementById('advMontoInicial').value), t = s, datos = [];
+            const deds = Array.from(document.querySelectorAll('.deduction-item')).map(i => ({ age: +i.querySelector('.ded-age').value, amt: clean(i.querySelector('.ded-amt').value) }));
+            const etapas = [
+                { e: +document.getElementById('advEdad1').value, a: clean(document.getElementById('advAporte1').value)*12, r: +document.getElementById('advRend1').value/100 },
+                { e: +document.getElementById('advEdad2').value, a: clean(document.getElementById('advAporte2').value)*12, r: +document.getElementById('advRend2').value/100 },
+                { e: +document.getElementById('advEdad3').value, a: clean(document.getElementById('advAporte3').value)*12, r: +document.getElementById('advRend3').value/100 }
+            ];
+            for(let i=etapas[0].e; i<=eF; i++){
+                let f = etapas[0]; if(i >= etapas[2].e) f = etapas[2]; else if(i >= etapas[1].e) f = etapas[1];
+                const g = deds.filter(d => d.age === i).reduce((v, d) => v + d.amt, 0);
+                s = (s + f.a - g)*(1+f.r); t += f.a;
+                datos.push({ edad: i, saldo: Math.max(0, s), saldoReal: Math.max(0, s) / Math.pow(1+inf, i-etapas[0].e), total: t });
+            }
+            renderDashboard(datos, t);
+        }
+
+        function calcularEscenarios() {
+            const cfg = { e0: +document.getElementById('escEdadActual').value, eF: +document.getElementById('escEdadRetiro').value, a: clean(document.getElementById('escAporteMensual').value)*12, s: clean(document.getElementById('escMontoInicial').value) };
+            const run = (r) => { let s = cfg.s; for(let i=cfg.e0; i<cfg.eF; i++) s = (s + cfg.a)*(1+r); return s; };
+            const esc = [ {t:'🚀 Optimista', r:0.10, c:'success'}, {t:'🎯 Realista', r:0.06, c:'accent'}, {t:'⚠️ Pesimista', r:0.03, c:'danger'} ];
+            document.getElementById('scenariosGrid').innerHTML = esc.map(e => {
+                const final = run(e.r);
+                return `<div class="resume-card" style="border-top: 4px solid var(--${e.c});"><h3>${e.t}</h3><div class="value">${formatCurrency(final)}</div><div class="subtitle">Retorno: ${e.r*100}%</div></div>`;
+            }).join('');
+            renderChart([{edad:cfg.e0, saldo:cfg.s}, {edad:cfg.eF, saldo:run(0.06)}]);
+            document.getElementById('resumen').innerHTML = '';
+        }
+
+        function calcularInversa() {
+            const obj = clean(document.getElementById('invObjetivo').value), e0 = +document.getElementById('invEdadActual').value, eF = +document.getElementById('invEdadRetiro').value, r = (+document.getElementById('invRend').value)/100;
+            const n = eF - e0; if(n <= 0) return;
+            const pmt = (obj * r) / (Math.pow(1+r, n) - 1) / 12;
+            document.getElementById('resultadoInversa').innerHTML = `<div class="resume-grid"><div class="resume-item"><h3>Aporte Mensual Necesario</h3><div class="value">${formatCurrency(pmt)}</div><div class="subtitle">Para llegar a ${formatCurrency(obj)}</div></div></div>`;
+            document.getElementById('resumen').innerHTML = '';
         }
 
         function calcularDcaReal() {
-            const index = document.getElementById('realActivo').value;
-            const a0 = +document.getElementById('realAnioInicio').value;
-            const aF = +document.getElementById('realAnioFin').value;
-            const monto = clean(document.getElementById('realMontoMensual').value);
-
-            let totalAcciones = 0, totalInvertido = 0, datos = [], flujos = [];
-            for (let anio = a0; anio <= aF; anio++) {
-                for (let mes = 0; mes < 12; mes++) {
-                    if (anio === 2026 && mes > 1) break; 
-                    const p = getPrice(index, anio, mes);
-                    totalAcciones += monto / p;
-                    totalInvertido += monto;
-                    flujos.push(-monto);
+            const act = document.getElementById('realActivo').value, a0 = +document.getElementById('realAnioInicio').value, aF = +document.getElementById('realAnioFin').value, m = clean(document.getElementById('realMontoMensual').value);
+            let tAcc = 0, tInv = 0, flujos = [], datos = [];
+            for (let y = a0; y <= aF; y++) {
+                for (let ms = 0; ms < 12; ms++) {
+                    if (y === 2026 && ms > 1) break;
+                    const p = getPrice(act, y, ms); tAcc += m / p; tInv += m; flujos.push(-m);
                 }
-                const pCierre = getPrice(index, anio, 11);
-                datos.push({ edad: anio, saldo: totalAcciones * pCierre, total: totalInvertido });
+                datos.push({ edad: y, saldo: tAcc * getPrice(act, y, 11), total: tInv });
             }
-
-            const pFinal = getPrice(index, aF, (aF===2026?1:11));
-            const valFinal = totalAcciones * pFinal;
-            flujos.push(valFinal);
-            
-            const tirMensual = calculateIRR(flujos);
-            const tirAnual = (Math.pow(1 + tirMensual, 12) - 1) * 100;
-
+            const vF = tAcc * getPrice(act, aF, (aF===2026?1:11)); flujos.push(vF);
+            const tirA = (Math.pow(1 + calculateTIR(flujos), 12) - 1) * 100;
             document.getElementById('resultadoDcaReal').innerHTML = `
                 <div class="resume-grid">
-                    <div class="resume-item"><h3>Capital Final</h3><div class="value">${formatCurrency(valFinal)}</div><div class="subtitle">Simulación ${index}</div></div>
-                    <div class="resume-item"><h3>TIR Anualizada</h3><div class="value" style="color:var(--success)">${tirAnual.toFixed(2)}%</div><div class="subtitle">Rendimiento Interno</div></div>
-                    <div class="resume-item"><h3>Multiplicador</h3><div class="value">${(valFinal/totalInvertido).toFixed(2)}x</div></div>
+                    <div class="resume-item"><h3>Saldo Final</h3><div class="value">${formatCurrency(vF)}</div></div>
+                    <div class="resume-item"><h3>TIR (MWR) Anual</h3><div class="value" style="color:var(--success)">${tirA.toFixed(2)}%</div></div>
+                    <div class="resume-item"><h3>Multiplicador</h3><div class="value">${(vF/tInv).toFixed(2)}x</div></div>
                 </div>`;
-            render(datos, totalInvertido);
+            renderDashboard(datos, tInv, true);
         }
 
-        /* --- RESTO DE CALCULOS --- */
-        function calcularBasico() {
-            const e0 = +document.getElementById('edadInicioBasico').value, eF = +document.getElementById('edadFinBasico').value;
-            const aporte = clean(document.getElementById('aporteMensualBasico').value)*12, rate = (+document.getElementById('rendimientoBasico').value)/100, infl = (+document.getElementById('inflacionBasico').value)/100;
-            let saldo = clean(document.getElementById('montoInicialBasico').value);
-            const datos = []; let total = saldo;
-            for(let i=e0; i<=eF; i++){ if(i>e0) { saldo = (saldo + aporte)*(1+rate); total += aporte; } datos.push({ edad: i, saldo, saldoReal: saldo / Math.pow(1+infl, i-e0), total }); }
-            render(datos, total);
+        /* --- VISUALIZACIÓN --- */
+        function renderDashboard(datos, total, isDca = false) {
+            const tab = document.querySelector('.tab.active').dataset.tab;
+            const res = document.getElementById('resumen');
+            if(tab === 'dcaReal' || tab === 'escenarios' || tab === 'inversa') { res.style.display = 'none'; }
+            else {
+                res.style.display = 'block';
+                const f = datos[datos.length-1];
+                const crossed = datos.find(d => d.saldo >= 1000000);
+                res.innerHTML = `<div class="resume-grid">
+                    <div class="resume-item"><h3>Valor Nominal</h3><div class="value">${formatCurrency(f.saldo)}</div><div class="subtitle">A los ${f.edad} años</div></div>
+                    <div class="resume-item"><h3>Poder de Compra</h3><div class="value">${formatCurrency(f.saldoReal)}</div><div class="subtitle">Ajustado por inflación</div></div>
+                    <div class="resume-item"><h3>Inversión Total</h3><div class="value">${formatCurrency(total)}</div><div class="subtitle">Esfuerzo propio</div></div>
+                    <div class="resume-item"><h3>Hito: 1 Millón</h3><div class="value">${crossed ? crossed.edad + ' años' : '---'}</div><div class="subtitle">Edad del cruce</div></div>
+                </div>`;
+            }
+            const rows = datos.map(d => `<tr><td>${d.edad}</td><td>${formatCurrency(d.saldo)}</td><td>${formatCurrency(d.saldoReal || d.saldo)}</td><td>${formatCurrency(d.total)}</td></tr>`).join('');
+            document.getElementById('tableContainer').innerHTML = `<table><thead><tr><th>Año/Edad</th><th>Nominal</th><th>Real</th><th>Invertido</th></tr></thead><tbody>${rows}</tbody></table>`;
+            renderChart(datos);
         }
 
         function renderChart(datos) {
             const ctx = document.getElementById('savingChart').getContext('2d');
             if(myChart) myChart.destroy();
-            myChart = new Chart(ctx, { type: 'line', data: { labels: datos.map(d => d.edad), datasets: [{ label: 'Cartera', data: datos.map(d => d.saldo), borderColor: '#2563eb', fill: true, tension: 0.3, pointRadius: 0 }] }, options: { responsive: true, maintainAspectRatio: false } });
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: datos.map(d => d.edad),
+                    datasets: [
+                        { label: 'Valor Nominal', data: datos.map(d => d.saldo), borderColor: '#2563eb', fill: true, backgroundColor: '#2563eb10', tension: 0.3 },
+                        { label: 'Aportes Totales', data: datos.map(d => d.total), borderColor: '#059669', borderDash: [5,5], tension: 0 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { ticks: { callback: v => '$'+formatCurrency(v) } } } }
+            });
         }
 
-        function autoCalcular() {
-            document.querySelectorAll('input').forEach(i => i.id && localStorage.setItem(i.id, i.value));
-            const tab = document.querySelector('.tab.active').dataset.tab;
-            if(tab==='basico') calcularBasico(); else if(tab==='dcaReal') calcularDcaReal();
-            // ... agregar otros ...
+        /* --- PORTAFOLIO Y MODAL --- */
+        function openPortfolioModal(id) { currentTargetInput = id; document.getElementById('portfolioModal').classList.add('active'); if(!donutChart) initDonut(); }
+        function closePortfolioModal() { document.getElementById('portfolioModal').classList.remove('active'); }
+        function initDonut() {
+            donutChart = new Chart(document.getElementById('donutChart'), {
+                type: 'doughnut', data: { labels: ['Acciones','Bonos'], datasets: [{ data: [60,40], backgroundColor: ['#2563eb','#059669'] }] },
+                options: { cutout:'80%', plugins:{legend:{display:false}} }
+            });
+        }
+        function updatePortfolio() {
+            const s = +document.getElementById('rangeStocks').value;
+            document.getElementById('valStocks').innerText = s+'%';
+            const r = (s*0.11 + (100-s)*0.04).toFixed(1);
+            document.getElementById('finalReturnDisplay').innerText = r+'%';
+            donutChart.data.datasets[0].data = [s, 100-s]; donutChart.update();
+        }
+        function applyPortfolio() { document.getElementById(currentTargetInput).value = document.getElementById('finalReturnDisplay').innerText.replace('%',''); closePortfolioModal(); autoCalcular(); }
+        function setProfile(p) { const s = document.getElementById('rangeStocks'); s.value = p==='conservative'?20:(p==='moderate'?60:100); updatePortfolio(); }
+
+        /* --- DEDUCCIONES --- */
+        function addDeduction(age='', amt='') {
+            const div = document.createElement('div'); div.className = 'deduction-item';
+            div.innerHTML = `<div class="form-input-group"><label>Edad</label><input type="number" class="ded-age" value="${age}"></div>
+            <div class="form-input-group"><label>Monto</label><input type="text" class="money-input ded-amt" value="${amt}"></div>
+            <button type="button" class="btn-remove" onclick="this.parentElement.remove(); autoCalcular();">X</button>`;
+            document.getElementById('deductionsList').appendChild(div);
         }
 
+        /* --- INICIO --- */
         window.onload = () => {
             const formB = document.getElementById('formBasico');
-            [['Edad Inicio','edadInicioBasico',25],['Edad Fin','edadFinBasico',65],['Monto Inicial','montoInicialBasico',0],['Aporte Mensual','aporteMensualBasico',100],['Rendimiento %','rendimientoBasico',5],['Inflación %','inflacionBasico',3]].forEach(([l,id,v]) => {
-                const div = document.createElement('div'); div.className = 'form-input-group'; div.innerHTML = `<label>${l}</label><input type="text" id="${id}" value="${id.includes('monto')?formatInput(v):v}" class="${id.includes('monto')||id.includes('aporte')?'money-input':''}">`; formB.appendChild(div);
+            configBasico.forEach(([l,id,v,tt]) => {
+                const div = document.createElement('div'); div.className = 'form-input-group';
+                div.innerHTML = `<label>${l} <div class="tooltip-container"><div class="tooltip-icon">?</div><div class="tooltip"><b>${tt.t}</b>${tt.c}</div></div></label>
+                <input type="text" id="${id}" value="${id.includes('monto')||id.includes('aporte')?formatInput(v):v}" class="${id.includes('monto')||id.includes('aporte')?'money-input':''}">`;
+                formB.appendChild(div);
             });
             document.querySelectorAll('input, select').forEach(i => { const v = localStorage.getItem(i.id); if(v) i.value = i.classList.contains('money-input') ? formatInput(v) : v; });
+            document.getElementById('toggleNightBtn').onclick = () => { document.body.classList.toggle('night'); localStorage.setItem('night', document.body.classList.contains('night')); };
+            if(localStorage.getItem('night') === 'true') document.body.classList.add('night');
+            document.getElementById('addDeductionBtn').onclick = () => addDeduction();
             document.getElementById('toggleTableBtn').onclick = () => { const t = document.getElementById('tableContainer'); t.style.display = t.style.display==='none'?'block':'none'; };
             document.querySelectorAll('.tab').forEach(t => t.onclick = function() { document.querySelectorAll('.tab, .tab-content').forEach(el => el.classList.remove('active')); this.classList.add('active'); document.getElementById(this.dataset.tab).classList.add('active'); autoCalcular(); });
-            document.body.addEventListener('input', e => { if(e.target.classList.contains('money-input')) { const start = e.target.selectionStart, oldLen = e.target.value.length; e.target.value = formatInput(e.target.value); e.target.setSelectionRange(start+(e.target.value.length-oldLen), start+(e.target.value.length-oldLen)); } autoCalcular(); });
+            document.body.addEventListener('input', e => { if(e.target.classList.contains('money-input')) { const s = e.target.selectionStart, old = e.target.value.length; e.target.value = formatInput(e.target.value); e.target.setSelectionRange(s+(e.target.value.length-old), s+(e.target.value.length-old)); } autoCalcular(); });
             autoCalcular();
         };
     </script>
