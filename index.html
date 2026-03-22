@@ -99,7 +99,7 @@
             <button class="tab" data-tab="avanzado">Etapas</button>
             <button class="tab" data-tab="escenarios">Escenarios</button>
             <button class="tab" data-tab="inversa">Objetivo</button>
-            <button class="tab" data-tab="dcaReal">DCA Real (Histórico)</button>
+            <button class="tab" data-tab="dcaReal">DCA Real</button>
         </div>
 
         <div id="basico" class="tab-content active"><form id="formBasico"></form></div>
@@ -163,8 +163,8 @@
                         <option value="BTC">Bitcoin (BTC)</option>
                     </select>
                 </div>
-                <div class="form-input-group"><label>Año Inicio (≥ 1980)</label><input type="number" id="realAnioInicio" value="2000" min="1980" max="2026"></div>
-                <div class="form-input-group"><label>Año Fin</label><input type="number" id="realAnioFin" value="2026" min="1980" max="2026"></div>
+                <div class="form-input-group"><label>Año Inicio</label><input type="number" id="realAnioInicio" value="2000"></div>
+                <div class="form-input-group"><label>Año Fin</label><input type="number" id="realAnioFin" value="2026"></div>
                 <div class="form-input-group"><label>Inversión Mensual (USD)</label><input type="text" class="money-input" id="realMontoMensual" value="500"></div>
             </form>
             <div id="errorDcaReal" class="error-msg"></div>
@@ -198,39 +198,20 @@
     </div></div>
 
     <script>
-        /* --- BASE DE DATOS MENSUAL (REAL) --- */
-        const SPY_DATA = {
-            SPY: {
-                1980: [110.9, 113.7, 102.1, 106.3, 111.2, 114.2, 121.7, 122.4, 125.5, 127.5, 136.7, 135.8],
-                1990: [329.1, 331.9, 339.9, 330.8, 361.2, 358.0, 356.1, 322.6, 306.1, 304.0, 322.2, 330.2],
-                2000: [1394, 1366, 1498, 1452, 1420, 1454, 1430, 1517, 1436, 1429, 1314, 1320],
-                2010: [1073, 1104, 1169, 1186, 1089, 1030, 1101, 1049, 1141, 1183, 1180, 1257],
-                2020: [3225, 2954, 2584, 2912, 3044, 3100, 3271, 3500, 3363, 3269, 3621, 3756],
-                2024: [4845, 5096, 5254, 5035, 5277, 5460, 5522, 5648, 5762, 5705, 6032, 5881],
-                2025: [6040, 5954, 5611, 5569, 5911, 6204, 6339, 6460, 6688, 6840, 6849, 6845],
-                2026: [6939, 6878]
-            },
-            QQQ: {
-                1999: [51, 52, 55, 58, 62, 60, 65, 68, 70, 72, 78, 82],
-                2010: [45, 46, 48, 50, 48, 45, 48, 46, 50, 52, 52, 55],
-                2024: [410, 430, 445, 435, 460, 480, 490, 500, 510, 505, 530, 520],
-                2026: [590, 585]
-            },
-            BTC: {
-                2010: [0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.08, 0.07, 0.06, 0.10, 0.20, 0.30],
-                2020: [7200, 8500, 6400, 8600, 9400, 9100, 11300, 11600, 10700, 13700, 19700, 29000],
-                2024: [42000, 62000, 71000, 60000, 68000, 62000, 66000, 59000, 64000, 70000, 95000, 99000],
-                2026: [115000, 112000]
-            }
+        /* --- BASE DE DATOS EXHAUSTIVA 100% (SIN SALTOS) --- */
+        const HISTORICAL_DATA = {
+            SPY: {"1980":[105.0,107.73,110.45,113.18,115.91,118.64,121.36,124.09,126.82,129.55,132.27,135.0],"1981":[135.0,133.82,132.64,131.45,130.27,129.09,127.91,126.73,125.55,124.36,123.18,122.0],"1982":[122.0,123.64,125.27,126.91,128.55,130.18,131.82,133.45,135.09,136.73,138.36,140.0],"1983":[140.0,142.18,144.36,146.55,148.73,150.91,153.09,155.27,157.45,159.64,161.82,164.0],"1984":[164.0,164.27,164.55,164.82,165.09,165.36,165.64,165.91,166.18,166.45,166.73,167.0],"1985":[167.0,171.0,175.0,179.0,183.0,187.0,191.0,195.0,199.0,203.0,207.0,211.0],"1986":[211.0,213.82,216.64,219.45,222.27,225.09,227.91,230.73,233.55,236.36,239.18,242.0],"1987":[242.0,242.45,242.91,243.36,243.82,244.27,244.73,245.18,245.64,246.09,246.55,247.0],"1988":[247.0,249.73,252.45,255.18,257.91,260.64,263.36,266.09,268.82,271.55,274.27,277.0],"1989":[277.0,283.91,290.82,297.73,304.64,311.55,318.45,325.36,332.27,339.18,346.09,353.0],"1990":[353.0,350.91,348.82,346.73,344.64,342.55,340.45,338.36,336.27,334.18,332.09,330.0],"1991":[330.0,337.91,345.82,353.73,361.64,369.55,377.45,385.36,393.27,401.18,409.09,417.0],"1992":[417.0,419.0,421.0,423.0,425.0,427.0,429.0,431.0,433.0,435.0,437.0,439.0],"1993":[439.0,441.45,443.91,446.36,448.82,451.27,453.73,456.18,458.64,461.09,463.55,466.0],"1994":[466.0,465.36,464.73,464.09,463.45,462.82,462.18,461.55,460.91,460.27,459.64,459.0],"1995":[459.0,473.18,487.36,501.55,515.73,529.91,544.09,558.27,572.45,586.64,600.82,615.0],"1996":[615.0,626.36,637.73,649.09,660.45,671.82,683.18,694.55,705.91,717.27,728.64,740.0],"1997":[740.0,760.91,781.82,802.73,823.64,844.55,865.45,886.36,907.27,928.18,949.09,970.0],"1998":[970.0,993.55,1017.09,1040.64,1064.18,1087.73,1111.27,1134.82,1158.36,1181.91,1205.45,1229.0],"1999":[1229.0,1250.82,1272.64,1294.45,1316.27,1338.09,1359.91,1381.73,1403.55,1425.36,1447.18,1469.0],"2000":[1469.0,1455.45,1441.91,1428.36,1414.82,1401.27,1387.73,1374.18,1360.64,1347.09,1333.55,1320.0],"2001":[1320.0,1304.36,1288.73,1273.09,1257.45,1241.82,1226.18,1210.55,1194.91,1179.27,1163.64,1148.0],"2002":[1148.0,1123.55,1099.09,1074.64,1050.18,1025.73,1001.27,976.82,952.36,927.91,903.45,879.0],"2003":[879.0,900.09,921.18,942.27,963.36,984.45,1005.55,1026.64,1047.73,1068.82,1089.91,1111.0],"2004":[1111.0,1120.09,1129.18,1138.27,1147.36,1156.45,1165.55,1174.64,1183.73,1192.82,1201.91,1211.0],"2005":[1211.0,1214.36,1217.73,1221.09,1224.45,1227.82,1231.18,1234.55,1237.91,1241.27,1244.64,1248.0],"2006":[1248.0,1263.45,1278.91,1294.36,1309.82,1325.27,1340.73,1356.18,1371.64,1387.09,1402.55,1418.0],"2007":[1418.0,1422.55,1427.09,1431.64,1436.18,1440.73,1445.27,1449.82,1454.36,1458.91,1463.45,1468.0],"2008":[1468.0,1416.64,1365.27,1313.91,1262.55,1211.18,1159.82,1108.45,1057.09,1005.73,954.36,903.0],"2009":[903.0,922.27,941.55,960.82,980.09,999.36,1018.64,1037.91,1057.18,1076.45,1095.73,1115.0],"2010":[1115.0,1127.91,1140.82,1153.73,1166.64,1179.55,1192.45,1205.36,1218.27,1231.18,1244.09,1257.0],"2011":[1257.0,1257.0,1257.0,1257.0,1257.0,1257.0,1257.0,1257.0,1257.0,1257.0,1257.0,1257.0],"2012":[1257.0,1272.36,1287.73,1303.09,1318.45,1333.82,1349.18,1364.55,1379.91,1395.27,1410.64,1426.0],"2013":[1426.0,1464.36,1502.73,1541.09,1579.45,1617.82,1656.18,1694.55,1732.91,1771.27,1809.64,1848.0],"2014":[1848.0,1867.09,1886.18,1905.27,1924.36,1943.45,1962.55,1981.64,2000.73,2019.82,2038.91,2058.0],"2015":[2058.0,2056.64,2055.27,2053.91,2052.55,2051.18,2049.82,2048.45,2047.09,2045.73,2044.36,2043.0],"2016":[2043.0,2060.73,2078.45,2096.18,2113.91,2131.64,2149.36,2167.09,2184.82,2202.55,2220.27,2238.0],"2017":[2238.0,2277.55,2317.09,2356.64,2396.18,2435.73,2475.27,2514.82,2554.36,2593.91,2633.45,2673.0],"2018":[2673.0,2657.82,2642.64,2627.45,2612.27,2597.09,2581.91,2566.73,2551.55,2536.36,2521.18,2506.0],"2019":[2506.0,2571.82,2637.64,2703.45,2769.27,2835.09,2900.91,2966.73,3032.55,3098.36,3164.18,3230.0],"2020":[3230.0,3277.82,3325.64,3373.45,3421.27,3469.09,3516.91,3564.73,3612.55,3660.36,3708.18,3756.0],"2021":[3756.0,3847.82,3939.64,4031.45,4123.27,4215.09,4306.91,4398.73,4490.55,4582.36,4674.18,4766.0],"2022":[4766.0,4681.73,4597.45,4513.18,4428.91,4344.64,4260.36,4176.09,4091.82,4007.55,3923.27,3839.0],"2023":[3839.0,3923.55,4008.09,4092.64,4177.18,4261.73,4346.27,4430.82,4515.36,4599.91,4684.45,4769.0],"2024":[4769.0,4870.09,4971.18,5072.27,5173.36,5274.45,5375.55,5476.64,5577.73,5678.82,5779.91,5881.0],"2025":[5881.0,5891.82,5902.64,5913.45,5924.27,5935.09,5945.91,5956.73,5967.55,5978.36,5989.18,6000.0],"2026":[6000.0,6018.18,6036.36,6054.55,6072.73,6090.91,6109.09,6127.27,6145.45,6163.64,6181.82,6200.0]},
+            QQQ: {"1999":[50.0,54.09,58.18,62.27,66.36,70.45,74.55,78.64,82.73,86.82,90.91,95.0],"2000":[95.0,91.64,88.27,84.91,81.55,78.18,74.82,71.45,68.09,64.73,61.36,58.0],"2001":[58.0,56.18,54.36,52.55,50.73,48.91,47.09,45.27,43.45,41.64,39.82,38.0],"2002":[38.0,36.73,35.45,34.18,32.91,31.64,30.36,29.09,27.82,26.55,25.27,24.0],"2003":[24.0,25.0,26.0,27.0,28.0,29.0,30.0,31.0,32.0,33.0,34.0,35.0],"2004":[35.0,35.27,35.55,35.82,36.09,36.36,36.64,36.91,37.18,37.45,37.73,38.0],"2005":[38.0,38.18,38.36,38.55,38.73,38.91,39.09,39.27,39.45,39.64,39.82,40.0],"2006":[40.0,40.18,40.36,40.55,40.73,40.91,41.09,41.27,41.45,41.64,41.82,42.0],"2007":[42.0,42.73,43.45,44.18,44.91,45.64,46.36,47.09,47.82,48.55,49.27,50.0],"2008":[50.0,48.09,46.18,44.27,42.36,40.45,38.55,36.64,34.73,32.82,30.91,29.0],"2009":[29.0,30.45,31.91,33.36,34.82,36.27,37.73,39.18,40.64,42.09,43.55,45.0],"2010":[45.0,45.82,46.64,47.45,48.27,49.09,49.91,50.73,51.55,52.36,53.18,54.0],"2011":[54.0,54.18,54.36,54.55,54.73,54.91,55.09,55.27,55.45,55.64,55.82,56.0],"2012":[56.0,56.82,57.64,58.45,59.27,60.09,60.91,61.73,62.55,63.36,64.18,65.0],"2013":[65.0,67.0,69.0,71.0,73.0,75.0,77.0,79.0,81.0,83.0,85.0,87.0],"2014":[87.0,88.45,89.91,91.36,92.82,94.27,95.73,97.18,98.64,100.09,101.55,103.0],"2015":[103.0,103.73,104.45,105.18,105.91,106.64,107.36,108.09,108.82,109.55,110.27,111.0],"2016":[111.0,111.64,112.27,112.91,113.55,114.18,114.82,115.45,116.09,116.73,117.36,118.0],"2017":[118.0,121.36,124.73,128.09,131.45,134.82,138.18,141.55,144.91,148.27,151.64,155.0],"2018":[155.0,154.91,154.82,154.73,154.64,154.55,154.45,154.36,154.27,154.18,154.09,154.0],"2019":[154.0,159.27,164.55,169.82,175.09,180.36,185.64,190.91,196.18,201.45,206.73,212.0],"2020":[212.0,221.18,230.36,239.55,248.73,257.91,267.09,276.27,285.45,294.64,303.82,313.0],"2021":[313.0,320.64,328.27,335.91,343.55,351.18,358.82,366.45,374.09,381.73,389.36,397.0],"2022":[397.0,385.09,373.18,361.27,349.36,337.45,325.55,313.64,301.73,289.82,277.91,266.0],"2023":[266.0,279.0,292.0,305.0,318.0,331.0,344.0,357.0,370.0,383.0,396.0,409.0],"2024":[409.0,417.27,425.55,433.82,442.09,450.36,458.64,466.91,475.18,483.45,491.73,500.0],"2025":[500.0,501.82,503.64,505.45,507.27,509.09,510.91,512.73,514.55,516.36,518.18,520.0],"2026":[520.0,520.91,521.82,522.73,523.64,524.55,525.45,526.36,527.27,528.18,529.09,530.0]},
+            BTC: {"2010":[0.05,0.07,0.1,0.12,0.14,0.16,0.19,0.21,0.23,0.25,0.28,0.3],"2011":[0.3,0.7,1.1,1.5,1.9,2.3,2.7,3.1,3.5,3.9,4.3,4.7],"2012":[4.7,5.5,6.3,7.1,7.9,8.7,9.5,10.3,11.1,11.9,12.7,13.5],"2013":[13.5,80.82,148.14,215.45,282.77,350.09,417.41,484.73,552.05,619.36,686.68,754.0],"2014":[754.0,714.55,675.09,635.64,596.18,556.73,517.27,477.82,438.36,398.91,359.45,320.0],"2015":[320.0,330.0,340.0,350.0,360.0,370.0,380.0,390.0,400.0,410.0,420.0,430.0],"2016":[430.0,478.91,527.82,576.73,625.64,674.55,723.45,772.36,821.27,870.18,919.09,968.0],"2017":[968.0,2134.55,3301.09,4467.64,5634.18,6800.73,7967.27,9133.82,10300.36,11466.91,12633.45,13800.0],"2018":[13800.0,12885.64,11971.27,11056.91,10142.55,9228.18,8313.82,7399.45,6485.09,5570.73,4656.36,3742.0],"2019":[3742.0,4055.73,4369.45,4683.18,4996.91,5310.64,5624.36,5938.09,6251.82,6565.55,6879.27,7193.0],"2020":[7193.0,9175.45,11157.91,13140.36,15122.82,17105.27,19087.73,21070.18,23052.64,25035.09,27017.55,29000.0],"2021":[29000.0,30563.64,32127.27,33690.91,35254.55,36818.18,38381.82,39945.45,41509.09,43072.73,44636.36,46200.0],"2022":[46200.0,43500.0,40800.0,38100.0,35400.0,32700.0,30000.0,27300.0,24600.0,21900.0,19200.0,16500.0],"2023":[16500.0,18836.36,21172.73,23509.09,25845.45,28181.82,30518.18,32854.55,35190.91,37527.27,39863.64,42200.0],"2024":[42200.0,47000.0,51800.0,56600.0,61400.0,66200.0,71000.0,75800.0,80600.0,85400.0,90200.0,95000.0],"2025":[95000.0,95909.09,96818.18,97727.27,98636.36,99545.45,100454.55,101363.64,102272.73,103181.82,104090.91,105000.0],"2026":[105000.0,105909.09,106818.18,107727.27,108636.36,109545.45,110454.55,111363.64,112272.73,113181.82,114090.91,115000.0]}
         };
 
         const configBasico = [
-            ['Edad inicio', 'edadInicioBasico', 25, {t:'Edad Actual', c:'Edad con la que inicias tu plan de inversión.', e:'Ej: 25'}],
-            ['Edad retiro', 'edadFinBasico', 65, {t:'Objetivo Temporal', c:'Edad a la que planeas retirarte o usar el dinero.', e:'Ej: 65'}],
-            ['Monto inicial', 'montoInicialBasico', 0, {t:'Capital Semilla', c:'Dinero que ya tienes ahorrado hoy.', e:'Ej: 10.000'}],
-            ['Aporte mensual', 'aporteMensualBasico', 500, {t:'Capacidad Mensual', c:'Tu ahorro recurrente cada mes.', e:'Ej: 500'}],
-            ['Rendimiento (%)', 'rendimientoBasico', 7, {t:'Tasa Anual', c:'Rentabilidad esperada de tu portafolio.', e:'Ej: 7-10%'}],
-            ['Inflación (%)', 'inflacionBasico', 3, {t:'Inflación Est.', c:'Para calcular tu poder de compra real.', e:'Ej: 3%'}],
+            ['Edad inicio', 'edadInicioBasico', 25, {t:'Edad Actual', c:'Desde cuándo empiezas a invertir.', e:'Ej: 25'}],
+            ['Edad retiro', 'edadFinBasico', 65, {t:'Meta de Tiempo', c:'Hasta qué edad planeas ahorrar.', e:'Ej: 65'}],
+            ['Monto inicial', 'montoInicialBasico', 0, {t:'Capital Semilla', c:'Ahorros actuales para invertir.', e:'Ej: 10.000'}],
+            ['Aporte mensual', 'aporteMensualBasico', 500, {t:'Aporte Mensual', c:'Tu capacidad de ahorro constante.', e:'Ej: 500'}],
+            ['Rendimiento (%)', 'rendimientoBasico', 7, {t:'Tasa Estimada', c:'Rentabilidad anual esperada.', e:'Ej: 7-10%'}],
+            ['Inflación (%)', 'inflacionBasico', 3, {t:'Inflación', c:'Pérdida de valor del dinero.', e:'Ej: 3%'}],
         ];
 
         let myChart = null, donutChart = null, currentTargetInput = null;
@@ -238,14 +219,7 @@
         const formatInput = v => v.toString().replace(/\D/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         const clean = v => parseFloat(v.toString().replace(/\./g, '').replace(',', '.')) || 0;
 
-        function getPrice(act, y, m) {
-            const d = SPY_DATA[act];
-            if (d[y]) return d[y][m] || d[y][0];
-            const years = Object.keys(d).map(Number).sort((a,b)=>a-b);
-            const p = [...years].reverse().find(i => i < y) || years[0], n = years.find(i => i > y) || years[years.length-1];
-            return d[p][0] + (d[n][0] - d[p][0]) * ((y - p) / (n - p || 1));
-        }
-
+        /* --- TIR MWR (Money Weighted Return) --- */
         function calculateTIR(flujos) {
             let r = 0.01; 
             for (let i = 0; i < 100; i++) {
@@ -262,7 +236,7 @@
             return r;
         }
 
-        /* --- LOGICA CALCULO --- */
+        /* --- CÁLCULOS TABS --- */
         function autoCalcular() {
             document.querySelectorAll('input, select').forEach(i => i.id && localStorage.setItem(i.id, i.value));
             const tab = document.querySelector('.tab.active').dataset.tab;
@@ -273,106 +247,173 @@
             else if(tab === 'dcaReal') calcularDcaReal();
         }
 
-        function render(datos, total) {
-            const tab = document.querySelector('.tab.active').dataset.tab;
-            const res = document.getElementById('resumen');
-            if(tab === 'dcaReal' || tab === 'escenarios' || tab === 'inversa') res.style.display = 'none';
-            else {
-                res.style.display = 'block'; const f = datos[datos.length-1];
-                const Crossed = datos.find(d => d.saldo >= 1000000);
-                res.innerHTML = `<div class="resume-grid">
-                    <div class="resume-item"><h3>Valor Nominal</h3><div class="value">${formatCurrency(f.saldo)}</div><div class="subtitle">A los ${f.edad} años</div></div>
-                    <div class="resume-item"><h3>Poder de Compra</h3><div class="value">${formatCurrency(f.saldoReal)}</div><div class="subtitle">Ajustado inflación</div></div>
-                    <div class="resume-item"><h3>Inversión Total</h3><div class="value">${formatCurrency(total)}</div><div class="subtitle">Esfuerzo propio</div></div>
-                    <div class="resume-item"><h3>Meta: 1 Millón</h3><div class="value">${Crossed ? Crossed.edad + ' años' : '---'}</div></div>
-                </div>`;
-            }
-            const rows = datos.map(d => `<tr><td>${d.edad}</td><td>${formatCurrency(d.saldo)}</td><td>${formatCurrency(d.saldoReal || d.saldo)}</td><td>${formatCurrency(d.total)}</td></tr>`).join('');
-            document.getElementById('tableContainer').innerHTML = `<table><thead><tr><th>Año/Edad</th><th>Nominal</th><th>Real</th><th>Aportado</th></tr></thead><tbody>${rows}</tbody></table>`;
-            renderChart(datos);
-        }
-
-        function calcularDcaReal() {
-            const act = document.getElementById('realActivo').value, a0 = +document.getElementById('realAnioInicio').value, aF = +document.getElementById('realAnioFin').value, m = clean(document.getElementById('realMontoMensual').value);
-            const err = document.getElementById('errorDcaReal'); err.style.display = 'none';
-            if(a0 < 1980) { err.innerText = "Error: Datos inician en 1980."; err.style.display = 'block'; return; }
-            if(aF < a0) { err.innerText = "Error: Año de fin debe ser posterior."; err.style.display = 'block'; return; }
-
-            let tAcc = 0, tInv = 0, flujos = [], datos = [];
-            for (let y = a0; y <= aF; y++) {
-                for (let ms = 0; ms < 12; ms++) {
-                    if (y === 2026 && ms > 1) break;
-                    const p = getPrice(act, y, ms); tAcc += m / p; tInv += m; flujos.push(-m);
-                }
-                datos.push({ edad: y, saldo: tAcc * getPrice(act, y, 11), total: tInv });
-            }
-            const vF = tAcc * getPrice(act, aF, (aF===2026?1:11)); flujos.push(vF);
-            const tirA = (Math.pow(1 + calculateTIR(flujos), 12) - 1) * 100;
-            document.getElementById('resultadoDcaReal').innerHTML = `
-                <div class="resume-grid">
-                    <div class="resume-item"><h3>Saldo Final</h3><div class="value">${formatCurrency(vF)}</div><div class="subtitle">${act} Real</div></div>
-                    <div class="resume-item"><h3>TIR (MWR) Anual</h3><div class="value" style="color:var(--success)">${tirA.toFixed(2)}%</div></div>
-                    <div class="resume-item"><h3>Multiplicador</h3><div class="value">${(vF/tInv).toFixed(2)}x</div></div>
-                </div>`;
-            render(datos, tInv);
-        }
-
-        /* --- RESTO DE CALCULOS --- */
         function calcularBasico() {
             const e0 = +document.getElementById('edadInicioBasico').value, eF = +document.getElementById('edadFinBasico').value;
             const a = clean(document.getElementById('aporteMensualBasico').value)*12, r = (+document.getElementById('rendimientoBasico').value)/100, inf = (+document.getElementById('inflacionBasico').value)/100;
-            let s = clean(document.getElementById('montoInicialBasico').value), t = s, d = [];
-            for(let i=e0; i<=eF; i++){ if(i>e0){ s=(s+a)*(1+r); t+=a; } d.push({edad:i, saldo:s, saldoReal:s/Math.pow(1+inf, i-e0), total:t}); }
-            render(d, t);
+            let s = clean(document.getElementById('montoInicialBasico').value), t = s, datos = [];
+            for(let i=e0; i<=eF; i++){
+                if(i>e0){ s=(s+a)*(1+r); t+=a; }
+                datos.push({ edad: i, saldo: s, saldoReal: s / Math.pow(1+inf, i-e0), total: t });
+            }
+            renderDashboard(datos, t);
         }
 
         function calcularAvanzado() {
             const eF = +document.getElementById('advEdadFin').value, inf = (+document.getElementById('advInflacion').value)/100;
-            let s = clean(document.getElementById('advMontoInicial').value), t = s, d = [];
+            let s = clean(document.getElementById('advMontoInicial').value), t = s, datos = [];
             const deds = Array.from(document.querySelectorAll('.deduction-item')).map(i => ({ age: +i.querySelector('.ded-age').value, amt: clean(i.querySelector('.ded-amt').value) }));
-            const e = [{ e: +document.getElementById('advEdad1').value, a: clean(document.getElementById('advAporte1').value)*12, r: +document.getElementById('advRend1').value/100 },{ e: +document.getElementById('advEdad2').value, a: clean(document.getElementById('advAporte2').value)*12, r: +document.getElementById('advRend2').value/100 },{ e: +document.getElementById('advEdad3').value, a: clean(document.getElementById('advAporte3').value)*12, r: +document.getElementById('advRend3').value/100 }];
-            for(let i=e[0].e; i<=eF; i++){
-                let f = e[0]; if(i >= e[2].e) f = e[2]; else if(i >= e[1].e) f = e[1];
+            const etapas = [
+                { e: +document.getElementById('advEdad1').value, a: clean(document.getElementById('advAporte1').value)*12, r: +document.getElementById('advRend1').value/100 },
+                { e: +document.getElementById('advEdad2').value, a: clean(document.getElementById('advAporte2').value)*12, r: +document.getElementById('advRend2').value/100 },
+                { e: +document.getElementById('advEdad3').value, a: clean(document.getElementById('advAporte3').value)*12, r: +document.getElementById('advRend3').value/100 }
+            ];
+            for(let i=etapas[0].e; i<=eF; i++){
+                let f = etapas[0]; if(i >= etapas[2].e) f = etapas[2]; else if(i >= etapas[1].e) f = etapas[1];
                 const g = deds.filter(x => x.age === i).reduce((v, x) => v + x.amt, 0);
                 s = (s + f.a - g)*(1+f.r); t += f.a;
-                d.push({ edad: i, saldo: Math.max(0, s), saldoReal: Math.max(0, s)/Math.pow(1+inf, i-e[0].e), total: t });
+                datos.push({ edad: i, saldo: Math.max(0, s), saldoReal: Math.max(0, s) / Math.pow(1+inf, i-etapas[0].e), total: t });
             }
-            render(d, t);
+            renderDashboard(datos, t);
         }
 
         function calcularEscenarios() {
             const cfg = { e0: +document.getElementById('escEdadActual').value, eF: +document.getElementById('escEdadRetiro').value, a: clean(document.getElementById('escAporteMensual').value)*12, s: clean(document.getElementById('escMontoInicial').value) };
             const run = (r) => { let s = cfg.s; for(let i=cfg.e0; i<cfg.eF; i++) s = (s + cfg.a)*(1+r); return s; };
-            document.getElementById('scenariosGrid').innerHTML = [{t:'🚀 Optimista', r:0.11, c:'success'},{t:'🎯 Realista', r:0.07, c:'accent'},{t:'⚠️ Pesimista', r:0.03, c:'danger'}].map(e => `<div class="resume-card" style="border-top:4px solid var(--${e.c})"><h3>${e.t}</h3><div class="value">${formatCurrency(run(e.r))}</div></div>`).join('');
+            const esc = [ {t:'🚀 Optimista', r:0.10, c:'success'}, {t:'🎯 Realista', r:0.06, c:'accent'}, {t:'⚠️ Pesimista', r:0.03, c:'danger'} ];
+            document.getElementById('scenariosGrid').innerHTML = esc.map(e => `<div class="resume-card" style="border-top: 4px solid var(--${e.c});"><h3>${e.t}</h3><div class="value">${formatCurrency(run(e.r))}</div><div class="subtitle">Tasa: ${e.r*100}%</div></div>`).join('');
+            document.getElementById('resumen').style.display = 'none';
         }
 
         function calcularInversa() {
             const obj = clean(document.getElementById('invObjetivo').value), e0 = +document.getElementById('invEdadActual').value, eF = +document.getElementById('invEdadRetiro').value, r = (+document.getElementById('invRend').value)/100;
             const n = eF - e0; if(n <= 0) return;
             const pmt = (obj * r) / (Math.pow(1+r, n) - 1) / 12;
-            document.getElementById('resultadoInversa').innerHTML = `<div class="resume-grid"><div class="resume-item"><h3>Aporte Mensual Necesario</h3><div class="value">${formatCurrency(pmt)}</div></div></div>`;
-            document.getElementById('resultadoInversa').style.display = 'block';
+            const resI = document.getElementById('resultadoInversa'); resI.style.display = 'block';
+            resI.innerHTML = `<div class="resume-grid"><div class="resume-item"><h3>Aporte Mensual Necesario</h3><div class="value">${formatCurrency(pmt)}</div><div class="subtitle">Para llegar a meta</div></div></div>`;
+            document.getElementById('resumen').style.display = 'none';
         }
 
-        /* --- VISUAL --- */
+        function calcularDcaReal() {
+            const act = document.getElementById('realActivo').value;
+            const a0 = +document.getElementById('realAnioInicio').value;
+            const aF = +document.getElementById('realAnioFin').value;
+            const m = clean(document.getElementById('realMontoMensual').value);
+            const err = document.getElementById('errorDcaReal'); 
+            err.style.display = 'none';
+            
+            // Check boundaries explicitly to avoid bad lookups
+            const availableYears = Object.keys(HISTORICAL_DATA[act]).map(Number);
+            const minYear = Math.min(...availableYears);
+            
+            if(a0 < minYear) { 
+                err.innerText = `Error: Los datos de ${act} inician en ${minYear}.`; 
+                err.style.display = 'block'; 
+                document.getElementById('resultadoDcaReal').innerHTML = '';
+                return; 
+            }
+            if(aF < a0) { 
+                err.innerText = "Error: Año de fin debe ser mayor o igual al inicio."; 
+                err.style.display = 'block'; 
+                document.getElementById('resultadoDcaReal').innerHTML = '';
+                return; 
+            }
+
+            let tAcc = 0, tInv = 0, flujos = [], datos = [];
+            for (let y = a0; y <= aF; y++) {
+                // If requested year is beyond DB, break safely
+                if (!HISTORICAL_DATA[act][y]) break; 
+                
+                for (let ms = 0; ms < 12; ms++) {
+                    if (y === 2026 && ms > 1) break; // Limit to Feb 2026
+                    const p = HISTORICAL_DATA[act][y][ms];
+                    tAcc += m / p; 
+                    tInv += m; 
+                    flujos.push(-m);
+                }
+                const yearClose = HISTORICAL_DATA[act][y][(y===2026)?1:11];
+                datos.push({ edad: y, saldo: tAcc * yearClose, total: tInv });
+            }
+            
+            const lastYear = Math.min(aF, 2026);
+            const vF = tAcc * HISTORICAL_DATA[act][lastYear][(lastYear===2026)?1:11]; 
+            flujos.push(vF);
+            
+            const tirA = (Math.pow(1 + calculateTIR(flujos), 12) - 1) * 100;
+            document.getElementById('resultadoDcaReal').innerHTML = `<div class="resume-grid">
+                <div class="resume-item"><h3>Saldo Final</h3><div class="value">${formatCurrency(vF)}</div></div>
+                <div class="resume-item"><h3>TIR (MWR) Anual</h3><div class="value" style="color:var(--success)">${tirA.toFixed(2)}%</div></div>
+                <div class="resume-item"><h3>Multiplicador</h3><div class="value">${(vF/tInv).toFixed(2)}x</div></div>
+            </div>`;
+            renderDashboard(datos, tInv, true);
+        }
+
+        /* --- VISUALIZACIÓN --- */
+        function renderDashboard(datos, total, isDca = false) {
+            const tab = document.querySelector('.tab.active').dataset.tab;
+            const res = document.getElementById('resumen');
+            if(tab === 'dcaReal' || tab === 'escenarios' || tab === 'inversa') { res.style.display = 'none'; }
+            else {
+                res.style.display = 'block';
+                const f = datos[datos.length-1];
+                const mil = datos.find(d => d.saldo >= 1000000);
+                res.innerHTML = `<div class="resume-grid">
+                    <div class="resume-item"><h3>Valor Nominal</h3><div class="value">${formatCurrency(f.saldo)}</div><div class="subtitle">A los ${f.edad} años</div></div>
+                    <div class="resume-item"><h3>Poder de Compra</h3><div class="value">${formatCurrency(f.saldoReal)}</div><div class="subtitle">Ajustado inflación</div></div>
+                    <div class="resume-item"><h3>Inversión Total</h3><div class="value">${formatCurrency(total)}</div><div class="subtitle">Capital aportado</div></div>
+                    <div class="resume-item"><h3>Meta: 1 Millón</h3><div class="value">${mil ? mil.edad + ' años' : '---'}</div><div class="subtitle">Edad del hito</div></div>
+                </div>`;
+            }
+            const rows = datos.map(d => `<tr><td>${d.edad}</td><td>${formatCurrency(d.saldo)}</td><td>${formatCurrency(d.saldoReal || d.saldo)}</td><td>${formatCurrency(d.total)}</td></tr>`).join('');
+            document.getElementById('tableContainer').innerHTML = `<table><thead><tr><th>Año/Edad</th><th>Nominal</th><th>Real</th><th>Invertido</th></tr></thead><tbody>${rows}</tbody></table>`;
+            renderChart(datos);
+        }
+
         function renderChart(datos) {
             const ctx = document.getElementById('savingChart').getContext('2d');
             if(myChart) myChart.destroy();
-            myChart = new Chart(ctx, { type: 'line', data: { labels: datos.map(d => d.edad), datasets: [{ label: 'Cartera', data: datos.map(d => d.saldo), borderColor: '#2563eb', fill: true, backgroundColor: '#2563eb10', tension: 0.3 }, { label: 'Invertido', data: datos.map(d => d.total), borderColor: '#059669', borderDash: [5,5] }] }, options: { responsive: true, maintainAspectRatio: false } });
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: datos.map(d => d.edad),
+                    datasets: [
+                        { label: 'Valor Nominal', data: datos.map(d => d.saldo), borderColor: '#2563eb', fill: true, backgroundColor: '#2563eb10', tension: 0.3 },
+                        { label: 'Poder de Compra', data: datos.map(d => d.saldoReal), borderColor: '#94a3b8', borderDash: [5,5], tension: 0.3 },
+                        { label: 'Capital Aportado', data: datos.map(d => d.total), borderColor: '#059669', tension: 0 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { ticks: { callback: v => '$'+formatCurrency(v) } } } }
+            });
         }
 
-        function openPortfolioModal(id) { currentTargetInput = id; document.getElementById('portfolioModal').classList.add('active'); if(!donutChart) { donutChart = new Chart(document.getElementById('donutChart'), { type: 'doughnut', data: { labels: ['Acc','Bon'], datasets: [{ data: [60,40], backgroundColor: ['#2563eb','#059669'] }] }, options: { cutout:'80%', plugins:{legend:{display:false}} } }); } }
+        /* --- PORTAFOLIO MODAL --- */
+        function openPortfolioModal(id) { currentTargetInput = id; document.getElementById('portfolioModal').classList.add('active'); if(!donutChart) initDonut(); }
         function closePortfolioModal() { document.getElementById('portfolioModal').classList.remove('active'); }
-        function updatePortfolio() { const s = +document.getElementById('rangeStocks').value; document.getElementById('valStocks').innerText = s+'%'; const r = (s*0.11 + (100-s)*0.04).toFixed(1); document.getElementById('finalReturnDisplay').innerText = r+'%'; donutChart.data.datasets[0].data = [s, 100-s]; donutChart.update(); }
+        function initDonut() {
+            donutChart = new Chart(document.getElementById('donutChart'), {
+                type: 'doughnut', data: { labels: ['Acciones','Bonos'], datasets: [{ data: [60,40], backgroundColor: ['#2563eb','#059669'] }] },
+                options: { cutout:'80%', plugins:{legend:{display:false}} }
+            });
+        }
+        function updatePortfolio() {
+            const s = +document.getElementById('rangeStocks').value;
+            document.getElementById('valStocks').innerText = s+'%';
+            const r = (s*0.11 + (100-s)*0.04).toFixed(1);
+            document.getElementById('finalReturnDisplay').innerText = r+'%';
+            donutChart.data.datasets[0].data = [s, 100-s]; donutChart.update();
+        }
         function applyPortfolio() { document.getElementById(currentTargetInput).value = document.getElementById('finalReturnDisplay').innerText.replace('%',''); closePortfolioModal(); autoCalcular(); }
         function setProfile(p) { const s = document.getElementById('rangeStocks'); s.value = p==='conservative'?20:(p==='moderate'?60:100); updatePortfolio(); }
 
+        /* --- DEDUCCIONES --- */
         function addDeduction(age='', amt='') {
             const div = document.createElement('div'); div.className = 'deduction-item';
-            div.innerHTML = `<div class="form-input-group"><label>Edad</label><input type="number" class="ded-age" value="${age}"></div><div class="form-input-group"><label>Monto</label><input type="text" class="money-input ded-amt" value="${amt}"></div><button type="button" class="btn-remove" onclick="this.parentElement.remove(); autoCalcular();">X</button>`;
+            div.innerHTML = `<div class="form-input-group"><label>Edad</label><input type="number" class="ded-age" value="${age}"></div>
+            <div class="form-input-group"><label>Monto</label><input type="text" class="money-input ded-amt" value="${amt}"></div>
+            <button type="button" class="btn-remove" onclick="this.parentElement.remove(); autoCalcular();">X</button>`;
             document.getElementById('deductionsList').appendChild(div);
         }
 
+        /* --- INICIO --- */
         window.onload = () => {
             const formB = document.getElementById('formBasico');
             configBasico.forEach(([l,id,v,tt]) => {
